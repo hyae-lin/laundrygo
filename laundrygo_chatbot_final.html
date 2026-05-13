@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaundryGo · 챗봇 도입 성과 리포트</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f8fa;
+  --white: #ffffff;
+  --border: #e8eaed;
+  --border2: #d1d5db;
+  --text: #111827;
+  --text2: #4b5563;
+  --text3: #9ca3af;
+  --blue: #2563eb;
+  --blue-light: #eff6ff;
+  --blue-mid: #bfdbfe;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --yellow: #d97706;
+  --yellow-light: #fffbeb;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --teal: #0891b2;
+  --teal-light: #ecfeff;
+  --purple: #7c3aed;
+  --purple-light: #f5f3ff;
+  --font: 'Noto Sans KR', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; line-height: 1.6; }
+
+/* ── TOP NAV ── */
+.topnav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.nav-logo-mark {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--blue); display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white; font-family: var(--mono);
+}
+.nav-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.nav-subtitle { font-size: 11px; color: var(--text3); margin-left: 6px; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  font-size: 12px; color: var(--text2); text-decoration: none;
+  padding: 5px 10px; border-radius: 5px;
+  transition: background .15s, color .15s;
+}
+.nav-link:hover { background: var(--bg); color: var(--text); }
+
+/* ── HEADER ── */
+.page-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 48px 36px;
+}
+.header-inner { max-width: 1200px; }
+.header-eyebrow {
+  font-size: 11px; font-weight: 500; color: var(--blue);
+  letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.header-eyebrow::before { content: ''; width: 16px; height: 2px; background: var(--blue); border-radius: 1px; }
+h1 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+.header-desc { font-size: 13px; color: var(--text2); max-width: 600px; }
+.header-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+.meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); }
+.meta-item b { color: var(--text2); font-weight: 500; }
+
+/* ── BODY ── */
+.body { max-width: 1248px; margin: 0 auto; padding: 32px 48px 80px; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 56px; }
+.section-header { margin-bottom: 20px; }
+.section-num { font-size: 11px; font-weight: 600; color: var(--blue); font-family: var(--mono); letter-spacing: .06em; }
+.section-title { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 3px; letter-spacing: -.01em; }
+.section-desc { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+/* ── GRID ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.g-full { display: block; }
+.gap-top { margin-top: 16px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 24px;
+}
+.card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.card-desc { font-size: 11px; color: var(--text3); margin-bottom: 16px; line-height: 1.5; }
+
+/* ── SUMMARY KPI ── */
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.skpi { background: var(--white); padding: 24px 26px; position: relative; }
+.skpi::after { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+.skpi.blue::after { background: var(--blue); }
+.skpi.green::after { background: var(--green); }
+.skpi.teal::after { background: var(--teal); }
+.skpi.yellow::after { background: var(--yellow); }
+.skpi-label { font-size: 11px; font-weight: 500; color: var(--text3); margin-bottom: 8px; letter-spacing: .02em; }
+.skpi-val { font-size: 32px; font-weight: 700; font-family: var(--mono); letter-spacing: -.03em; line-height: 1; }
+.skpi-val.blue { color: var(--blue); }
+.skpi-val.green { color: var(--green); }
+.skpi-val.teal { color: var(--teal); }
+.skpi-val.yellow { color: var(--yellow); }
+.skpi-val small { font-size: 16px; opacity: .6; font-family: var(--mono); }
+.skpi-sub { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.5; }
+.skpi-note { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* ── INLINE KPI ROW ── */
+.krow { display: flex; gap: 12px; margin-bottom: 16px; }
+.kchip { flex: 1; background: var(--bg); border-radius: 8px; padding: 12px 14px; }
+.kchip-l { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.kchip-v { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.kchip-v small { font-size: 12px; color: var(--text3); }
+.kchip-d { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ── INSIGHT ── */
+.insight {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--bg); border-radius: 8px;
+  padding: 12px 14px; margin-top: 14px;
+  font-size: 12px; color: var(--text2); line-height: 1.65;
+}
+.insight-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.insight strong { color: var(--text); }
+
+/* ── CALLOUT BOX ── */
+.callout {
+  border-radius: 8px; padding: 14px 16px;
+  font-size: 12px; line-height: 1.6;
+}
+.callout.blue { background: var(--blue-light); border-left: 3px solid var(--blue); color: #1e40af; }
+.callout.green { background: var(--green-light); border-left: 3px solid var(--green); color: #14532d; }
+.callout.yellow { background: var(--yellow-light); border-left: 3px solid var(--yellow); color: #78350f; }
+.callout.red { background: var(--red-light); border-left: 3px solid var(--red); color: #7f1d1d; }
+.callout strong { font-weight: 700; }
+
+/* ── FUNNEL ── */
+.funnel { display: flex; flex-direction: column; gap: 8px; }
+.frow { display: grid; grid-template-columns: 140px 1fr 60px 100px; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.frow:last-child { border-bottom: none; }
+.flbl { font-size: 12px; color: var(--text2); }
+.flbl.key { font-weight: 700; color: var(--text); }
+.ftrack { background: #f3f4f6; border-radius: 4px; height: 24px; overflow: hidden; }
+.fbar { height: 100%; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 600; font-family: var(--mono); border-radius: 4px; color: white; }
+.fpct { font-size: 15px; font-weight: 700; font-family: var(--mono); text-align: right; }
+.fnote { font-size: 11px; color: var(--text3); }
+
+/* ── BAR LIST ── */
+.blist { display: flex; flex-direction: column; }
+.brow { display: grid; grid-template-columns: 148px 1fr 40px 50px 50px; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.brow:last-child { border-bottom: none; }
+.brow-header { display: grid; grid-template-columns: 148px 1fr 40px 50px 50px; gap: 8px; padding: 0 0 8px 0; border-bottom: 2px solid var(--border2); margin-bottom: 2px; }
+.bhdr { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+.bhdr.r { text-align: right; }
+.blbl { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btrack { background: #f3f4f6; border-radius: 3px; height: 6px; overflow: hidden; }
+.bfill { height: 100%; border-radius: 3px; }
+.bnum { font-family: var(--mono); font-size: 12px; color: var(--text); text-align: right; }
+.brate { font-family: var(--mono); font-size: 12px; text-align: right; }
+.brate.high { color: var(--red); font-weight: 600; }
+.brate.mid { color: var(--yellow); font-weight: 600; }
+.brate.low { color: var(--green); font-weight: 600; }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tbl th { text-align: left; padding: 9px 14px; font-size: 11px; font-weight: 600; color: var(--text3); border-bottom: 2px solid var(--border2); }
+.tbl th.r { text-align: right; }
+.tbl td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: middle; }
+.tbl td.n { font-family: var(--mono); color: var(--text); text-align: right; }
+.tbl td.dn { font-family: var(--mono); color: var(--green); font-weight: 700; text-align: right; }
+.tbl td.hi { font-family: var(--mono); color: var(--red); font-weight: 700; text-align: right; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr.hl { background: #eff6ff; }
+.tbl tr.hl td { color: var(--text); }
+
+/* ── TOP Q ── */
+.qlist { display: flex; flex-direction: column; }
+.qrow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.qrow:last-child { border-bottom: none; }
+.qrank { width: 20px; text-align: center; font-size: 11px; font-family: var(--mono); color: var(--text3); flex-shrink: 0; }
+.qrank.top { color: var(--yellow); font-weight: 700; }
+.qq { flex: 1; font-size: 12px; color: var(--text); }
+.qbar-wrap { width: 70px; background: #f3f4f6; border-radius: 3px; height: 4px; overflow: hidden; flex-shrink: 0; }
+.qbar-fill { height: 100%; border-radius: 3px; background: var(--blue-mid); }
+.qcnt { width: 32px; text-align: right; font-family: var(--mono); font-size: 12px; color: var(--text2); }
+.qtag { font-size: 10px; color: var(--text3); background: var(--bg); border-radius: 4px; padding: 2px 7px; flex-shrink: 0; border: 1px solid var(--border); }
+.qtag.alert { color: var(--red); background: var(--red-light); border-color: #fca5a5; }
+
+/* ── HOUR STRIP ── */
+.hstrip { display: flex; gap: 2px; flex-wrap: wrap; }
+.hcell { width: 36px; border-radius: 5px; padding: 5px 2px; text-align: center; cursor: default; }
+.hcell .hn { font-size: 9px; color: var(--text3); }
+.hcell .hv { font-size: 11px; font-weight: 600; font-family: var(--mono); }
+
+/* ── PRIO CARDS ── */
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pcard { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.pcard.feat { border-color: #a5f3fc; background: var(--teal-light); }
+.phead { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pbadge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: .04em; }
+.pbadge.p1 { background: #fee2e2; color: var(--red); }
+.pbadge.p2 { background: #fef9c3; color: #854d0e; }
+.pbadge.pn { background: #cffafe; color: #155e75; }
+.ptitle { font-size: 13px; font-weight: 700; color: var(--text); }
+.pbody { font-size: 12px; color: var(--text2); line-height: 1.7; }
+.ptags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.ptag { font-size: 11px; color: var(--text3); background: var(--bg); border-radius: 4px; padding: 2px 8px; border: 1px solid var(--border); }
+
+/* ── LEGEND ── */
+.leg { display: flex; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+.li { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+.ld { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+/* ── PILL TAG ── */
+.pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+.pill.blue { background: var(--blue-light); color: var(--blue); }
+.pill.green { background: var(--green-light); color: var(--green); }
+.pill.red { background: var(--red-light); color: var(--red); }
+
+/* ── MISC ── */
+.two { display: flex; gap: 14px; }
+.two > * { flex: 1; }
+.annot { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.5; }
+footer { background: var(--white); border-top: 1px solid var(--border); padding: 20px 48px; font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">L</div>
+    <span class="nav-title">LaundryGo</span>
+    <span class="nav-subtitle">챗봇 도입 성과 리포트</span>
+  </div>
+  <div class="nav-links">
+    <a href="#s1" class="nav-link">성과 요약</a>
+    <a href="#s2" class="nav-link">이용량</a>
+    <a href="#s3" class="nav-link">진입 경로</a>
+    <a href="#s4" class="nav-link">문의 감소</a>
+    <a href="#s5" class="nav-link">이용 현황</a>
+    <a href="#s6" class="nav-link">고도화 계획</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">챗봇 도입 효과 분석</div>
+    <h1>챗봇 도입 성과 리포트</h1>
+    <p class="header-desc">2026년 4월 22일 챗봇 도입 이후 고객센터 1:1 문의 감소 효과 및 챗봇 이용 현황 분석</p>
+    <div class="header-meta">
+      <div class="meta-item">📅 <b>분석 기간 2026.04.07 – 2026.05.06</b></div>
+      <div class="meta-item">🤖 <b>챗봇 도입 2026.04.22</b></div>
+      <div class="meta-item">⏰ <b>고객센터 운영 평일 10:00–19:00</b></div>
+      <div class="meta-item">📊 <b>2026.05.08 기준</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+
+<!-- ────────────────────────────────
+     S1. 챗봇 도입 성과 요약
+     ──────────────────────────────── -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title">챗봇 도입 성과 요약</div>
+    <div class="section-desc">2026.04.22 챗봇 도입 후 15일(~05.06) 기준</div>
+  </div>
+
+  <!-- 분석 기준 배지 -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:6px;background:#f8faff;border:1px solid #bfdbfe;border-radius:6px;padding:7px 12px;font-size:12px;color:#1e40af;">
+      <span style="font-weight:700;">📊 비교 기준</span>
+      <span style="color:#374151;">챗봇 도입 전 15일 (04/07–04/21) vs 도입 이후 15일 (04/22–05/06)</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:7px 12px;font-size:12px;color:#14532d;">
+      <span style="font-weight:700;">⚖️ 성수기 보정</span>
+      <span style="color:#374151;">수거신청건 변화율(−4.5%)을 반영해 비수기 전환에 의한 자연 감소분을 제거</span>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="skpi blue">
+      <div class="skpi-label">전체 이용 규모</div>
+      <div class="skpi-val blue">1,601<small>건</small></div>
+      <div class="skpi-sub">15일간 총 챗봇 대화방<br>일평균 <b>107개</b> · 메시지 <b>306건</b></div>
+    </div>
+    <div class="skpi green">
+      <div class="skpi-label">1:1 문의 순수 감소</div>
+      <div class="skpi-val green">−7.3<small>%</small></div>
+      <div class="skpi-sub">성수기 종료 효과 제거 후<br>수거 1,000건당 <b>126건 → 112건</b></div>
+      <div class="skpi-note">월 환산 약 955건 절감</div>
+    </div>
+    <div class="skpi teal">
+      <div class="skpi-label">챗봇 자체 해결율</div>
+      <div class="skpi-val teal">91.8<small>%</small></div>
+      <div class="skpi-sub">1,601개 대화방 중 <b>1,469개</b><br>1:1 문의 등록 없이 종료</div>
+    </div>
+    <div class="skpi yellow">
+      <div class="skpi-label">운영 외 시간 대응</div>
+      <div class="skpi-val yellow">50.3<small>%</small></div>
+      <div class="skpi-sub">전체 챗봇 메시지 2,595건 중<br><b>1,304건</b>이 19시~익일 10시 발생</div>
+      <div class="skpi-note">챗봇 없었다면 다음날까지 미해결</div>
+    </div>
+  </div>
+
+  <!-- 전체 분석 써머리 -->
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-top:16px;">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;">📋 전체 분석 요약</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">①</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">챗봇 이용량</strong> — 도입 후 15일간 1,601개 대화방, 일 107명 이용. 팝업 경유(60%)와 직접 진입(40%)이 주 경로. 메시지의 50.3%가 운영시간 외 발생해 24시간 대응 역할 수행.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green-light);color:var(--green);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">②</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">1:1 문의 감소</strong> — 전체 −11.4% 감소 중, 성수기 종료 효과(−4.1%p, 36%)를 제거해도 챗봇 순수 기여 <strong style="color:var(--green);">−7.3%p(64%)</strong> 확인. 수거/배송·런드렛 카테고리에서 감소폭 가장 큼.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--teal-light);color:var(--teal);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">③</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">챗봇 이용 현황</strong> — 91.8% 자체 해결(1:1 미등록). 실질 이탈률은 등록 기준 8.2%. 세탁가능여부(4.3%) 영역 성공적, 런드렛/결제(12~15%) 영역 개선 필요.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--yellow-light);color:var(--yellow);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">④</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">고도화 방향</strong> — 운영 외 시간 챗봇 유도(즉시 실행), 런드렛 비번 API 자동화(P1), 계정/결제 조회 연동(P1) 순으로 대응 시 1:1 문의 추가 10~20건/일 절감 기대.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ────────────────────────────────
+     S2. 챗봇 이용량
+     ──────────────────────────────── -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title">챗봇 이용량</div>
+    <div class="section-desc">2026.04.22 – 05.06</div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">일별 챗봇 메시지 수 추이</div>
+      <div class="card-desc">04/22 도입 첫 주에 비해 이후 안정적으로 유지됩니다 · 05/02(445건) 피크</div>
+      <div style="height:200px"><canvas id="cbDailyChart"></canvas></div>
+      <div class="krow" style="margin-top:14px;margin-bottom:0">
+        <div class="kchip">
+          <div class="kchip-l">총 메시지</div>
+          <div class="kchip-v">4,810<small>건</small></div>
+          <div class="kchip-d">15일 합계</div>
+        </div>
+        <div class="kchip">
+          <div class="kchip-l">일평균</div>
+          <div class="kchip-v">306<small>건</small></div>
+          <div class="kchip-d">메시지 기준</div>
+        </div>
+        <div class="kchip">
+          <div class="kchip-l">총 대화방</div>
+          <div class="kchip-v">1,601<small>개</small></div>
+          <div class="kchip-d">일평균 107개</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">24시간 고객 메시지 분포</div>
+      <div class="card-desc">파란색: 운영시간(10–19시) · 회색: 운영 외 · 전체 2,595건</div>
+      <div class="leg">
+        <div class="li"><div class="ld" style="background:#bfdbfe"></div>운영시간 49.7%</div>
+        <div class="li"><div class="ld" style="background:#d1d5db"></div>운영 외 <b style="color:var(--teal)">50.3%</b></div>
+      </div>
+      <div style="height:170px"><canvas id="hourlyMsgChart"></canvas></div>
+      <div class="hstrip" id="hourStrip" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div class="callout blue gap-top">
+    <strong>운영 외 시간에 메시지의 절반(50.3%)이 발생합니다.</strong> 특히 자정~새벽 1시(166건)는 픽업 전날 밤 막바지 확인 수요로 추정됩니다.
+    현재 앱 내에 <strong>고객센터 운영시간 안내가 없어</strong> 고객이 챗봇을 먼저 떠올리기 어려운 상황입니다.
+    운영 외 시간에 1:1 문의 진입 시 챗봇 유도 배너 추가만으로 추가 흡수가 가능합니다. (→ 6번 고도화 계획 참고)
+  </div>
+</div>
+
+<!-- ────────────────────────────────
+     S3. 챗봇 진입 경로
+     ──────────────────────────────── -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title">챗봇 진입 경로</div>
+    <div class="section-desc">2026.04.22 – 05.06 · 앰플리튜드 기준</div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">진입 경로별 이용자 수</div>
+      <div class="card-desc">팝업 경유(문의하기 → 챗봇 선택) vs 직접 진입(앱 내 챗봇 버튼)</div>
+      <div style="height:195px"><canvas id="entryChart"></canvas></div>
+      <div class="krow" style="margin-top:14px;margin-bottom:0">
+        <div class="kchip">
+          <div class="kchip-l">팝업 경유</div>
+          <div class="kchip-v">1,609<small>명</small></div>
+          <div class="kchip-d">일평균 107명 · 60%</div>
+        </div>
+        <div class="kchip">
+          <div class="kchip-l">직접 진입</div>
+          <div class="kchip-v">1,067<small>명</small></div>
+          <div class="kchip-d">일평균 71명 · 40%</div>
+        </div>
+        <div class="kchip">
+          <div class="kchip-l">합계</div>
+          <div class="kchip-v">2,676<small>명</small></div>
+          <div class="kchip-d">일평균 178명</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">팝업 내 문의 유형 선택 비율</div>
+      <div class="card-desc">[문의하기] 팝업에서 일대일 vs 챗봇 선택 · 일별 추이</div>
+      <div style="height:195px"><canvas id="ctypeChart"></canvas></div>
+      <div class="krow" style="margin-top:14px;margin-bottom:0">
+        <div class="kchip">
+          <div class="kchip-l">1:1 문의 선택</div>
+          <div class="kchip-v" style="color:var(--text2)">73<small>%</small></div>
+          <div class="kchip-d">일평균 288명</div>
+        </div>
+        <div class="kchip">
+          <div class="kchip-l">챗봇 선택</div>
+          <div class="kchip-v" style="color:var(--blue)">27<small>%</small></div>
+          <div class="kchip-d">일평균 107명</div>
+        </div>
+      </div>
+      <div class="insight">
+        <span class="insight-icon">💡</span>
+        <span>팝업에서 <strong>73%가 여전히 1:1 문의를 선택</strong>합니다. 팝업 내 챗봇 안내 문구 개선, 유형별 직접 진입 버튼 추가 등으로 챗봇 선택률을 높일 여지가 있습니다.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────────────────────
+     S4. 1:1 문의 감소
+     ──────────────────────────────── -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title">1:1 문의 감소</div>
+    <div class="section-desc">도입 전후 15일 대칭 비교 · 수거신청건 기준 성수기 효과 보정</div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">도입 전/후 15일 대칭 비교</div>
+      <div class="card-desc">수거건 변화(−4.5%)를 통제해 성수기 종료 효과와 챗봇 기여분을 분리합니다</div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th class="r">수거 일평균</th>
+            <th class="r">문의 일평균</th>
+            <th class="r">수거 1,000건당</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>도입 전 (04/07–21)</td>
+            <td class="n">4,202건</td>
+            <td class="n">496건</td>
+            <td class="n">118건</td>
+          </tr>
+          <tr class="hl">
+            <td><b>도입 후 (04/22–05/06)</b></td>
+            <td class="n">4,015건</td>
+            <td class="n">439건</td>
+            <td class="n">109건</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text3)">변화율</td>
+            <td class="dn">−4.5%</td>
+            <td class="dn">−11.4%</td>
+            <td class="dn">−7.6%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
+        <div class="kchip">
+          <div class="kchip-l">성수기 종료 기여</div>
+          <div class="kchip-v" style="color:var(--text2)">−4.1<small>%p</small></div>
+          <div class="kchip-d">전체 감소의 36%</div>
+        </div>
+        <div class="kchip" style="background:#f0fdf4">
+          <div class="kchip-l">챗봇 순수 효과</div>
+          <div class="kchip-v" style="color:var(--green)">−7.3<small>%p</small></div>
+          <div class="kchip-d">전체 감소의 64%</div>
+        </div>
+        <div class="kchip">
+          <div class="kchip-l">총 감소</div>
+          <div class="kchip-v">−11.4<small>%</small></div>
+          <div class="kchip-d">56건/일 절감</div>
+        </div>
+      </div>
+
+      <div class="callout green" style="margin-top:14px">
+        수거건을 통제해도 <strong>문의율이 하락</strong>했으므로, 챗봇 도입은 1:1 문의 감소에 <strong>유의미한 영향</strong>을 주었다고 볼 수 있습니다.
+        수거 규모가 같다고 가정하면 매 1,000건 수거마다 <strong>9건의 문의가 추가로 감소</strong>합니다.
+      </div>
+    </div>
+
+    <!-- 문의 카테고리별 분석 -->
+    <div class="card">
+      <div class="card-title">대분류별 전후 비교 — 어떤 문의가 줄었나</div>
+      <div class="card-desc">CS 답변 시 태깅된 대분류 기준 · 수거건 보정(−4.5%) 후 순수 챗봇 기여분 분리</div>
+      <table class="tbl">
+        <thead><tr><th>대분류</th><th class="r">도입 전</th><th class="r">도입 후</th><th class="r">보정 후 순수효과</th></tr></thead>
+        <tbody>
+          <tr><td>수거/배송/런드렛</td><td class="n">1,817건</td><td class="n">1,494건</td><td class="dn">−242건 (−13.9%)</td></tr>
+          <tr><td>세탁/수선</td><td class="n">1,984건</td><td class="n">1,713건</td><td class="dn">−183건 (−9.6%)</td></tr>
+          <tr><td>서비스/회원/오류</td><td class="n">403건</td><td class="n">222건</td><td class="dn">−163건 (−42.3%)</td></tr>
+          <tr><td>인수증/결제/요금제</td><td class="n">1,359건</td><td class="n">1,270건</td><td class="dn">−28건 (−2.2%)</td></tr>
+          <tr><td>프리미엄</td><td class="n">111건</td><td class="n">108건</td><td style="font-family:var(--mono);color:var(--text3);text-align:right">±0 (−2.7%)</td></tr>
+        </tbody>
+      </table>
+      <div class="annot" style="margin-top:8px">※ 보정 후 순수효과 = 도입 후 실제 건수 − (도입 전 × 수거건 비율 0.955)</div>
+      <div class="insight" style="margin-top:12px;">
+        <span class="insight-icon">💡</span>
+        <span><strong>수거/배송/런드렛(−13.9%)</strong>과 <strong>서비스/오류(−42.3%)</strong>에서 가장 큰 감소. 챗봇이 배송·수거 관련 단순 조회와 FAQ 오류 문의를 효과적으로 흡수한 것으로 해석됩니다. 반면 <strong>결제/요금제(−2.2%)</strong>는 감소폭이 작아 계정 연동 없이는 챗봇 해결 한계가 있음을 시사합니다.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────────────────────
+     S5. 챗봇 이용 현황
+     ──────────────────────────────── -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div class="section-title">챗봇 이용 현황</div>
+    <div class="section-desc">어떤 문의가 들어오고, 챗봇이 얼마나 해결하나</div>
+  </div>
+
+  <!-- 퍼널 -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">챗봇 → 1:1 등록 전환 퍼널</div>
+    <div class="card-desc">1:1 문의 <b>접속 클릭</b>과 실제 <b>등록</b>은 다릅니다 — 클릭의 35%만 실제 등록으로 이어집니다</div>
+    <div class="funnel">
+      <div class="frow">
+        <div class="flbl">총 챗봇 대화방</div>
+        <div class="ftrack"><div class="fbar" style="width:100%;background:#2563eb">1,601개</div></div>
+        <div class="fpct" style="color:var(--blue)">100%</div>
+        <div class="fnote">04/22–05/06 전체</div>
+      </div>
+      <div class="frow">
+        <div class="flbl">1:1 버튼 클릭</div>
+        <div class="ftrack"><div class="fbar" style="width:23.4%;background:#d97706">375개</div></div>
+        <div class="fpct" style="color:var(--yellow)">23.4%</div>
+        <div class="fnote">이탈 시도</div>
+      </div>
+      <div class="frow" style="background:#fef2f2;border-radius:6px;padding:8px 0 8px 8px;border-bottom:none;margin:2px -8px">
+        <div class="flbl key" style="color:var(--red)">1:1 실제 등록 ★</div>
+        <div class="ftrack"><div class="fbar" style="width:8.2%;background:#dc2626;min-width:70px">132개</div></div>
+        <div class="fpct" style="color:var(--red);font-size:17px">8.2%</div>
+        <div class="fnote" style="color:var(--red)">실질 이탈 지표</div>
+      </div>
+      <div class="frow" style="border-bottom:none">
+        <div class="flbl" style="color:var(--green)">챗봇 자체 해결</div>
+        <div class="ftrack"><div class="fbar" style="width:91.8%;background:#16a34a">1,469개</div></div>
+        <div class="fpct" style="color:var(--green)">91.8%</div>
+        <div class="fnote">등록 없이 종료</div>
+      </div>
+    </div>
+    <div class="callout red" style="margin-top:14px">
+      <strong>클릭률(23.4%)이 아닌 등록률(8.2%)이 핵심 지표입니다.</strong> 클릭 375건 중 132건(35%)만 실제 등록으로 이어졌습니다.
+      나머지 243건(65%)은 운영 외 시간 클릭 후 미등록, 대기 중 자체 해결, 포기 등으로 추정됩니다.
+    </div>
+  </div>
+
+  <!-- 유형별 + 유래 문의 양옆 배치 -->
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card">
+    <div class="card-title">챗봇 질문 유형별 트래픽 & 1:1 등록률</div>
+      <div class="card-desc">등록률이 높을수록 챗봇이 해결 못한 영역 · 트래픽 × 등록률로 개선 우선순위 결정</div>
+      <div class="brow-header">
+        <div class="bhdr">카테고리</div>
+        <div class="bhdr">트래픽</div>
+        <div class="bhdr r">건수</div>
+        <div class="bhdr r">클릭률</div>
+        <div class="bhdr r">📌 등록률</div>
+      </div>
+      <div class="blist">
+        <div class="brow"><div class="blbl">세탁가능여부/품목</div><div class="btrack"><div class="bfill" style="width:100%;background:#bfdbfe"></div></div><div class="bnum">253</div><div class="brate mid">16.6%</div><div class="brate low">4.3%</div></div>
+        <div class="brow"><div class="blbl">수거/배송</div><div class="btrack"><div class="bfill" style="width:77.9%;background:#bfdbfe"></div></div><div class="bnum">294</div><div class="brate mid">20.7%</div><div class="brate low">5.8%</div></div>
+        <div class="brow"><div class="blbl">결제/환불</div><div class="btrack"><div class="bfill" style="width:72%;background:#fde68a"></div></div><div class="bnum">272</div><div class="brate high">29.4%</div><div class="brate mid">12.1%</div></div>
+        <div class="brow"><div class="blbl">런드렛/비밀번호</div><div class="btrack"><div class="bfill" style="width:40.3%;background:#fca5a5"></div></div><div class="bnum">152</div><div class="brate high">32.9%</div><div class="brate high">12.5%</div></div>
+        <div class="brow"><div class="blbl">이용방법/서비스안내</div><div class="btrack"><div class="bfill" style="width:29.7%;background:#bfdbfe"></div></div><div class="bnum">112</div><div class="brate mid">24.1%</div><div class="brate low">6.2%</div></div>
+        <div class="brow"><div class="blbl">요금제/구독</div><div class="btrack"><div class="bfill" style="width:25.4%;background:#bfdbfe"></div></div><div class="bnum">96</div><div class="brate low">17.7%</div><div class="brate low">6.2%</div></div>
+        <div class="brow"><div class="blbl">세탁결과/손상</div><div class="btrack"><div class="bfill" style="width:11.9%;background:#fca5a5"></div></div><div class="bnum">45</div><div class="brate mid">26.7%</div><div class="brate high">15.6%</div></div>
+        <div class="brow"><div class="blbl">처리상태/진행확인</div><div class="btrack"><div class="bfill" style="width:8.7%;background:#fde68a"></div></div><div class="bnum">33</div><div class="brate high">36.4%</div><div class="brate mid">9.1%</div></div>
+        <div class="brow"><div class="blbl">포인트/쿠폰</div><div class="btrack"><div class="bfill" style="width:4.5%;background:#fde68a"></div></div><div class="bnum">17</div><div class="brate high">35.3%</div><div class="brate mid">11.8%</div></div>
+        <div class="brow"><div class="blbl">세탁권</div><div class="btrack"><div class="bfill" style="width:2.6%;background:#bbf7d0"></div></div><div class="bnum">10</div><div class="brate low">0.0%</div><div class="brate low">0.0%</div></div>
+      </div>
+      <div class="annot">등록률: <span style="color:var(--green)">●</span> &lt;8% 잘 해결 · <span style="color:var(--yellow)">●</span> 8–15% 개선 필요 · <span style="color:var(--red)">●</span> &gt;15% 즉시 개선</div>
+    </div>
+
+    <div class="card">
+    <div class="card-title">챗봇 유래 1:1 문의 — 유형 & 처리 결과</div>
+    <div class="card-desc">챗봇에서 해결하지 못해 실제로 등록된 1:1 문의 140건 · 2026.04.29 16시~ 취합</div>
+    <div class="two">
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">대분류</div>
+        <div class="blist">
+          <div class="brow" style="grid-template-columns:120px 1fr 36px 34px"><div class="blbl" style="width:120px">수거/배송/런드렛</div><div class="btrack"><div class="bfill" style="width:100%;background:#fca5a5"></div></div><div class="bnum">59</div><div class="bpct" style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right">42%</div></div>
+          <div class="brow" style="grid-template-columns:120px 1fr 36px 34px"><div class="blbl" style="width:120px">이용내역/결제</div><div class="btrack"><div class="bfill" style="width:67.8%;background:#fde68a"></div></div><div class="bnum">40</div><div class="bpct" style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right">29%</div></div>
+          <div class="brow" style="grid-template-columns:120px 1fr 36px 34px"><div class="blbl" style="width:120px">세탁/수선</div><div class="btrack"><div class="bfill" style="width:23.7%;background:#bfdbfe"></div></div><div class="bnum">14</div><div class="bpct" style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right">10%</div></div>
+          <div class="brow" style="grid-template-columns:120px 1fr 36px 34px;border-bottom:none"><div class="blbl" style="width:120px;color:var(--text3);font-style:italic">미분류</div><div class="btrack"><div class="bfill" style="width:35.6%;background:#e5e7eb"></div></div><div class="bnum" style="color:var(--text3)">27</div><div class="bpct" style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right">19%</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">처리 결과 (118건)</div>
+        <div style="height:140px"><canvas id="resultChart"></canvas></div>
+      </div>
+    </div>
+    <div class="callout green" style="margin-top:14px">
+      처리 결과 중 <strong>단순안내 68%(80건)</strong>는 계정 데이터 연동 시 챗봇에서 직접 해결 가능한 영역입니다.
+      포인트 잔액·결제 내역 1회 조회로 끝나는 문의는 API 연동 즉시 이탈 제거가 가능합니다.
+    </div>
+    </div>
+  </div>
+
+  <!-- 자주 묻는 질문 아코디언 -->
+  <div class="card gap-top">
+    <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.acc-arrow').style.transform=this.nextElementSibling.style.display==='none'?'rotate(0deg)':'rotate(180deg)';"
+      style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;padding:0;text-align:left;">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);">자주 묻는 질문</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">버튼/단답 TOP 8 · 자유입력 대표 패턴 · 클릭해서 열기</div>
+      </div>
+      <svg class="acc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;transition:transform .2s;transform:rotate(0deg);">
+        <path d="M4 6l4 4 4-4" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div style="display:none;">
+      <div style="border-top:1px solid var(--border);margin:14px 0;"></div>
+      <div class="g2">
+        <div>
+          <div class="card-title" style="margin-bottom:4px;">버튼/단답 유형 TOP 8</div>
+          <div class="card-desc">15자 이하 단답 · 기본 제공 메뉴 버튼 클릭으로 추정 · 총 1,691건</div>
+          <div class="qlist">
+            <div class="qrow"><div class="qrank top">1</div><div class="qq">세탁 요금 확인하기</div><div class="qbar-wrap"><div class="qbar-fill" style="width:100%"></div></div><div class="qcnt">108</div><div class="qtag">세탁/품목</div></div>
+            <div class="qrow"><div class="qrank top">2</div><div class="qq">세탁물 내놓는 법</div><div class="qbar-wrap"><div class="qbar-fill" style="width:72%"></div></div><div class="qcnt">78</div><div class="qtag">이용방법</div></div>
+            <div class="qrow"><div class="qrank top">3</div><div class="qq">환불</div><div class="qbar-wrap"><div class="qbar-fill" style="width:38.9%"></div></div><div class="qcnt">42</div><div class="qtag">결제/환불</div></div>
+            <div class="qrow"><div class="qrank">4</div><div class="qq">개별클리닝 vs 생활빨래 차이</div><div class="qbar-wrap"><div class="qbar-fill" style="width:38%"></div></div><div class="qcnt">41</div><div class="qtag">이용방법</div></div>
+            <div class="qrow"><div class="qrank">5</div><div class="qq">세탁 불가 품목 확인하기</div><div class="qbar-wrap"><div class="qbar-fill" style="width:35.2%"></div></div><div class="qcnt">38</div><div class="qtag">세탁/품목</div></div>
+            <div class="qrow"><div class="qrank">6</div><div class="qq">런드렛 비밀번호</div><div class="qbar-wrap"><div class="qbar-fill" style="width:30.6%"></div></div><div class="qcnt">33</div><div class="qtag alert">런드렛 ★</div></div>
+            <div class="qrow"><div class="qrank">7</div><div class="qq">해지 / 구독취소 / 구독해지 (합산)</div><div class="qbar-wrap"><div class="qbar-fill" style="width:44%"></div></div><div class="qcnt">48</div><div class="qtag">요금제</div></div>
+            <div class="qrow"><div class="qrank">8</div><div class="qq">비밀번호 (단답)</div><div class="qbar-wrap"><div class="qbar-fill" style="width:21%"></div></div><div class="qcnt">23</div><div class="qtag alert">런드렛 ★</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:4px;">자유입력 대표 패턴</div>
+          <div class="card-desc">15자 초과 · 904건 · ★ 표시는 1:1 등록 전환율이 높은 유형</div>
+          <div class="qlist">
+            <div class="qrow"><div class="qrank">—</div><div class="qq">X요금제에서 ○○ 세탁권 사용 가능 여부</div><div class="qtag">세탁/품목</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">헌옷 수거 시 운동화/가방 가능 여부</div><div class="qtag">수거/배송</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">수거 안 해갔다 / 오수거됐다</div><div class="qtag alert">수거 ★</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">세탁물 분실 / 다른 옷이 왔다</div><div class="qtag alert">세탁결과 ★</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">포인트/쿠폰 발급됐다는데 안 보임</div><div class="qtag">포인트</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">구독 해지일에 결제 적용 여부</div><div class="qtag">요금제</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">비밀번호 문자 안 온다 / 런드렛 못 열고 있다</div><div class="qtag alert">런드렛 ★</div></div>
+            <div class="qrow"><div class="qrank">—</div><div class="qq">이불/패딩 봉지 없어도 내놔도 되는지</div><div class="qtag">이용방법</div></div>
+          </div>
+          <div class="insight" style="margin-top:12px;">
+            <span class="insight-icon">💡</span>
+            <span>★ 유형(오수거, 런드렛 비번, 세탁물 손상)은 챗봇이 구조적으로 해결하기 어렵습니다. <strong>계정/물류 시스템 연동 없이는 1:1 등록을 막을 수 없는 문의들</strong>로, 6번 고도화 계획의 핵심 근거입니다.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────────────────────
+     S6. 향후 챗봇 고도화 계획
+     ──────────────────────────────── -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div class="section-title">향후 챗봇 고도화 계획</div>
+    <div class="section-desc">등록률 기준 우선순위 · 개발 난이도 대비 기대 효과 순</div>
+  </div>
+
+  <div class="pgrid">
+    <div class="pcard feat">
+      <div class="phead"><div class="pbadge pn">신규 발굴</div><div class="ptitle">운영 외 시간 챗봇 자동 유도</div></div>
+      <div class="pbody">앱 내 <b>고객센터 운영시간 안내가 없어</b> 19시 이후에도 고객이 1:1 문의를 먼저 누릅니다.
+        운영 외 시간(19시–익일 10시) 1:1 문의 진입 시 <b>"현재 운영 외 시간 (운영: 평일 10–19시) · 챗봇으로 지금 바로 해결해보세요"</b> 배너 노출.
+        개발 비용은 팝업 문구 수정 수준입니다.</div>
+      <div class="ptags">
+        <div class="ptag">운영외 메시지 1,304건(50.3%)</div>
+        <div class="ptag"><b>즉시 실행 가능</b></div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p1">P1 긴급</div><div class="ptitle">만족도 수집 활성화</div></div>
+      <div class="pbody">1,601건 대화 중 만족도 입력 <b>2건(0.1%)</b>. 91.8% "자체 해결"이 진짜 해결인지 포기인지 지금은 알 수 없습니다.
+        매 대화 종료 시 👍/👎 수집이 모든 챗봇 개선의 전제 조건입니다.</div>
+      <div class="ptags">
+        <div class="ptag">효과: 진짜 해결률 측정 → 개선 가속</div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p1">P1 긴급</div><div class="ptitle">런드렛 비밀번호 자동화</div></div>
+      <div class="pbody">등록률 <b>12.5%</b>, 클릭→등록 전환율 <b>38%</b>로 가장 절박한 수요입니다.
+        비밀번호 재발송 API 연동 하나로 152개 대화방 중 19개 이탈을 즉시 제거 가능합니다.</div>
+      <div class="ptags">
+        <div class="ptag">등록 19건 → 목표 ~2건</div>
+        <div class="ptag">API 연동 1회로 해결</div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p1">P1</div><div class="ptitle">계정/주문 실시간 조회 연동</div></div>
+      <div class="pbody">결제/환불 등록률 <b>12.1%</b>, 처리상태 <b>9.1%</b>, 포인트/쿠폰 <b>11.8%</b>.
+        "포인트 왜 없어요", "주문 지금 어디?" 는 계정 데이터 1회 조회로 즉답 가능합니다.
+        챗봇 유래 단순안내 68%의 대부분이 이 영역입니다.</div>
+      <div class="ptags">
+        <div class="ptag">결제(272) + 처리상태(33) + 포인트(17) = 322개</div>
+        <div class="ptag">추가 절감 일 10–20건 예상</div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p2">P2</div><div class="ptitle">팝업 내 챗봇 선택률 개선</div></div>
+      <div class="pbody">현재 팝업에서 <b>73%가 1:1 선택</b>. 운영 외 시간 배너와 연계해 유형별 직접 진입 버튼 추가, 챗봇 해결률 표시 등으로 선택률 개선 가능합니다.</div>
+      <div class="ptags">
+        <div class="ptag">현재 27% → 목표 40%+</div>
+        <div class="ptag">~30명/일 추가 흡수 가능</div>
+      </div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p2">P2</div><div class="ptitle">수거/배송 예외 케이스 접수 자동화</div></div>
+      <div class="pbody">"오수거", "수거 안 해감" 발생 시 보상/재수거 신청 폼 챗봇 내 직접 연결. 접수 구조화로 상담 처리 시간도 단축됩니다. 챗봇 유래 1:1 문의 중 42%가 이 유형입니다.</div>
+      <div class="ptags">
+        <div class="ptag">챗봇 유래 1:1 중 42%</div>
+        <div class="ptag">사진 첨부 자동화 병행 권장</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /body -->
+
+<footer>
+  <span>LaundryGo · 챗봇 도입 성과 리포트 · 2026.05.08 기준</span>
+  <span>데이터: 챗봇 전체 대화내역(문의등록 포함) · 일대일문의 현황 · 수거신청건수 · Amplitude</span>
+</footer>
+
+<script>
+Chart.defaults.color='#9ca3af';
+Chart.defaults.font.family="'Noto Sans KR', sans-serif";
+Chart.defaults.font.size=11;
+const G='rgba(229,231,235,1)';
+const TT={backgroundColor:'#1f2937',borderColor:'#374151',borderWidth:1,titleColor:'#f9fafb',bodyColor:'#d1d5db',padding:10,cornerRadius:6};
+
+// data
+const allDates=["04/07","04/08","04/09","04/10","04/11","04/12","04/13","04/14","04/15","04/16","04/17","04/18","04/19","04/20","04/21","04/22","04/23","04/24","04/25","04/26","04/27","04/28","04/29","04/30","05/01","05/02","05/03","05/04","05/05","05/06","05/07"];
+const inqData=[646,543,491,461,430,448,535,520,503,532,452,403,441,550,480,425,478,450,391,406,524,522,559,432,377,401,408,405,382,428,412];
+const cbMsgs=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,363,323,269,195,173,344,327,351,354,315,445,297,300,338,324,267];
+const cbDates=["04/22","04/23","04/24","04/25","04/26","04/27","04/28","04/29","04/30","05/01","05/02","05/03","05/04","05/05","05/06","05/07"];
+const cbMsgsByDate=[363,323,269,195,173,344,327,351,354,315,445,297,300,338,324,267];
+const hourlyMsgs=[118,48,11,18,4,11,59,105,115,90,141,116,100,146,153,110,176,158,191,130,130,210,155,100];
+const hourlyRegRate=[7.7,17.2,0,9.1,0,20,7.1,11.8,14.1,9.7,10.6,7.9,8.3,7.8,8.5,9.9,9.3,6.9,6.3,6.5,12.8,8.2,5.1,5.7];
+const hours=Array.from({length:24},(_,i)=>i+'시');
+const isOps=Array.from({length:24},(_,i)=>i>=10&&i<19);
+const d15=cbDates.slice(0,15);
+const cbDirect=[62,62,76,57,63,84,74,63,84,69,84,61,79,74,75];
+const cbPopup=[84,115,100,90,85,132,128,121,92,109,113,119,106,111,104];
+const ctOneOne=[213,310,312,240,274,376,338,359,309,250,291,254,280,250,310];
+const ctBot=[84,115,100,90,85,132,128,121,92,109,113,119,106,111,104];
+
+// Period BG plugin (split at index 15 = 04/22)
+const pbg={id:'pbg',beforeDraw(c){
+  const{ctx,chartArea,scales}=c;
+  if(!chartArea||!scales.x)return;
+  try{
+    const sp=scales.x.getPixelForValue(15);
+    const{top,bottom,right}=chartArea;
+    ctx.save();
+    ctx.fillStyle='rgba(239,246,255,0.6)';
+    ctx.fillRect(sp,top,right-sp,bottom-top);
+    ctx.strokeStyle='rgba(37,99,235,0.35)';
+    ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(sp,top);ctx.lineTo(sp,bottom);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(37,99,235,0.55)';
+    ctx.font='10px "Noto Sans KR",sans-serif';
+    ctx.fillText('챗봇 도입',sp+5,top+13);
+    ctx.restore();
+  }catch(e){}
+}};
+
+// ── S2 Daily CB messages ──
+new Chart(document.getElementById('cbDailyChart'),{
+  type:'bar',
+  data:{labels:cbDates,datasets:[{label:'챗봇 메시지',data:cbMsgsByDate,backgroundColor:'rgba(37,99,235,0.15)',borderColor:'rgba(37,99,235,0.5)',borderWidth:1,borderRadius:3}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:TT},
+    scales:{x:{grid:{color:G},ticks:{maxTicksLimit:8}},y:{grid:{color:G}}}}
+});
+
+// ── S2 Hourly distribution ──
+new Chart(document.getElementById('hourlyMsgChart'),{
+  type:'bar',
+  data:{labels:hours,datasets:[{label:'고객 메시지',data:hourlyMsgs,
+    backgroundColor:isOps.map(o=>o?'rgba(37,99,235,0.5)':'rgba(156,163,175,0.4)'),borderRadius:2}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`${c.raw}건 · ${isOps[c.dataIndex]?'운영시간':'운영 외'}`}}},
+    scales:{x:{grid:{color:G}},y:{grid:{color:G}}}}
+});
+
+// Hour strip
+(()=>{
+  const s=document.getElementById('hourStrip');
+  const mx=Math.max(...hourlyMsgs);
+  hours.forEach((h,i)=>{
+    const a=0.07+0.65*(hourlyMsgs[i]/mx);
+    const el=document.createElement('div');
+    el.className='hcell';
+    el.style.background=isOps[i]?`rgba(37,99,235,${a})`:`rgba(156,163,175,${a})`;
+    el.innerHTML=`<div class="hn">${i}시</div><div class="hv" style="color:${isOps[i]?'#fff':'#374151'}">${hourlyMsgs[i]}</div>`;
+    el.title=`${i}시: ${hourlyMsgs[i]}건 · ${isOps[i]?'운영내':'운영외'} · 등록률 ${hourlyRegRate[i]}%`;
+    s.appendChild(el);
+  });
+})();
+
+// ── S3 Entry routes ──
+new Chart(document.getElementById('entryChart'),{
+  type:'bar',
+  data:{labels:d15,datasets:[
+    {label:'팝업 경유',data:cbPopup,backgroundColor:'rgba(37,99,235,0.6)',borderRadius:2},
+    {label:'직접 진입',data:cbDirect,backgroundColor:'rgba(134,239,172,0.7)',borderRadius:2}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,labels:{boxWidth:10,padding:10}},tooltip:TT},
+    scales:{x:{stacked:true,grid:{color:G},ticks:{maxTicksLimit:8}},y:{stacked:true,grid:{color:G}}}}
+});
+
+// ── S3 Contact type ──
+new Chart(document.getElementById('ctypeChart'),{
+  type:'bar',
+  data:{labels:d15,datasets:[
+    {label:'일대일 문의',data:ctOneOne,backgroundColor:'rgba(156,163,175,0.45)',borderRadius:2},
+    {label:'챗봇',data:ctBot,backgroundColor:'rgba(37,99,235,0.55)',borderRadius:2}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,labels:{boxWidth:10,padding:10}},tooltip:TT},
+    scales:{x:{stacked:true,grid:{color:G},ticks:{maxTicksLimit:8}},y:{stacked:true,grid:{color:G}}}}
+});
+
+// ── S5 Result donut ──
+new Chart(document.getElementById('resultChart'),{
+  type:'doughnut',
+  data:{labels:['단순안내(80)','환불(13)','중복인입(7)','포인트/품목(6)','고객오인(5)','기타(7)'],
+    datasets:[{data:[80,13,7,6,5,7],
+      backgroundColor:['#86efac','#fca5a5','#d1d5db','#fde68a','#bfdbfe','#c4b5fd'],
+      borderColor:'#ffffff',borderWidth:3}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+    plugins:{legend:{position:'bottom',labels:{padding:6,boxWidth:9,font:{size:10}}},tooltip:TT}}
+});
+
+</script>
+</body>
+</html>
