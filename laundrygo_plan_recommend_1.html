@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>런드리고 구독 플랜 추천</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --surface2: #F2F1ED;
+    --border: #E4E2DA;
+    --border-strong: #C8C5BB;
+    --text: #1A1916;
+    --text-sub: #6B6860;
+    --text-muted: #A09D96;
+    --accent: #1D6A4A;
+    --accent-light: #EAF4EE;
+    --accent-mid: #2E8A61;
+    --warning: #92580A;
+    --warning-bg: #FEF3E2;
+    --danger: #A3352D;
+    --danger-bg: #FEF0EF;
+    --info-bg: #EEF4FF;
+    --info: #2456A4;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.09);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  }
+
+  html { font-size: 15px; }
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .logo-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    padding: 2px 8px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 20px;
+    letter-spacing: 0;
+  }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    grid-column: 1 / -1;
+    padding: 36px 40px;
+    background: var(--accent);
+    border-radius: var(--radius-xl);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .hero-text h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    line-height: 1.25;
+  }
+  .hero-text p {
+    font-size: 14px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+  .hero-steps {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .hero-step {
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 90px;
+  }
+  .hero-step-num {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .hero-step-label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── Left panel ── */
+  .input-panel {}
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-head:hover { background: var(--surface2); }
+  .section-icon {
+    width: 28px; height: 28px;
+    background: var(--accent-light);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+  }
+  .section-count {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    background: var(--accent-light);
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: none;
+  }
+  .section-count.visible { display: inline-block; }
+  .chevron {
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+  }
+  .section.collapsed .chevron { transform: rotate(-90deg); }
+  .section-body {
+    padding: 16px 20px;
+  }
+  .section.collapsed .section-body { display: none; }
+
+  .item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 8px;
+  }
+
+  .item-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    background: var(--bg);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .item-card.selected {
+    border-color: var(--accent-mid);
+    background: var(--accent-light);
+  }
+  .item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .item-name {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.35;
+    flex: 1;
+    min-width: 0;
+  }
+  .counter {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .counter-btn {
+    width: 22px; height: 22px;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    background: var(--surface);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text);
+    line-height: 1;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .counter-btn:hover { background: var(--surface2); border-color: var(--text-sub); }
+  .counter-val {
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+    color: var(--text);
+  }
+  .prem-row {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    align-items: center;
+    gap: 6px;
+  }
+  .item-card.selected .prem-row { display: flex; }
+  .prem-label {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--text-sub); cursor: pointer;
+    flex: 1;
+  }
+  .prem-label input { cursor: pointer; accent-color: var(--warning); }
+  .prem-badge {
+    display: none;
+    font-size: 10px;
+    padding: 1px 7px;
+    background: var(--warning-bg);
+    color: var(--warning);
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* Living section */
+  .living-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+  }
+  .living-input-row.selected {
+    border-color: var(--accent-mid);
+    background: var(--accent-light);
+  }
+  .living-input-row label { font-size: 14px; flex: 1; font-weight: 500; }
+  .living-input-row input {
+    width: 72px;
+    text-align: right;
+    font-size: 14px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-family: inherit;
+    color: var(--text);
+  }
+  .living-input-row input:focus { outline: none; border-color: var(--accent-mid); }
+  .living-input-row span { font-size: 13px; color: var(--text-sub); }
+  .living-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    padding-left: 2px;
+  }
+
+  /* Delivery row */
+  .delivery-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .delivery-label { font-size: 14px; font-weight: 500; flex: 1; }
+  .delivery-label span { font-size: 12px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; }
+  .delivery-counter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .delivery-counter .counter-btn {
+    width: 30px; height: 30px; font-size: 16px;
+  }
+  .delivery-counter .counter-val { font-size: 16px; min-width: 24px; }
+
+  /* CTA */
+  .cta-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: var(--radius-lg);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .cta-btn:hover { background: var(--accent-mid); }
+  .cta-btn:active { transform: scale(0.99); }
+  .cta-btn svg { width: 18px; height: 18px; }
+
+  /* ── Right panel: results ── */
+  .result-panel {
+    position: sticky;
+    top: 80px;
+  }
+
+  .result-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+    margin-bottom: 12px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .empty-state {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; color: var(--text-sub); line-height: 1.6; }
+
+  .nosub-banner {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--text-sub);
+    display: flex;
+    justify-content: space-between;
+  }
+  .nosub-price { font-weight: 600; color: var(--text); }
+
+  .plan-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    transition: box-shadow 0.15s;
+  }
+  .plan-card:hover { box-shadow: var(--shadow-sm); }
+  .plan-card.best {
+    border: 2px solid var(--accent-mid);
+    box-shadow: var(--shadow-md);
+  }
+
+  .best-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  .plan-row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .plan-name { font-size: 15px; font-weight: 700; }
+  .plan-grade { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+  .plan-total { font-size: 18px; font-weight: 700; text-align: right; }
+  .plan-total-sub { font-size: 11px; color: var(--text-muted); text-align: right; margin-top: 2px; }
+
+  .plan-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .chip {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+
+  .savings-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .savings-label { font-size: 12px; color: var(--text-muted); }
+  .savings-amount { font-size: 14px; font-weight: 700; }
+  .savings-amount.pos { color: var(--accent); }
+  .savings-amount.neg { color: var(--danger); }
+
+  .breakdown {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+  }
+  .breakdown-title { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .breakdown-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-sub); padding: 2px 0; }
+  .breakdown-row span:last-child { font-weight: 500; color: var(--text); }
+
+  .no-benefit {
+    text-align: center;
+    padding: 20px;
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.6;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 10px;
+  }
+
+  .tail-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 6px 0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 820px) {
+    .page { grid-template-columns: 1fr; }
+    .hero { flex-direction: column; padding: 28px 24px; }
+    .hero-steps { width: 100%; justify-content: flex-start; }
+    .result-panel { position: static; }
+    header { position: relative; }
+  }
+  @media (max-width: 520px) {
+    .page { padding: 16px 16px 60px; }
+    .hero { padding: 22px 18px; border-radius: var(--radius-lg); }
+    .hero-text h1 { font-size: 22px; }
+    .hero-steps { flex-wrap: wrap; }
+  }
+
+  /* animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .plan-card { animation: fadeUp 0.25s ease both; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="logo">laundrigo</span>
+    <span class="logo-sub">플랜 추천 테스트</span>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>내 세탁 습관에 딱 맞는<br>구독 플랜 찾기</h1>
+      <p>매달 맡기는 세탁물을 입력하면 AI가<br>절약 효과가 가장 큰 플랜을 추천해드려요.</p>
+    </div>
+    <div class="hero-steps">
+      <div class="hero-step"><div class="hero-step-num">STEP 1</div><div class="hero-step-label">세탁물 입력</div></div>
+      <div class="hero-step"><div class="hero-step-num">STEP 2</div><div class="hero-step-label">수거 횟수</div></div>
+      <div class="hero-step"><div class="hero-step-num">STEP 3</div><div class="hero-step-label">플랜 추천</div></div>
+    </div>
+  </div>
+
+  <!-- Left: Input -->
+  <div class="input-panel">
+
+    <!-- 의류 -->
+    <div class="section" id="sec-의류">
+      <div class="section-head" onclick="toggleSection('의류')">
+        <div class="section-icon">👔</div>
+        <span class="section-title">의류</span>
+        <span class="section-count" id="cnt-sec-의류"></span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="item-grid" id="grid-의류"></div>
+      </div>
+    </div>
+
+    <!-- 이불 -->
+    <div class="section collapsed" id="sec-이불">
+      <div class="section-head" onclick="toggleSection('이불')">
+        <div class="section-icon">🛏️</div>
+        <span class="section-title">이불</span>
+        <span class="section-count" id="cnt-sec-이불"></span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="item-grid" id="grid-이불"></div>
+      </div>
+    </div>
+
+    <!-- 신발 -->
+    <div class="section collapsed" id="sec-신발">
+      <div class="section-head" onclick="toggleSection('신발')">
+        <div class="section-icon">👟</div>
+        <span class="section-title">신발</span>
+        <span class="section-count" id="cnt-sec-신발"></span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="item-grid" id="grid-신발"></div>
+      </div>
+    </div>
+
+    <!-- 리빙 -->
+    <div class="section collapsed" id="sec-리빙">
+      <div class="section-head" onclick="toggleSection('리빙')">
+        <div class="section-icon">🏠</div>
+        <span class="section-title">리빙</span>
+        <span class="section-count" id="cnt-sec-리빙"></span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="item-grid" id="grid-리빙"></div>
+      </div>
+    </div>
+
+    <!-- 잡화 -->
+    <div class="section collapsed" id="sec-잡화">
+      <div class="section-head" onclick="toggleSection('잡화')">
+        <div class="section-icon">🧣</div>
+        <span class="section-title">잡화</span>
+        <span class="section-count" id="cnt-sec-잡화"></span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="item-grid" id="grid-잡화"></div>
+      </div>
+    </div>
+
+    <!-- 생활빨래 -->
+    <div class="section collapsed" id="sec-생활빨래">
+      <div class="section-head" onclick="toggleSection('생활빨래')">
+        <div class="section-icon">🧺</div>
+        <span class="section-title">생활빨래</span>
+        <span class="section-count" id="cnt-sec-생활빨래"></span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="living-input-row" id="living-card">
+          <label for="living-kg">월 생활빨래 양</label>
+          <input type="number" id="living-kg" min="0" step="0.5" value="0" oninput="onLivingChange()" />
+          <span>kg / 월</span>
+        </div>
+        <div class="living-hint">4kg까지 13,500원 · 초과분 0.5kg당 1,500원</div>
+      </div>
+    </div>
+
+    <!-- 수거 횟수 -->
+    <div class="delivery-section">
+      <div class="delivery-label">
+        월 수거 횟수
+        <span>구독 초과 시 3,800원 · 정가 7,600원/회</span>
+      </div>
+      <div class="delivery-counter">
+        <button class="counter-btn" onclick="adjDelivery(-1)">−</button>
+        <span class="counter-val" id="delivery-val">2</span>
+        <button class="counter-btn" onclick="adjDelivery(1)">+</button>
+      </div>
+    </div>
+
+    <button class="cta-btn" onclick="runRecommend()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      최적 플랜 추천받기
+    </button>
+
+  </div>
+
+  <!-- Right: Result -->
+  <div class="result-panel">
+    <div class="result-header">추천 결과</div>
+    <div id="result-area">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">세탁물을 입력하고<br>추천받기 버튼을 눌러주세요.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PLANS = [
+  {id:133,name:'드라이온리',grade:'베이직',delivery:1,ticket:8,living:0,price:52380},
+  {id:134,name:'드라이온리',grade:'스탠다드',delivery:2,ticket:12,living:0,price:73800},
+  {id:135,name:'런드리&드라이',grade:'베이직',delivery:1,ticket:3,living:8,price:45810},
+  {id:136,name:'런드리&드라이',grade:'스탠다드',delivery:2,ticket:4,living:12,price:63630},
+  {id:137,name:'런드리온리',grade:'베이직',delivery:2,ticket:0,living:12,price:41940},
+  {id:138,name:'런드리온리',grade:'스탠다드',delivery:3,ticket:0,living:24,price:72360},
+  {id:139,name:'베딩온리',grade:'베이직',delivery:1,ticket:3,living:0,price:35550},
+  {id:140,name:'런드리고X',grade:'베이직',delivery:1,ticket:6,living:0,price:39600},
+  {id:141,name:'런드리고X',grade:'스탠다드',delivery:1,ticket:10,living:0,price:58770},
+  {id:142,name:'런드리고X',grade:'시그니처',delivery:2,ticket:14,living:0,price:79290},
+];
+
+const DEDUCTION = {
+  '드라이온리':{'와이셔츠':null,'일반셔츠':null,'티셔츠':1,'블라우스':1,'원피스, 점프수트':1,'후드티, 맨투맨티':1,'니트, 스웨터':1,'가디건':1,'정장조끼':1,'캐주얼 조끼':1,'아동한복, 량한복 조끼':1,'아동한복, 량한복 상의':1,'인조가죽, 인조세무 상의':1,'바지':1,'스커트':1,'패딩바지':1,'아동한복, 량한복 하의':1,'점퍼':1,'재킷':1,'정장재킷':1,'일반패딩':2,'다운패딩':2,'롱패딩점퍼':2,'경량패딩':1,'패딩조끼':1,'코트, 트렌치코트':1,'이불 압축포장':null,'커버류, 이불패드':null,'일반 이불, 극세사 패드':null,'극세사 이불, 일반 토퍼':null,'구스이불, 양모이불, 실크이불':null,'구스토퍼':null,'구스베개':null,'아동이불, 무릎담요':null,'일반 운동화':null,'운동화 - 부분 세무/가죽':null,'운동화 - 전체 세무/가죽':null,'축구화':null,'하이탑':null,'골프화, 등산화':null,'아동 신발':null,'일반 커튼':null,'암막 커튼':null,'이중 커튼':null,'식탁보':null,'베개 커버, 쿠션 커버':null,'쇼파 커버 - 3인이상':null,'쇼파 커버 - 2인이상':null,'차량용 양털시트':null,'발매트':null,'러그, 카펫':null,'러그, 카펫 (대형)':null,'스페셜 러그, 카펫':null,'스페셜 러그, 카펫 (대형)':null,'일반모자, 캡모자':null,'머플러, 장갑, 스카프':null,'숄':null,'넥타이':null,'래시가드, 수영복':null,'가운':null,'인형':null,'대형 인형':null,'앞치마':null,'에코백/토트백':null},
+  '런드리고X':{'와이셔츠':null,'일반셔츠':null,'티셔츠':1,'블라우스':1,'원피스, 점프수트':1,'후드티, 맨투맨티':1,'니트, 스웨터':1,'가디건':1,'정장조끼':1,'캐주얼 조끼':1,'아동한복, 량한복 조끼':1,'아동한복, 량한복 상의':1,'인조가죽, 인조세무 상의':1,'바지':1,'스커트':1,'패딩바지':1,'아동한복, 량한복 하의':1,'점퍼':1,'재킷':1,'정장재킷':1,'일반패딩':2,'다운패딩':2,'롱패딩점퍼':3,'경량패딩':1,'패딩조끼':1,'코트, 트렌치코트':2,'이불 압축포장':null,'커버류, 이불패드':2,'일반 이불, 극세사 패드':2,'극세사 이불, 일반 토퍼':3,'구스이불, 양모이불, 실크이불':3,'구스토퍼':3,'구스베개':2,'아동이불, 무릎담요':1,'일반 운동화':1,'운동화 - 부분 세무/가죽':1,'운동화 - 전체 세무/가죽':2,'축구화':1,'하이탑':1,'골프화, 등산화':2,'아동 신발':1,'일반 커튼':null,'암막 커튼':null,'이중 커튼':null,'식탁보':null,'베개 커버, 쿠션 커버':null,'쇼파 커버 - 3인이상':null,'쇼파 커버 - 2인이상':null,'차량용 양털시트':null,'발매트':null,'러그, 카펫':null,'러그, 카펫 (대형)':null,'스페셜 러그, 카펫':null,'스페셜 러그, 카펫 (대형)':null,'일반모자, 캡모자':null,'머플러, 장갑, 스카프':null,'숄':null,'넥타이':null,'래시가드, 수영복':null,'가운':null,'인형':null,'대형 인형':null,'앞치마':null,'에코백/토트백':null},
+  '런드리&드라이':{'와이셔츠':null,'일반셔츠':null,'티셔츠':1,'블라우스':1,'원피스, 점프수트':1,'후드티, 맨투맨티':1,'니트, 스웨터':1,'가디건':1,'정장조끼':1,'캐주얼 조끼':1,'아동한복, 량한복 조끼':1,'아동한복, 량한복 상의':1,'인조가죽, 인조세무 상의':1,'바지':1,'스커트':1,'패딩바지':1,'아동한복, 량한복 하의':1,'점퍼':1,'재킷':1,'정장재킷':1,'일반패딩':2,'다운패딩':2,'롱패딩점퍼':2,'경량패딩':1,'패딩조끼':1,'코트, 트렌치코트':1,'이불 압축포장':null,'커버류, 이불패드':null,'일반 이불, 극세사 패드':null,'극세사 이불, 일반 토퍼':null,'구스이불, 양모이불, 실크이불':null,'구스토퍼':null,'구스베개':null,'아동이불, 무릎담요':null,'일반 운동화':null,'운동화 - 부분 세무/가죽':null,'운동화 - 전체 세무/가죽':null,'축구화':null,'하이탑':null,'골프화, 등산화':null,'아동 신발':null,'일반 커튼':null,'암막 커튼':null,'이중 커튼':null,'식탁보':null,'베개 커버, 쿠션 커버':null,'쇼파 커버 - 3인이상':null,'쇼파 커버 - 2인이상':null,'차량용 양털시트':null,'발매트':null,'러그, 카펫':null,'러그, 카펫 (대형)':null,'스페셜 러그, 카펫':null,'스페셜 러그, 카펫 (대형)':null,'일반모자, 캡모자':null,'머플러, 장갑, 스카프':null,'숄':null,'넥타이':null,'래시가드, 수영복':null,'가운':null,'인형':null,'대형 인형':null,'앞치마':null,'에코백/토트백':null},
+  '런드리온리':{'와이셔츠':null,'일반셔츠':null,'티셔츠':null,'블라우스':null,'원피스, 점프수트':null,'후드티, 맨투맨티':null,'니트, 스웨터':null,'가디건':null,'정장조끼':null,'캐주얼 조끼':null,'아동한복, 량한복 조끼':null,'아동한복, 량한복 상의':null,'인조가죽, 인조세무 상의':null,'바지':null,'스커트':null,'패딩바지':null,'아동한복, 량한복 하의':null,'점퍼':null,'재킷':null,'정장재킷':null,'일반패딩':null,'다운패딩':null,'롱패딩점퍼':null,'경량패딩':null,'패딩조끼':null,'코트, 트렌치코트':null,'이불 압축포장':null,'커버류, 이불패드':null,'일반 이불, 극세사 패드':null,'극세사 이불, 일반 토퍼':null,'구스이불, 양모이불, 실크이불':null,'구스토퍼':null,'구스베개':null,'아동이불, 무릎담요':null,'일반 운동화':null,'운동화 - 부분 세무/가죽':null,'운동화 - 전체 세무/가죽':null,'축구화':null,'하이탑':null,'골프화, 등산화':null,'아동 신발':null,'일반 커튼':null,'암막 커튼':null,'이중 커튼':null,'식탁보':null,'베개 커버, 쿠션 커버':null,'쇼파 커버 - 3인이상':null,'쇼파 커버 - 2인이상':null,'차량용 양털시트':null,'발매트':null,'러그, 카펫':null,'러그, 카펫 (대형)':null,'스페셜 러그, 카펫':null,'스페셜 러그, 카펫 (대형)':null,'일반모자, 캡모자':null,'머플러, 장갑, 스카프':null,'숄':null,'넥타이':null,'래시가드, 수영복':null,'가운':null,'인형':null,'대형 인형':null,'앞치마':null,'에코백/토트백':null},
+  '베딩온리':{'와이셔츠':null,'일반셔츠':null,'티셔츠':null,'블라우스':null,'원피스, 점프수트':null,'후드티, 맨투맨티':null,'니트, 스웨터':null,'가디건':null,'정장조끼':null,'캐주얼 조끼':null,'아동한복, 량한복 조끼':null,'아동한복, 량한복 상의':null,'인조가죽, 인조세무 상의':null,'바지':null,'스커트':null,'패딩바지':null,'아동한복, 량한복 하의':null,'점퍼':null,'재킷':null,'정장재킷':null,'일반패딩':null,'다운패딩':null,'롱패딩점퍼':null,'경량패딩':null,'패딩조끼':null,'코트, 트렌치코트':null,'이불 압축포장':null,'커버류, 이불패드':1,'일반 이불, 극세사 패드':1,'극세사 이불, 일반 토퍼':2,'구스이불, 양모이불, 실크이불':2,'구스토퍼':2,'구스베개':1,'아동이불, 무릎담요':1,'일반 운동화':null,'운동화 - 부분 세무/가죽':null,'운동화 - 전체 세무/가죽':null,'축구화':null,'하이탑':null,'골프화, 등산화':null,'아동 신발':null,'일반 커튼':null,'암막 커튼':null,'이중 커튼':null,'식탁보':null,'베개 커버, 쿠션 커버':null,'쇼파 커버 - 3인이상':null,'쇼파 커버 - 2인이상':null,'차량용 양털시트':null,'발매트':null,'러그, 카펫':null,'러그, 카펫 (대형)':null,'스페셜 러그, 카펫':null,'스페셜 러그, 카펫 (대형)':null,'일반모자, 캡모자':null,'머플러, 장갑, 스카프':null,'숄':null,'넥타이':null,'래시가드, 수영복':null,'가운':null,'인형':null,'대형 인형':null,'앞치마':null,'에코백/토트백':null},
+};
+
+const PRICES = {
+  '와이셔츠':{n:2900,s:2320,p:10000,sp:8000},'일반셔츠':{n:3800,s:3040,p:10000,sp:8000},
+  '티셔츠':{n:4500,s:3600,p:12000,sp:9600},'블라우스':{n:4800,s:3840,p:15000,sp:12000},
+  '원피스, 점프수트':{n:7400,s:5920,p:25000,sp:20000},'후드티, 맨투맨티':{n:5500,s:4400,p:15000,sp:12000},
+  '니트, 스웨터':{n:6500,s:5200,p:18000,sp:14400},'가디건':{n:6500,s:5200,p:18000,sp:14400},
+  '정장조끼':{n:3500,s:2800,p:12000,sp:9600},'캐주얼 조끼':{n:5000,s:4000,p:12000,sp:12000},
+  '아동한복, 량한복 조끼':{n:3000,s:2400,p:null,sp:null},'아동한복, 량한복 상의':{n:6000,s:4800,p:null,sp:null},
+  '인조가죽, 인조세무 상의':{n:6500,s:5200,p:18000,sp:14400},'바지':{n:5800,s:4640,p:15000,sp:12000},
+  '스커트':{n:5800,s:4640,p:15000,sp:12000},'패딩바지':{n:10000,s:8000,p:25000,sp:20000},
+  '아동한복, 량한복 하의':{n:7000,s:5600,p:null,sp:null},'점퍼':{n:8500,s:6800,p:30000,sp:24000},
+  '재킷':{n:8500,s:6800,p:30000,sp:24000},'정장재킷':{n:6500,s:5200,p:25000,sp:20000},
+  '일반패딩':{n:17800,s:14240,p:40000,sp:32000},'다운패딩':{n:17800,s:14240,p:40000,sp:32000},
+  '롱패딩점퍼':{n:22000,s:17600,p:50000,sp:40000},'경량패딩':{n:9800,s:7840,p:40000,sp:32000},
+  '패딩조끼':{n:9800,s:7840,p:40000,sp:32000},'코트, 트렌치코트':{n:14800,s:11840,p:50000,sp:40000},
+  '이불 압축포장':{n:5000,s:4000,p:null,sp:null},'커버류, 이불패드':{n:11500,s:9200,p:null,sp:null},
+  '일반 이불, 극세사 패드':{n:14500,s:11600,p:null,sp:null},'극세사 이불, 일반 토퍼':{n:19800,s:15840,p:null,sp:null},
+  '구스이불, 양모이불, 실크이불':{n:22000,s:17600,p:null,sp:null},'구스토퍼':{n:30000,s:24000,p:null,sp:null},
+  '구스베개':{n:12000,s:9600,p:null,sp:null},'아동이불, 무릎담요':{n:7500,s:6000,p:null,sp:null},
+  '일반 운동화':{n:6500,s:5200,p:25000,sp:20000},'운동화 - 부분 세무/가죽':{n:8500,s:6800,p:45000,sp:36000},
+  '운동화 - 전체 세무/가죽':{n:10500,s:8400,p:45000,sp:36000},'축구화':{n:9800,s:7840,p:25000,sp:20000},
+  '하이탑':{n:9800,s:7840,p:25000,sp:20000},'골프화, 등산화':{n:12500,s:10000,p:25000,sp:20000},
+  '아동 신발':{n:5800,s:4640,p:25000,sp:20000},
+  '일반 커튼':{n:17000,s:13600,p:null,sp:null},'암막 커튼':{n:25000,s:20000,p:null,sp:null},
+  '이중 커튼':{n:20000,s:16000,p:null,sp:null},'식탁보':{n:12000,s:9600,p:null,sp:null},
+  '베개 커버, 쿠션 커버':{n:4000,s:3200,p:null,sp:null},'쇼파 커버 - 3인이상':{n:20000,s:16000,p:null,sp:null},
+  '쇼파 커버 - 2인이상':{n:15000,s:12000,p:null,sp:null},'차량용 양털시트':{n:20000,s:16000,p:null,sp:null},
+  '발매트':{n:5800,s:4640,p:null,sp:null},'러그, 카펫':{n:18000,s:14400,p:null,sp:null},
+  '러그, 카펫 (대형)':{n:30000,s:24000,p:null,sp:null},'스페셜 러그, 카펫':{n:60000,s:48000,p:null,sp:null},
+  '스페셜 러그, 카펫 (대형)':{n:100000,s:80000,p:null,sp:null},
+  '일반모자, 캡모자':{n:6800,s:5440,p:12000,sp:9600},'머플러, 장갑, 스카프':{n:4800,s:3840,p:12000,sp:9600},
+  '숄':{n:8000,s:6400,p:20000,sp:16000},'넥타이':{n:3000,s:2400,p:12000,sp:9600},
+  '래시가드, 수영복':{n:6000,s:4800,p:null,sp:null},'가운':{n:7500,s:6000,p:null,sp:null},
+  '인형':{n:7800,s:6240,p:null,sp:null},'대형 인형':{n:20000,s:16000,p:null,sp:null},
+  '앞치마':{n:4000,s:3200,p:null,sp:null},'에코백/토트백':{n:4000,s:3200,p:null,sp:null},
+};
+
+const CATEGORIES = {
+  '의류':['와이셔츠','일반셔츠','티셔츠','블라우스','후드티, 맨투맨티','니트, 스웨터','가디건','원피스, 점프수트','정장조끼','캐주얼 조끼','바지','스커트','패딩바지','점퍼','재킷','정장재킷','경량패딩','패딩조끼','일반패딩','다운패딩','롱패딩점퍼','코트, 트렌치코트','인조가죽, 인조세무 상의','아동한복, 량한복 상의','아동한복, 량한복 조끼','아동한복, 량한복 하의'],
+  '이불':['이불 압축포장','커버류, 이불패드','일반 이불, 극세사 패드','극세사 이불, 일반 토퍼','구스이불, 양모이불, 실크이불','구스토퍼','구스베개','아동이불, 무릎담요'],
+  '신발':['일반 운동화','운동화 - 부분 세무/가죽','운동화 - 전체 세무/가죽','축구화','하이탑','골프화, 등산화','아동 신발'],
+  '리빙':['일반 커튼','암막 커튼','이중 커튼','식탁보','베개 커버, 쿠션 커버','쇼파 커버 - 2인이상','쇼파 커버 - 3인이상','차량용 양털시트','발매트','러그, 카펫','러그, 카펫 (대형)','스페셜 러그, 카펫','스페셜 러그, 카펫 (대형)'],
+  '잡화':['일반모자, 캡모자','머플러, 장갑, 스카프','숄','넥타이','래시가드, 수영복','가운','인형','대형 인형','앞치마','에코백/토트백'],
+};
+const ALL_ITEMS = Object.values(CATEGORIES).flat();
+
+let counts = {};
+let isPrem = {};
+let deliveryCount = 2;
+ALL_ITEMS.forEach(i => { counts[i] = 0; isPrem[i] = false; });
+
+function toggleSection(cat) {
+  const sec = document.getElementById('sec-' + cat);
+  sec.classList.toggle('collapsed');
+}
+
+function buildGrid(cat, items) {
+  const el = document.getElementById('grid-' + cat);
+  el.innerHTML = '';
+  items.forEach(item => {
+    const hasPremOpt = PRICES[item] && PRICES[item].p !== null;
+    const safeId = item.replace(/[^a-zA-Z0-9가-힣]/g, '_');
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.id = 'card_' + safeId;
+    card.innerHTML = `
+      <div class="item-top">
+        <span class="item-name">${item}</span>
+        <div class="counter">
+          <button class="counter-btn" onclick="adj('${item}',-1)">−</button>
+          <span class="counter-val" id="val_${safeId}">0</span>
+          <button class="counter-btn" onclick="adj('${item}',1)">+</button>
+        </div>
+      </div>
+      ${hasPremOpt ? `<div class="prem-row" id="premrow_${safeId}">
+        <label class="prem-label">
+          <input type="checkbox" id="premcb_${safeId}" onchange="onPremChange('${item}')" />
+          프리미엄 세탁
+        </label>
+        <span class="prem-badge" id="prembadge_${safeId}">프리미엄</span>
+      </div>` : ''}
+    `;
+    el.appendChild(card);
+  });
+}
+
+function adj(item, delta) {
+  counts[item] = Math.max(0, counts[item] + delta);
+  const safeId = item.replace(/[^a-zA-Z0-9가-힣]/g, '_');
+  document.getElementById('val_' + safeId).textContent = counts[item];
+  document.getElementById('card_' + safeId).className = 'item-card' + (counts[item] > 0 ? ' selected' : '');
+  if (counts[item] === 0) {
+    const cb = document.getElementById('premcb_' + safeId);
+    if (cb) { cb.checked = false; isPrem[item] = false; }
+    const badge = document.getElementById('prembadge_' + safeId);
+    if (badge) badge.style.display = 'none';
+  }
+  updateSectionCount(item);
+}
+
+function onPremChange(item) {
+  const safeId = item.replace(/[^a-zA-Z0-9가-힣]/g, '_');
+  const cb = document.getElementById('premcb_' + safeId);
+  isPrem[item] = cb ? cb.checked : false;
+  const badge = document.getElementById('prembadge_' + safeId);
+  if (badge) badge.style.display = isPrem[item] ? 'inline-block' : 'none';
+}
+
+function updateSectionCount(item) {
+  for (const [cat, items] of Object.entries(CATEGORIES)) {
+    if (!items.includes(item)) continue;
+    const total = items.reduce((s, i) => s + counts[i], 0);
+    const el = document.getElementById('cnt-sec-' + cat);
+    if (el) {
+      el.textContent = total > 0 ? total + '개' : '';
+      el.className = 'section-count' + (total > 0 ? ' visible' : '');
+    }
+  }
+}
+
+function onLivingChange() {
+  const v = parseFloat(document.getElementById('living-kg').value) || 0;
+  document.getElementById('living-card').className = 'living-input-row' + (v > 0 ? ' selected' : '');
+  const el = document.getElementById('cnt-sec-생활빨래');
+  if (el) { el.textContent = v > 0 ? v + 'kg' : ''; el.className = 'section-count' + (v > 0 ? ' visible' : ''); }
+}
+
+function adjDelivery(delta) {
+  deliveryCount = Math.max(1, deliveryCount + delta);
+  document.getElementById('delivery-val').textContent = deliveryCount;
+}
+
+function calcLivingCost(kg, isSub) {
+  if (!kg || kg <= 0) return 0;
+  const base = isSub ? 9800 : 13500;
+  const overRate = isSub ? 1200 : 1500;
+  if (kg <= 4) return base;
+  return base + Math.ceil((kg - 4) / 0.5) * overRate;
+}
+
+function calcNoSubCost(livingKg) {
+  let cost = 0;
+  ALL_ITEMS.forEach(item => {
+    const cnt = counts[item]; if (!cnt) return;
+    const p = PRICES[item]; if (!p) return;
+    cost += (isPrem[item] && p.p ? p.p : p.n) * cnt;
+  });
+  return cost + calcLivingCost(livingKg, false) + deliveryCount * 7600;
+}
+
+function calcPlanCost(plan, livingKg) {
+  const dedMap = DEDUCTION[plan.name] || {};
+  let ticketsNeeded = 0, overageCost = 0;
+  ALL_ITEMS.forEach(item => {
+    const cnt = counts[item]; if (!cnt) return;
+    const need = dedMap[item];
+    const p = PRICES[item]; if (!p) return;
+    const up = isPrem[item] && p.sp ? p.sp : p.s;
+    if (need === null || need === undefined) overageCost += up * cnt;
+    else ticketsNeeded += need * cnt;
+  });
+  let ticketOverage = 0;
+  if (ticketsNeeded > plan.ticket) {
+    let rem = plan.ticket;
+    ALL_ITEMS.forEach(item => {
+      const cnt = counts[item]; if (!cnt) return;
+      const need = dedMap[item]; if (!need) return;
+      const p = PRICES[item];
+      const up = isPrem[item] && p.sp ? p.sp : p.s;
+      if (rem >= need * cnt) rem -= need * cnt;
+      else { ticketOverage += up * cnt; rem = 0; }
+    });
+  }
+  const livingExtra = calcLivingCost(Math.max(0, livingKg - plan.living), true);
+  const deliveryCost = Math.max(0, deliveryCount - plan.delivery) * 3800;
+  const total = plan.price + overageCost + ticketOverage + livingExtra + deliveryCost;
+  return { total, overageCost, ticketOverage, livingExtra, deliveryCost, ticketsNeeded };
+}
+
+function runRecommend() {
+  const livingKg = parseFloat(document.getElementById('living-kg').value) || 0;
+  const hasItems = ALL_ITEMS.some(i => counts[i] > 0) || livingKg > 0;
+  if (!hasItems) {
+    document.getElementById('result-area').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">세탁물을 하나 이상 입력해주세요.</div></div>`;
+    return;
+  }
+
+  const noSubTotal = calcNoSubCost(livingKg);
+  const results = PLANS.map(plan => {
+    const r = calcPlanCost(plan, livingKg);
+    return { ...plan, ...r, savings: noSubTotal - r.total };
+  }).sort((a, b) => b.savings - a.savings);
+
+  const benefitPlans = results.filter(r => r.savings > 0);
+  let html = `<div class="nosub-banner"><span>정가 기준 월 예상 비용</span><span class="nosub-price">${noSubTotal.toLocaleString()}원</span></div>`;
+
+  if (benefitPlans.length === 0) {
+    html += `<div class="no-benefit">입력하신 세탁량으로는<br>구독 시 절약 효과가 없어요.<br><small style="color:var(--text-muted)">세탁량이 적거나 구독 범위 외 품목이 많을 수 있어요.</small></div>`;
+  }
+
+  const showPlans = (benefitPlans.length > 0 ? benefitPlans : results).slice(0, 4);
+  showPlans.forEach((r, idx) => {
+    const isBest = idx === 0 && r.savings > 0;
+    const delay = idx * 60;
+    html += `<div class="plan-card ${isBest ? 'best' : ''}" style="animation-delay:${delay}ms">`;
+    if (isBest) html += `<div class="best-tag">✦ 절약 효과 최고</div>`;
+    html += `<div class="plan-row1">
+      <div><div class="plan-name">${r.name}</div><div class="plan-grade">${r.grade}</div></div>
+      <div><div class="plan-total">${r.total.toLocaleString()}원</div><div class="plan-total-sub">구독료 ${r.price.toLocaleString()}원 포함</div></div>
+    </div>
+    <div class="plan-chips">
+      <span class="chip">세탁권 ${r.ticket}장</span>
+      <span class="chip">${r.living > 0 ? '생활빨래 ' + r.living + 'kg' : '생활빨래 미포함'}</span>
+      <span class="chip">배송권 ${r.delivery}회</span>
+    </div>
+    <div class="savings-bar">
+      <span class="savings-label">정가 대비</span>
+      <span class="savings-amount ${r.savings > 0 ? 'pos' : 'neg'}">${r.savings > 0 ? '-' + r.savings.toLocaleString() + '원 절약' : '+' + Math.abs(r.savings).toLocaleString() + '원 더 비쌈'}</span>
+    </div>`;
+
+    if (isBest && (r.overageCost > 0 || r.ticketOverage > 0 || r.livingExtra > 0 || r.deliveryCost > 0)) {
+      html += `<div class="breakdown"><div class="breakdown-title">추가 비용 내역</div>`;
+      if (r.ticketOverage > 0) html += `<div class="breakdown-row"><span>세탁권 부족 추가 과금</span><span>${r.ticketOverage.toLocaleString()}원</span></div>`;
+      if (r.overageCost > 0) html += `<div class="breakdown-row"><span>구독 미포함 품목 과금</span><span>${r.overageCost.toLocaleString()}원</span></div>`;
+      if (r.livingExtra > 0) html += `<div class="breakdown-row"><span>생활빨래 과금</span><span>${r.livingExtra.toLocaleString()}원</span></div>`;
+      if (r.deliveryCost > 0) html += `<div class="breakdown-row"><span>수거배송 초과 ${Math.max(0, deliveryCount - r.delivery)}회</span><span>${r.deliveryCost.toLocaleString()}원</span></div>`;
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  if (benefitPlans.length > 0 && results.length - benefitPlans.length > 0) {
+    html += `<div class="tail-note">나머지 ${results.length - benefitPlans.length}개 플랜은 정가보다 비쌉니다</div>`;
+  }
+  document.getElementById('result-area').innerHTML = html;
+}
+
+Object.entries(CATEGORIES).forEach(([cat, items]) => buildGrid(cat, items));
+</script>
+</body>
+</html>
