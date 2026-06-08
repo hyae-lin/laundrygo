@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaundryGo · 얼룩제거 고객 Comm. 성과 리포트</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f8fa;
+  --white: #ffffff;
+  --border: #e8eaed;
+  --border2: #d1d5db;
+  --text: #111827;
+  --text2: #4b5563;
+  --text3: #9ca3af;
+  --blue: #2563eb;
+  --blue-light: #eff6ff;
+  --blue-mid: #bfdbfe;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --yellow: #d97706;
+  --yellow-light: #fffbeb;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --teal: #0891b2;
+  --teal-light: #ecfeff;
+  --purple: #7c3aed;
+  --purple-light: #f5f3ff;
+  --font: 'Noto Sans KR', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; line-height: 1.6; }
+
+.topnav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 48px; display: flex; align-items: center; justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 100; }
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.nav-logo-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; font-family: var(--mono); }
+.nav-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.nav-subtitle { font-size: 11px; color: var(--text3); margin-left: 6px; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link { font-size: 12px; color: var(--text2); text-decoration: none; padding: 5px 10px; border-radius: 5px; transition: background .15s, color .15s; }
+.nav-link:hover { background: var(--bg); color: var(--text); }
+
+.page-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 40px 48px 36px; }
+.header-inner { max-width: 1200px; }
+.header-eyebrow { font-size: 11px; font-weight: 500; color: var(--green); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.header-eyebrow::before { content: ''; width: 16px; height: 2px; background: var(--green); border-radius: 1px; }
+h1 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+.header-desc { font-size: 13px; color: var(--text2); max-width: 800px; }
+.header-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+.meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); }
+.meta-item b { color: var(--text2); font-weight: 500; }
+
+.body { max-width: 1248px; margin: 0 auto; padding: 32px 48px 80px; }
+.section { margin-bottom: 56px; }
+.section-header { margin-bottom: 20px; }
+.section-num { font-size: 11px; font-weight: 600; color: var(--green); font-family: var(--mono); letter-spacing: .06em; }
+.section-title { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 3px; letter-spacing: -.01em; }
+.section-desc { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.gap-top { margin-top: 16px; }
+
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.card-desc { font-size: 11px; color: var(--text3); margin-bottom: 16px; line-height: 1.5; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.skpi { background: var(--white); padding: 24px 26px; position: relative; }
+.skpi::after { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+.skpi.blue::after { background: var(--blue); }
+.skpi.green::after { background: var(--green); }
+.skpi.teal::after { background: var(--teal); }
+.skpi.yellow::after { background: var(--yellow); }
+.skpi-label { font-size: 11px; font-weight: 500; color: var(--text3); margin-bottom: 8px; letter-spacing: .02em; }
+.skpi-val { font-size: 32px; font-weight: 700; font-family: var(--mono); letter-spacing: -.03em; line-height: 1; }
+.skpi-val.blue { color: var(--blue); }
+.skpi-val.green { color: var(--green); }
+.skpi-val.teal { color: var(--teal); }
+.skpi-val.yellow { color: var(--yellow); }
+.skpi-val small { font-size: 16px; opacity: .6; font-family: var(--mono); }
+.skpi-sub { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.5; }
+.skpi-note { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+.krow { display: flex; gap: 12px; margin-bottom: 16px; }
+.kchip { flex: 1; background: var(--bg); border-radius: 8px; padding: 12px 14px; }
+.kchip-l { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.kchip-v { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.kchip-v small { font-size: 12px; color: var(--text3); }
+.kchip-d { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.insight { display: flex; gap: 10px; align-items: flex-start; background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-top: 14px; font-size: 12px; color: var(--text2); line-height: 1.65; }
+.insight-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.insight strong { color: var(--text); }
+
+.callout { border-radius: 8px; padding: 14px 16px; font-size: 12px; line-height: 1.6; }
+.callout.blue { background: var(--blue-light); border-left: 3px solid var(--blue); color: #1e40af; }
+.callout.green { background: var(--green-light); border-left: 3px solid var(--green); color: #14532d; }
+.callout.yellow { background: var(--yellow-light); border-left: 3px solid var(--yellow); color: #78350f; }
+.callout.red { background: var(--red-light); border-left: 3px solid var(--red); color: #7f1d1d; }
+.callout strong { font-weight: 700; }
+
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tbl th { text-align: left; padding: 9px 14px; font-size: 11px; font-weight: 600; color: var(--text3); border-bottom: 2px solid var(--border2); }
+.tbl th.r { text-align: right; }
+.tbl td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: middle; }
+.tbl td.n { font-family: var(--mono); color: var(--text); text-align: right; }
+.tbl td.dn { font-family: var(--mono); color: var(--green); font-weight: 700; text-align: right; }
+.tbl td.hi { font-family: var(--mono); color: var(--red); font-weight: 700; text-align: right; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr.hl { background: var(--green-light); }
+.tbl tr.hl td { color: var(--text); }
+
+.blist { display: flex; flex-direction: column; }
+.brow { display: grid; grid-template-columns: 150px 1fr 44px 56px; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.brow:last-child { border-bottom: none; }
+.brow-header { display: grid; grid-template-columns: 150px 1fr 44px 56px; gap: 10px; padding: 0 0 8px 0; border-bottom: 2px solid var(--border2); margin-bottom: 2px; }
+.bhdr { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+.bhdr.r { text-align: right; }
+.blbl { font-size: 12px; color: var(--text2); }
+.btrack { background: #f3f4f6; border-radius: 3px; height: 7px; overflow: hidden; }
+.bfill { height: 100%; border-radius: 3px; }
+.bnum { font-family: var(--mono); font-size: 12px; color: var(--text); text-align: right; }
+.brate { font-family: var(--mono); font-size: 12px; text-align: right; font-weight: 600; }
+.brate.high { color: var(--red); } .brate.mid { color: var(--yellow); } .brate.low { color: var(--green); }
+
+.qlist { display: flex; flex-direction: column; }
+.qrow { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.qrow:last-child { border-bottom: none; }
+.qtag { font-size: 10px; color: var(--green); background: var(--green-light); border-radius: 4px; padding: 2px 7px; flex-shrink: 0; border: 1px solid #bbf7d0; font-weight: 600; white-space: nowrap; }
+.qq { flex: 1; font-size: 12px; color: var(--text); line-height: 1.5; }
+.qq em { font-style: normal; color: var(--text3); }
+
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pcard { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.pcard.feat { border-color: #bbf7d0; background: var(--green-light); }
+.phead { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pbadge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: .04em; }
+.pbadge.p1 { background: #fee2e2; color: var(--red); }
+.pbadge.p2 { background: #fef9c3; color: #854d0e; }
+.pbadge.pn { background: #cffafe; color: #155e75; }
+.ptitle { font-size: 13px; font-weight: 700; color: var(--text); }
+.pbody { font-size: 12px; color: var(--text2); line-height: 1.7; }
+.pbody b { color: var(--text); }
+.ptags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.ptag { font-size: 11px; color: var(--text3); background: var(--bg); border-radius: 4px; padding: 2px 8px; border: 1px solid var(--border); }
+.ptag b { color: var(--text2); }
+
+.leg { display: flex; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+.li { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+.ld { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+footer { background: var(--white); border-top: 1px solid var(--border); padding: 20px 48px; font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+@media print { body { background:#fff } .topnav{display:none} .section{break-inside:avoid} }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">L</div>
+    <span class="nav-title">LaundryGo</span>
+    <span class="nav-subtitle">얼룩제거 고객 Comm. 성과 리포트</span>
+  </div>
+  <div class="nav-links">
+    <a href="#s1" class="nav-link">성과 요약</a>
+    <a href="#s2" class="nav-link">VOC 추이</a>
+    <a href="#s3" class="nav-link">카테고리별 효과</a>
+    <a href="#s4" class="nav-link">해석·한계</a>
+    <a href="#s5" class="nav-link">결론·다음 단계</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">LAUN-2602 · 얼룩 커뮤니케이션 강화 효과 분석</div>
+    <h1>얼룩제거 고객 Comm. 성과 리포트</h1>
+    <p class="header-desc">2026년 4월 10일 배포 이후, 앱 커뮤니케이션 개선이 ‘얼룩’ 관련 VOC를 실제로 줄였는지 주문량·계절성을 보정해 검증한 결과입니다.</p>
+    <div class="header-meta">
+      <div class="meta-item">📅 <b>배포 2026.04.10</b></div>
+      <div class="meta-item">📊 <b>비교 배포 전 65일 vs 후 52일</b></div>
+      <div class="meta-item">🧺 <b>VOC 2,434건 · 주문 36.8만건</b></div>
+      <div class="meta-item">🗓 <b>2026.06.02 기준</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+
+<!-- S1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title">성과 요약</div>
+    <div class="section-desc">배포 전(01/01–03/06) vs 배포 후(04/10–05/31) · 주문량 보정 기준</div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:6px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:7px 12px;font-size:12px;color:#14532d;">
+      <span style="font-weight:700;">⚖️ 주문량 보정</span>
+      <span style="color:#374151;">주문 1,000건당 VOC율(‰)로 환산해 기간·성수기 차이를 제거</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;background:#f8faff;border:1px solid #bfdbfe;border-radius:6px;padding:7px 12px;font-size:12px;color:#1e40af;">
+      <span style="font-weight:700;">🔍 VOC 재분류</span>
+      <span style="color:#374151;">VOC 본문 텍스트를 직접 읽어 ‘앱으로 줄일 수 있는 불만 vs 아닌 불만’으로 다시 분류</span>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="skpi green">
+      <div class="skpi-label">타겟 VOC율 <span style="font-weight:400;color:var(--text3)">(넓게)</span></div>
+      <div class="skpi-val green">−33.3<small>%</small></div>
+      <div class="skpi-sub">주문 1,000건당<br><b>1.38‰ → 0.92‰</b></div>
+      <div class="skpi-note">월 환산 약 47건 절감</div>
+    </div>
+    <div class="skpi blue">
+      <div class="skpi-label">타겟 VOC율 <span style="font-weight:400;color:var(--text3)">(좁게)</span></div>
+      <div class="skpi-val blue">−28.6<small>%</small></div>
+      <div class="skpi-sub">명백한 소통 불만만<br><b>0.42‰ → 0.30‰</b></div>
+    </div>
+    <div class="skpi yellow">
+      <div class="skpi-label">사전 미고지 불만율</div>
+      <div class="skpi-val yellow">−50.0<small>%</small></div>
+      <div class="skpi-sub">처리불가·지연 알림톡 직접 효과<br><b>0.16‰ → 0.08‰</b></div>
+    </div>
+    <div class="skpi teal">
+      <div class="skpi-label">결과 안내 · 증빙 불만율</div>
+      <div class="skpi-val teal">−32.4<small>%</small></div>
+      <div class="skpi-sub">결과 문구 · Before/After<br><b>각 0.7‰대 → 0.5‰대</b></div>
+    </div>
+  </div>
+
+  <div style="font-size:11.5px;color:var(--text3);margin-top:10px;line-height:1.6;">
+    ‰(퍼밀) = 주문 1,000건당 VOC 건수 · 기간·주문량이 달라도 공정하게 비교하기 위한 환산값(낮을수록 좋음)<br>
+    타겟 VOC = 세탁 결과가 아니라 <span style="color:var(--text2)">과정 안내 부재</span>로 생긴 불만(“미리 알려줬어야지” 류) · 이번 과제가 앱 커뮤니케이션으로 직접 겨냥한 영역
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-top:16px;">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;">📋 분석 요약</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green-light);color:var(--green);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">①</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">목표 달성</strong> — 당초 소통(Comm.) 관련 VOC −35% 목표 대비, 타겟 VOC가 좁게 −28.6% / 넓게 <strong style="color:var(--green);">−33.3%</strong> 감소해 목표에 근접했습니다.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">②</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">주문량 보정이 핵심</strong> — 배포 후 주문이 5.8% 적었던 점을 보정해, 기간·성수기 차이를 제거한 ‰ 기준으로 비교했습니다.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--yellow-light);color:var(--yellow);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">③</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">사전 고지 효과가 가장 큼</strong> — 처리불가·지연 알림톡이 겨냥한 ‘사전 미고지’ 불만이 <strong style="color:var(--yellow);">−50.0%</strong>로 최대 감소했습니다.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--teal-light);color:var(--teal);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">④</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;"><strong style="color:var(--text);">결과의 견고함</strong> — 포함 범위를 좁게 잡든 넓게 잡든 모두 −28~33% 감소해, 분류 기준과 무관하게 결론이 유지됩니다. 단, 인과 확정이 아닌 강한 정황입니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title">VOC 추이</div>
+    <div class="section-desc">주문 1,000건당 주간 VOC율 · 배포 04/10</div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">주간 타겟 VOC율 추이</div>
+      <div class="card-desc">배포 후 타겟 VOC율이 하락합니다 · 3/09~4/05는 데이터 공백으로 제외</div>
+      <div class="leg">
+        <div class="li"><div class="ld" style="background:#16a34a"></div>타겟 VOC율 ‰</div>
+      </div>
+      <div style="height:210px"><canvas id="trendChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">보정 전후 비교 (타겟 VOC)</div>
+      <div class="card-desc">단순 건수·일평균은 주문량 차이에 가려집니다</div>
+      <div class="krow">
+        <div class="kchip"><div class="kchip-l">주문량</div><div class="kchip-v">−5.8<small>%</small></div><div class="kchip-d">19.0만 → 17.9만</div></div>
+        <div class="kchip"><div class="kchip-l">타겟 VOC 건수</div><div class="kchip-v">−37.0<small>%</small></div><div class="kchip-d">262 → 165건</div></div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>기준</th><th class="r">타겟 변화</th></tr></thead>
+        <tbody>
+          <tr><td>① 단순 건수</td><td class="n">−37.0%</td></tr>
+          <tr><td>② 일평균 (기간 보정)</td><td class="n">−21.3%</td></tr>
+          <tr class="hl"><td>③ 주문 1,000건당 (주문량 보정)</td><td class="dn">−33.1%</td></tr>
+        </tbody>
+      </table>
+      <div class="insight">
+        <span class="insight-icon">💡</span>
+        <span>②와 ③의 차이가 핵심입니다. 일평균(②)은 배포 후 주문이 적었던 영향에 효과가 가려져 과소평가됩니다. <strong>주문량 보정(③)이 가장 정확한 지표</strong>입니다.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green gap-top">
+    <strong>봄 성수기에 주문은 늘었는데 타겟 VOC율은 떨어졌습니다.</strong> 통상 주문이 늘면 VOC율도 함께 오르거나 유지되지만, 배포 후에는 반대로 움직였습니다.
+    계절성·물량 증가만으로는 이 하락이 설명되지 않으며, 앱 개선이 기여했음을 시사합니다.
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title">타겟 VOC 카테고리별 효과</div>
+    <div class="section-desc">이번 과제가 겨냥한 소통성 VOC의 기능별 효과 · 주문량 보정 기준</div>
+  </div>
+
+  <!-- 범위: 타겟 VOC 정의 -->
+  <div class="callout green" style="margin-top:0;">
+    <strong>이번 과제가 겨냥한 ‘타겟 VOC’는 과정 안내 부재로 생긴 소통성 불만입니다.</strong>
+    세탁 결과 자체(품질·손상)에 대한 불만은 팩토리 공정 영역으로 앱이 직접 줄일 수 없어, 본 분석의 효과 대상에서 제외했습니다.
+    아래는 타겟 VOC가 앱 기능별로 얼마나 줄었는지를 봅니다.
+  </div>
+
+  <!-- 핵심: 좁게/넓게 + 기능별 차트 -->
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-title">기능별 타겟 VOC율 감소폭</div>
+      <div class="card-desc">각 앱 기능이 직접 겨냥한 VOC 유형의 배포 전후 율 변화</div>
+      <div style="height:230px"><canvas id="funcChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">타겟 VOC 감소율 (좁게 / 넓게)</div>
+      <div class="card-desc">포함 범위를 어떻게 잡아도 결론이 유지됨</div>
+      <div class="brow-header">
+        <div class="bhdr">구분</div><div class="bhdr">감소폭</div><div class="bhdr r">전→후</div><div class="bhdr r">변화</div>
+      </div>
+      <div class="blist">
+        <div class="brow"><div class="blbl" style="font-weight:700;color:var(--text)">좁게 본 소통 불만</div><div class="btrack"><div class="bfill" style="width:86%;background:#22c55e"></div></div><div class="bnum">0.42→0.30</div><div class="brate low">−28.6%</div></div>
+        <div class="brow"><div class="blbl" style="font-weight:700;color:var(--text)">넓게 본 소통 불만</div><div class="btrack"><div class="bfill" style="width:100%;background:#16a34a"></div></div><div class="bnum">1.38→0.92</div><div class="brate low">−33.3%</div></div>
+      </div>
+      <div class="insight">
+        <span class="insight-icon">📌</span>
+        <span>타겟 VOC는 포함 범위를 어떻게 잡느냐로 갈립니다. <b>좁게(명백한 소통 불만만)</b> 봐도 −28.6%, <b>넓게(경계가 모호한 불만까지)</b> 봐도 −33.3%로 비슷하게 줄었습니다. 어느 기준으로 세도 결론이 같아, 수치가 우연이 아님을 보여줍니다.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상세: 기능별 표 + 실제 VOC 예시 흡수 -->
+  <div class="card gap-top">
+    <div class="card-title">기능별 타겟 VOC율 상세 · 실제 불만 예시</div>
+    <div class="card-desc">같은 ‘얼룩’ 불만이라도 과정을 투명하게 전달하자 유입 자체가 감소 · 각 기능이 겨냥한 대표 VOC(익명화) 포함</div>
+    <table class="tbl">
+      <thead><tr><th>앱 기능 / 대표 VOC</th><th class="r">배포 전 ‰</th><th class="r">배포 후 ‰</th><th class="r">변화</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--text)">사전 고지 — 처리불가·지연 알림톡</b><br><span style="color:var(--text3)">“안 지워질 거면 배송 전에 미리 알려줬어야죠.”</span></td><td class="n">0.16</td><td class="n">0.08</td><td class="dn">−50.0%</td></tr>
+        <tr><td><b style="color:var(--text)">결과 안내 — 성공·처리불가 결과 문구</b><br><span style="color:var(--text3)">“앱에는 ‘완료’라고 떠 있는데, 얼룩 제거가 된 건지 안 된 건지 모르겠어요.”</span></td><td class="n">0.71</td><td class="n">0.48</td><td class="dn">−32.4%</td></tr>
+        <tr><td><b style="color:var(--text)">Before/After — 작업 증빙</b><br><span style="color:var(--text3)">“세탁한 거 맞나요? 시도조차 안 한 것 같은데요.” / “앱에 뜬 게 입고 사진인가요, 완료 사진인가요?”</span></td><td class="n">0.74</td><td class="n">0.50</td><td class="dn">−32.4%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight">
+      <span class="insight-icon">💡</span>
+      <span>불만의 표면은 ‘얼룩’이지만 근본 원인은 <strong>과정 정보의 부재</strong>였습니다. 도입한 앱 3개 기능이 각 유형을 정확히 겨냥해, <strong>유형별로 32~50% 감소</strong>했습니다. 특히 사전 고지(알림톡) 효과가 가장 컸습니다.</span>
+    </div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title">해석과 한계</div>
+    <div class="section-desc">보고서를 읽을 때 함께 감안할 점</div>
+  </div>
+
+  <div class="g3">
+    <div class="callout blue" style="padding:18px 20px;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:8px;">인과의 증명은 아닙니다</div>
+      동일 기간 ‘개입군 vs 비개입군’ 통제 비교가 아닌 시점 전후 비교입니다. 따라서 효과는 인과 확정이 아니라 <strong>일관된 정황 증거</strong>로 해석합니다.
+    </div>
+    <div class="callout yellow" style="padding:18px 20px;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:8px;">잔존 계절성 · 부분 가동</div>
+      주문량은 보정했으나 오염 난이도의 계절적 구성 차이는 완전히 통제하지 못했습니다. 또 일부 기능은 ‘추후 진행’ 단계로 <strong>전체가 가동된 것은 아닙니다.</strong>
+      <span style="display:block;margin-top:8px;color:#92400e;">다만 같은 기간 앱 비개입 영역(품질·손상)은 −21.8%에 그쳐, <strong>타겟 영역이 더 크게 개선</strong>됐습니다 — 계절성만으로는 설명되지 않는 신호입니다.</span>
+    </div>
+    <div class="callout" style="padding:18px 20px;background:#f5f3ff;border-left:3px solid var(--purple);color:#5b21b6;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:8px;">분류 오차</div>
+      텍스트 규칙 기반 분류라 경계 사례 오차가 있습니다. 이를 감안해 <strong>좁게(−28.6%)·넓게(−33.3%) 두 기준</strong>으로 범위를 함께 제시했습니다.
+    </div>
+  </div>
+</div>
+
+<!-- S5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div class="section-title">결론 및 다음 단계</div>
+    <div class="section-desc">목표 달성 확인 · 후속 검증 방향</div>
+  </div>
+
+  <div class="callout green" style="padding:18px 22px;margin-bottom:16px;font-size:13px;line-height:1.7;">
+    주문량 보정 후 이번 과제가 겨냥한 <strong>타겟 VOC가 좁게 −28.6% / 넓게 −33.3% 감소</strong>해, 당초 목표(소통 관련 VOC −35%)에 근접했습니다.
+    특히 사전 고지(처리불가·지연 알림톡)가 겨냥한 불만은 −50.0%로 가장 크게 줄었습니다.
+    같은 기간 앱이 개입하지 않는 품질·손상 VOC는 −21.8%에 그쳐, 타겟 영역이 더 크게 개선된 점은 앱 개선의 기여를 시사합니다. 단, 인과 확정이 아닌 강한 정황입니다.
+  </div>
+
+  <div class="pgrid">
+    <div class="pcard feat">
+      <div class="phead"><div class="pbadge pn">즉시 실행</div><div class="ptitle">목표 달성 보고 및 효과 고정</div></div>
+      <div class="pbody">당초 목표 <b>소통 관련 VOC −35%</b> 대비, 좁게 −28.6% / 넓게 −33.3%로 목표에 근접.
+        사전 고지 효과(−50.0%)를 중심으로 과제의 효과를 정량적으로 입증했습니다.</div>
+      <div class="ptags"><div class="ptag"><b>목표 근접</b></div><div class="ptag">타겟 VOC −33.3%</div></div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p1">P1 긴급</div><div class="ptitle">풀 기능 가동 후 재측정</div></div>
+      <div class="pbody">얼룩 발견 알림톡 등 ‘추후 진행’ 기능까지 모두 켜진 뒤 <b>6~7월 데이터</b>로 동일한 주문량 보정 분석을 재실행해 추세 지속 여부를 확인합니다.</div>
+      <div class="ptags"><div class="ptag">동봉 엑셀 ‘주문량보정’ 시트 재활용</div></div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p2">P2</div><div class="ptitle">분류 기준 합의</div></div>
+      <div class="pbody">‘의구심’ 유형(품질 불만 ↔ 소통성 경계)을 타겟에 포함할지 PM·CX가 합의. 동봉 엑셀의 건별 분류로 직접 검증 가능합니다.</div>
+      <div class="ptags"><div class="ptag">좁게 / 넓게 기준 확정</div></div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><div class="pbadge p2">P2</div><div class="ptitle">잔존 품질 VOC 연계</div></div>
+      <div class="pbody">앱 영역 밖의 <b>품질·손상 VOC</b>는 팩토리 공정 TF와 데이터를 공유해 근본 원인 개선과 연계합니다.</div>
+      <div class="ptags"><div class="ptag">품질·손상 −21.8% (앱 외 요인)</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div><b style="color:var(--text2)">데이터 출처</b> · 얼룩 VOC 추출 2건(전 1,418 / 후 1,016) · 일별 주문량 로그(01.01–05.31)</div>
+  <div>지표 정의 · ‰ = 주문 1,000건당 VOC · 모든 비교는 주문량 보정 기준</div>
+</footer>
+
+<script>
+Chart.defaults.color='#9ca3af';
+Chart.defaults.font.family="'Noto Sans KR', sans-serif";
+Chart.defaults.font.size=11;
+const G='rgba(229,231,235,1)';
+const TT={backgroundColor:'#1f2937',borderColor:'#374151',borderWidth:1,titleColor:'#f9fafb',bodyColor:'#d1d5db',padding:10,cornerRadius:6};
+
+const trend=[
+ ["12/29",0.92],["1/05",1.01],["1/12",1.42],["1/19",1.40],["1/26",1.37],
+ ["2/02",1.70],["2/09",2.20],["2/16",0.73],["2/23",1.67],["3/02",0.83],
+ ["4/06",0.31],["4/13",0.80],["4/20",0.87],["4/27",1.20],["5/04",1.32],
+ ["5/11",0.92],["5/18",0.96],["5/25",0.64]];
+
+const pbg={id:'pbg',beforeDraw(c){
+  const{ctx,chartArea,scales}=c; if(!chartArea||!scales.x)return;
+  try{
+    const sp=(scales.x.getPixelForValue(9)+scales.x.getPixelForValue(10))/2;
+    const{top,bottom,right}=chartArea;
+    ctx.save();
+    ctx.fillStyle='rgba(240,253,244,0.7)';
+    ctx.fillRect(sp,top,right-sp,bottom-top);
+    ctx.strokeStyle='rgba(22,163,74,0.4)';
+    ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(sp,top);ctx.lineTo(sp,bottom);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(22,163,74,0.65)';
+    ctx.font='10px "Noto Sans KR",sans-serif';
+    ctx.fillText('배포 04/10',sp+5,top+13);
+    ctx.restore();
+  }catch(e){}
+}};
+
+new Chart(document.getElementById('trendChart'),{
+  type:'line',
+  data:{labels:trend.map(r=>r[0]),datasets:[
+    {label:'타겟 VOC율',data:trend.map(r=>r[1]),borderColor:'#16a34a',backgroundColor:'#16a34a',tension:.3,pointRadius:2.5,pointStyle:'rectRot',borderWidth:2}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>c.dataset.label+' '+c.raw.toFixed(2)+'‰'}}},
+    scales:{x:{grid:{color:G},ticks:{maxTicksLimit:10,maxRotation:45}},y:{min:0,grid:{color:G},ticks:{callback:v=>v+'‰'}}}},
+  plugins:[pbg]
+});
+
+new Chart(document.getElementById('funcChart'),{
+  type:'bar',
+  data:{labels:['사전 고지 (처리불가·지연)','결과 안내','Before/After 증빙'],
+    datasets:[{label:'VOC율 변화',data:[-50.0,-32.4,-32.4],
+      backgroundColor:'rgba(22,163,74,0.65)',borderColor:'#16a34a',borderWidth:1,borderRadius:3}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>c.raw+'%'}}},
+    scales:{x:{min:-55,max:0,grid:{color:G},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>
