@@ -829,31 +829,58 @@ function calcNoSubCost(livingKg) {
 
 function calcPlanCost(plan, livingKg) {
   const dedMap = DEDUCTION[plan.name] || {};
-  let ticketsNeeded = 0, overageCost = 0;
+
+  let overageCost = 0;
+  let ticketsNeededTotal = 0;
+  const deductible = [];
+
   ALL_ITEMS.forEach(item => {
     const cnt = counts[item]; if (!cnt) return;
     const need = dedMap[item];
     const p = PRICES[item]; if (!p) return;
     const up = isPrem[item] && p.sp ? p.sp : p.s;
-    if (need === null || need === undefined) overageCost += up * cnt;
-    else ticketsNeeded += need * cnt;
+    if (need === null || need === undefined) {
+      overageCost += up * cnt;
+    } else {
+      ticketsNeededTotal += need * cnt;
+      for (let i = 0; i < cnt; i++) {
+        deductible.push({ item, need, unitPrice: up });
+      }
+    }
   });
+
+  deductible.sort((a, b) => b.unitPrice - a.unitPrice);
+
+  let rem = plan.ticket;
   let ticketOverage = 0;
-  if (ticketsNeeded > plan.ticket) {
-    let rem = plan.ticket;
-    ALL_ITEMS.forEach(item => {
-      const cnt = counts[item]; if (!cnt) return;
-      const need = dedMap[item]; if (!need) return;
-      const p = PRICES[item];
-      const up = isPrem[item] && p.sp ? p.sp : p.s;
-      if (rem >= need * cnt) rem -= need * cnt;
-      else { ticketOverage += up * cnt; rem = 0; }
-    });
+  deductible.forEach(piece => {
+    if (rem >= piece.need) {
+      rem -= piece.need;
+    } else {
+      ticketOverage += piece.unitPrice;
+    }
+  });
+
+  let livingExtra = 0;
+  if (livingKg > 0) {
+    if (plan.living > 0) {
+      livingExtra = calcLivingCost(Math.max(0, livingKg - plan.living), true);
+    } else if (plan.name === '런드리고X') {
+      const livingTickets = Math.ceil(livingKg / 4) * 2;
+      let livingRem = rem;
+      if (livingRem >= livingTickets) {
+        livingExtra = 0;
+      } else {
+        livingExtra = calcLivingCost(livingKg, true);
+      }
+    } else {
+      livingExtra = calcLivingCost(livingKg, true);
+    }
   }
-  const livingExtra = calcLivingCost(Math.max(0, livingKg - plan.living), true);
+
   const deliveryCost = Math.max(0, deliveryCount - plan.delivery) * 3800;
   const total = plan.price + overageCost + ticketOverage + livingExtra + deliveryCost;
-  return { total, overageCost, ticketOverage, livingExtra, deliveryCost, ticketsNeeded };
+  return { total, overageCost, ticketOverage, livingExtra, deliveryCost, ticketsNeeded: ticketsNeededTotal };
 }
 
 function runRecommend() {
