@@ -249,31 +249,6 @@
     text-align: center;
     color: var(--text);
   }
-  .prem-row {
-    display: none;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--border);
-    align-items: center;
-    gap: 6px;
-  }
-  .item-card.selected .prem-row { display: flex; }
-  .prem-label {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 11px; color: var(--text-sub); cursor: pointer;
-    flex: 1;
-  }
-  .prem-label input { cursor: pointer; accent-color: var(--warning); }
-  .prem-badge {
-    display: none;
-    font-size: 10px;
-    padding: 1px 7px;
-    background: var(--warning-bg);
-    color: var(--warning);
-    border-radius: 20px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
 
   /* Living section */
   .living-input-row {
@@ -724,9 +699,8 @@ const CATEGORIES = {
 const ALL_ITEMS = Object.values(CATEGORIES).flat();
 
 let counts = {};
-let isPrem = {};
 let deliveryCount = 2;
-ALL_ITEMS.forEach(i => { counts[i] = 0; isPrem[i] = false; });
+ALL_ITEMS.forEach(i => { counts[i] = 0; });
 
 function toggleSection(cat) {
   const sec = document.getElementById('sec-' + cat);
@@ -737,7 +711,6 @@ function buildGrid(cat, items) {
   const el = document.getElementById('grid-' + cat);
   el.innerHTML = '';
   items.forEach(item => {
-    const hasPremOpt = PRICES[item] && PRICES[item].p !== null;
     const safeId = item.replace(/[^a-zA-Z0-9가-힣]/g, '_');
     const card = document.createElement('div');
     card.className = 'item-card';
@@ -751,13 +724,6 @@ function buildGrid(cat, items) {
           <button class="counter-btn" onclick="adj('${item}',1)">+</button>
         </div>
       </div>
-      ${hasPremOpt ? `<div class="prem-row" id="premrow_${safeId}">
-        <label class="prem-label">
-          <input type="checkbox" id="premcb_${safeId}" onchange="onPremChange('${item}')" />
-          프리미엄 세탁
-        </label>
-        <span class="prem-badge" id="prembadge_${safeId}">프리미엄</span>
-      </div>` : ''}
     `;
     el.appendChild(card);
   });
@@ -768,21 +734,7 @@ function adj(item, delta) {
   const safeId = item.replace(/[^a-zA-Z0-9가-힣]/g, '_');
   document.getElementById('val_' + safeId).textContent = counts[item];
   document.getElementById('card_' + safeId).className = 'item-card' + (counts[item] > 0 ? ' selected' : '');
-  if (counts[item] === 0) {
-    const cb = document.getElementById('premcb_' + safeId);
-    if (cb) { cb.checked = false; isPrem[item] = false; }
-    const badge = document.getElementById('prembadge_' + safeId);
-    if (badge) badge.style.display = 'none';
-  }
   updateSectionCount(item);
-}
-
-function onPremChange(item) {
-  const safeId = item.replace(/[^a-zA-Z0-9가-힣]/g, '_');
-  const cb = document.getElementById('premcb_' + safeId);
-  isPrem[item] = cb ? cb.checked : false;
-  const badge = document.getElementById('prembadge_' + safeId);
-  if (badge) badge.style.display = isPrem[item] ? 'inline-block' : 'none';
 }
 
 function updateSectionCount(item) {
@@ -822,7 +774,7 @@ function calcNoSubCost(livingKg) {
   ALL_ITEMS.forEach(item => {
     const cnt = counts[item]; if (!cnt) return;
     const p = PRICES[item]; if (!p) return;
-    cost += (isPrem[item] && p.p ? p.p : p.n) * cnt;
+    cost += p.n * cnt;
   });
   return cost + calcLivingCost(livingKg, false) + deliveryCount * 7600;
 }
@@ -838,7 +790,7 @@ function calcPlanCost(plan, livingKg) {
     const cnt = counts[item]; if (!cnt) return;
     const need = dedMap[item];
     const p = PRICES[item]; if (!p) return;
-    const up = isPrem[item] && p.sp ? p.sp : p.s;
+    const up = p.s;
     if (need === null || need === undefined) {
       overageCost += up * cnt;
     } else {
