@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>런드리고 고객센터 프로토타입</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<!-- LaundryGo Design System — design tokens (colors, type, radius, spacing, shadow) -->
+<style>
+/* LaundryGo Design System — tokens (fonts via Pretendard CDN) */
+/* ==========================================================================
+   LaundryGo Design System (LDS) — Colors & Type
+   Color Guide ver 2.1.0 · Typography ver 2.0.0
+   KR: Pretendard · EN display: Basis Grotesque (substituted — see README)
+   ========================================================================== */
+
+/* Brand display face — 런드리고딕 (LaundryGothic). Used for the wordmark
+   and occasional brand-voice numerals. */
+
+:root {
+  /* === Brand / Main — Green ============================================= */
+  /* The signature LaundryGo green. Action + brand-point color. */
+  --green-standard: #0AC290;      /* main brand (iOS / web canonical)   */
+  --green-standard-aos: #51CA97;  /* Android tint                       */
+  --green-01: #CEF3E9;            /* light tint — backgrounds, chips     */
+  --green-02: #07926C;            /* dark — pressed / on-light text      */
+  --green-pressed: #07926C;
+
+  /* === Secondary — Orange (witty accent) =============================== */
+  --orange-standard: #FF4F17;
+  --orange-standard-aos: #EC5F2F;
+  --orange-01: #FFE5DC;           /* light tint                          */
+
+  /* === Secondary — Blue ("water" identity) ============================ */
+  --blue-standard: #189FFB;
+  --blue-standard-aos: #5EA3F3;
+  --blue-01: #CDEAFE;
+
+  /* === InfoBlue (links / informational, all platforms) ================ */
+  --info-blue: #067DFD;
+  --info-blue-01: #CBE8FF;
+
+  /* === Gray Scale (neutral UI) ========================================= */
+  --black: #212121;
+  --gray-800: #666666;
+  --gray-700: #939393;
+  --gray-500: #C9C9C9;
+  --gray-400: #D9D9D9;
+  --gray-300: #EFEFEF;
+  --gray-200: #F5F5F5;
+  --gray-100: #FAFAFA;
+  --white: #FFFFFF;
+
+  /* === Cool Gray Scale (cool neutral, visual hierarchy) =============== */
+  --cool-gray-800: #4C5059;
+  --cool-gray-700: #646D7A;
+  --cool-gray-600: #8F97A3;
+  --cool-gray-500: #B6BEC9;
+  --cool-gray-400: #D3D8DF;
+  --cool-gray-300: #E5E8ED;
+  --cool-gray-200: #EDF0F2;
+  --cool-gray-100: #F4F5F7;
+
+  /* === Semantic =======================================================  */
+  --fg-1: var(--black);        /* primary text / titles                  */
+  --fg-2: var(--gray-700);     /* secondary text / descriptions          */
+  --fg-3: var(--gray-500);     /* tertiary / disabled text               */
+  --fg-on-color: var(--white); /* text on brand fills                    */
+  --action: var(--green-standard);
+  --link: var(--info-blue);
+  --price: var(--green-standard);  /* discount %, prices                 */
+  --bg-base: var(--white);
+  --bg-subtle: var(--gray-200);    /* card backgrounds, sections         */
+  --bg-field: var(--gray-100);
+  --border: var(--gray-300);
+  --border-strong: var(--gray-400);
+  --divider: var(--gray-200);
+
+  /* === Type families ================================================== */
+  --font-kr: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --font-en: "Pretendard", system-ui, sans-serif; /* EN/Latin also Pretendard */
+  --font-brand: "LaundryGothic", "Pretendard", sans-serif;
+  --font-base: var(--font-kr);
+
+  /* === Type scale (size / line-height) — see Typography Guide ======== */
+  --h1-size: 32px;  --h1-lh: 44px;   /* 타이틀1                          */
+  --h2-size: 28px;  --h2-lh: 40px;   /* 타이틀2 (회원가입)               */
+  --h3-size: 24px;  --h3-lh: 32px;   /* 타이틀3                          */
+  --h4-size: 20px;  --h4-lh: 28px;   /* 타이틀4 (basic)                  */
+  --h5-size: 18px;  --h5-lh: 26px;   /* Appbar title · XLarge button     */
+  --body1-size: 16px; --body1-lh: 24px;  /* 본문 권장                    */
+  --body2-size: 14px; --body2-lh: 22px;  /* 본문 최소                    */
+  --body3-size: 15px; --body3-lh: 24px;  /* 서브 버튼                    */
+  --label-size: 13px; --label-lh: 20px;  /* Label                        */
+  --caption1-size: 12px; --caption1-lh: 18px; /* 주석/유의 · Small btn   */
+  --caption2-size: 10px; --caption2-lh: 16px; /* Tiny badge               */
+
+  /* === Weights ======================================================== */
+  --w-regular: 400;   /* @kind font */
+  --w-medium: 500;    /* @kind font */
+  --w-semibold: 600;  /* @kind font */
+  --w-bold: 700;      /* @kind font */
+  --w-extrabold: 800; /* @kind font */
+
+  /* === Radius (corner system) ========================================= */
+  --r-button: 16px;   /* primary buttons                                  */
+  --r-card: 20px;     /* cards / sheets                                   */
+  --r-card-sm: 12px;  /* inner cards, list items                          */
+  --r-chip: 8px;      /* badges / chips                                   */
+  --r-field: 12px;    /* inputs                                           */
+  --r-pill: 999px;    /* full-round (CTA pill, toggles)                   */
+
+  /* === Spacing (4px base grid) ======================================== */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --gutter: 20px;  /* mobile screen side padding                          */
+
+  /* === Elevation / Shadow ============================================= */
+  --shadow-card: 0 2px 12px rgba(33,33,33,0.06);
+  --shadow-float: 0 4px 16px rgba(33,33,33,0.10);
+  --shadow-cta: 0 -4px 16px rgba(33,33,33,0.06); /* bottom-fixed CTA      */
+  --shadow-sheet: 0 -8px 24px rgba(33,33,33,0.12);
+}
+
+/* ----- Semantic type classes ------------------------------------------- */
+.lds-h1 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--h1-size); line-height: var(--h1-lh); color: var(--fg-1); letter-spacing: -0.02em; }
+.lds-h2 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--h2-size); line-height: var(--h2-lh); color: var(--fg-1); letter-spacing: -0.02em; }
+.lds-h3 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--h3-size); line-height: var(--h3-lh); color: var(--fg-1); letter-spacing: -0.01em; }
+.lds-h4 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--h4-size); line-height: var(--h4-lh); color: var(--fg-1); letter-spacing: -0.01em; }
+.lds-h5 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--h5-size); line-height: var(--h5-lh); color: var(--fg-1); }
+.lds-body1 { font-family: var(--font-base); font-weight: var(--w-medium); font-size: var(--body1-size); line-height: var(--body1-lh); color: var(--fg-1); }
+.lds-body2 { font-family: var(--font-base); font-weight: var(--w-regular); font-size: var(--body2-size); line-height: var(--body2-lh); color: var(--fg-2); }
+.lds-body3 { font-family: var(--font-base); font-weight: var(--w-semibold); font-size: var(--body3-size); line-height: var(--body3-lh); color: var(--fg-1); }
+.lds-label { font-family: var(--font-base); font-weight: var(--w-medium); font-size: var(--label-size); line-height: var(--label-lh); color: var(--fg-2); }
+.lds-caption1 { font-family: var(--font-base); font-weight: var(--w-medium); font-size: var(--caption1-size); line-height: var(--caption1-lh); color: var(--fg-2); }
+.lds-caption2 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--caption2-size); line-height: var(--caption2-lh); color: var(--fg-2); }
+</style>
+<style>
+  :root{
+    /* LaundryGo Design System (LDS) tokens applied to the CS prototype */
+    --green:var(--green-standard, #0AC290); --green-soft:var(--green-01, #CEF3E9); --green-press:var(--green-02, #07926C);
+    --ink:var(--black, #212121); --sub:var(--cool-gray-600, #8F97A3); --tert:var(--cool-gray-500, #B6BEC9);
+    --line:var(--gray-300, #EFEFEF); --card:#FFFFFF; --screen:#FFFFFF; --backdrop:var(--cool-gray-300, #E5E8ED);
+    --r1:var(--orange-standard, #FF4F17); --r1b:var(--orange-01, #FFE5DC);   /* 1:1 → 오렌지 */
+    --r2:var(--green-02, #07926C); --r2b:var(--green-01, #CEF3E9);   /* 기능 → 그린 */
+    --r3:var(--info-blue, #067DFD); --r3b:var(--blue-01, #CDEAFE);   /* 안심케어/재분류 → 블루(세탁·물) */
+    --r4:var(--cool-gray-700, #646D7A); --r4b:var(--cool-gray-100, #F4F5F7);   /* 챗봇 → 쿨그레이 */
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; height:100%}
+  body{
+    font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    background:var(--backdrop); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px 12px;
+  }
+  .wrap{display:flex; flex-direction:column; align-items:center; gap:14px}
+  /* phone */
+  .phone{
+    width:380px; max-width:94vw; height:780px; max-height:88vh; background:var(--screen);
+    border-radius:46px; box-shadow:0 24px 70px rgba(33,33,33,.28), 0 2px 8px rgba(33,33,33,.06);
+    position:relative; overflow:hidden; border:1px solid rgba(0,0,0,.04);
+    display:flex; flex-direction:column;
+  }
+  .statusbar{height:50px; display:flex; align-items:center; justify-content:space-between; padding:0 30px 0 34px; font-size:15px; font-weight:600; flex:0 0 auto}
+  .statusbar .ic{display:flex; gap:6px; align-items:center}
+  .statusbar svg{display:block}
+  .nav{height:56px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; position:relative; border-bottom:1px solid var(--line)}
+  .nav .title{font-size:18px; font-weight:600; letter-spacing:-.01em}
+  .nav .back{position:absolute; left:14px; top:0; height:56px; width:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink); opacity:0; pointer-events:none; transition:opacity .15s}
+  .nav.has-back .back{opacity:1; pointer-events:auto}
+  .body{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .pad{padding:24px 22px 28px}
+  .h1{font-size:24px; font-weight:700; letter-spacing:-.01em; margin:0 0 8px; line-height:1.33}
+  .lede{font-size:14px; color:var(--sub); margin:0 0 22px; line-height:1.5}
+  /* category rows */
+  .row{display:flex; align-items:center; gap:14px; padding:15px 2px; cursor:pointer; border-bottom:1px solid var(--line); transition:background .12s; border-radius:12px}
+  .row:active{background:#F7F8FA}
+  .tile{flex:0 0 auto; width:44px; height:44px; border-radius:12px; background:var(--green-soft); display:flex; align-items:center; justify-content:center}
+  .tile svg{width:23px; height:23px; stroke:var(--green); fill:none; stroke-width:1.7}
+  .tile.tile-c{background:var(--gray-200)}
+  .tile.tile-c svg{width:34px; height:34px; stroke:none; fill:none; stroke-width:0}
+  .row .meta{flex:1 1 auto; min-width:0}
+  .row .nm{font-size:16px; font-weight:600; letter-spacing:-.2px; line-height:1.34; word-break:keep-all}
+  .row .ex{font-size:12px; color:var(--sub); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .chev{flex:0 0 auto; color:var(--tert)}
+  /* sub items */
+  .item{display:flex; align-items:center; gap:12px; padding:16px 4px; cursor:pointer; border-bottom:1px solid var(--line)}
+  .item:active{background:#F7F8FA}
+  .item .nm{font-size:15px; font-weight:600; letter-spacing:-.2px; line-height:1.4; word-break:keep-all}
+  .item .nm .cond{font-weight:500; color:var(--tert); font-size:10px; margin-left:5px; letter-spacing:-.2px}
+  .item .ds{font-size:12px; color:var(--sub); margin-top:4px; line-height:1.45}
+  .item .right{margin-left:auto; display:flex; align-items:center; gap:9px}
+  /* etc button — emphasized chatbot action */
+  .etc{margin-top:24px; width:100%; background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:background .12s; text-align:left}
+  .etc:active{background:#F7F8FA}
+  /* 중분류 페이지: 챗봇 버튼을 하단 고정 */
+  .sub-pad{display:flex; flex-direction:column; min-height:100%}
+  .sub-pad>.etc{margin-top:auto; position:sticky; bottom:0}
+  .etc .etc-ic{width:18px; height:18px; stroke:var(--tert); fill:none; stroke-width:1.8; flex:0 0 auto}
+  .etc-txt{display:flex; flex-direction:column; gap:3px; min-width:0; flex:1}
+  .etc .nm{font-size:14px; font-weight:600; color:var(--ink); letter-spacing:-.2px}
+  .etc .ex{font-size:12px; font-weight:500; color:var(--sub); line-height:1.5; letter-spacing:-.2px}
+  .etc-right{display:flex; align-items:center; gap:6px; flex:0 0 auto}
+  /* badges (PM mode) */
+  .badge{display:none; font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; white-space:nowrap}
+  .cnt{display:none; font-size:12px; color:var(--tert); font-weight:600; margin-left:auto}
+  .b-1\.1{background:var(--r1b); color:var(--r1)}
+  .b-기능{background:var(--r2b); color:var(--r2)}
+  .b-안심케어{background:var(--r3b); color:var(--r3)}
+  .b-품목재분류{background:var(--r3b); color:var(--r3)}
+  .b-챗봇{background:var(--r4b); color:var(--r4)}
+  /* priority badges (CS 우선순위) — 사용자단 비노출 */
+  .pri{display:none; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; white-space:nowrap; letter-spacing:-.2px}
+  .pri.urgent{background:#FCE3DE; color:#E5341B}
+  .pri.high{background:#FFE8C9; color:#C2700A}
+  .pri.normal{background:#EEF0F2; color:#8A8F98}
+  /* destination screens */
+  .dest{padding:24px 22px}
+  .kicker{font-size:12px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; margin:0 0 10px}
+  .kmethod{display:none}
+  .kicker.pm-only{display:none}
+  /* segmented tabs (청구 내역) */
+  .tabs{display:flex; gap:6px; background:var(--cool-gray-100); border-radius:12px; padding:4px; margin:14px 0 14px}
+  .tabs .tab{flex:1; padding:9px; border:none; background:none; border-radius:8px; font-size:13px; font-weight:700; color:var(--sub); cursor:pointer; font-family:inherit; letter-spacing:-.2px}
+  .tabs .tab.active{background:#fff; color:var(--ink); box-shadow:var(--shadow-card)}
+  .care-note{font-size:12px; color:#4A4F57; line-height:1.6; margin-top:12px}
+  .care-note .ttl{font-weight:800; color:var(--ink); display:block; margin-bottom:4px}
+  .care-note .rule{display:block; font-size:12px; color:var(--sub); margin-top:8px; line-height:1.5}
+  .pill-ok{display:inline-block; font-size:12px; font-weight:800; color:var(--green); background:var(--green-soft); border-radius:8px; padding:2px 8px; margin-bottom:8px}
+  .pill-no{display:inline-block; font-size:12px; font-weight:800; color:#C0392B; background:#FCEBEA; border-radius:8px; padding:2px 8px; margin-bottom:8px}
+  .bcnt{font-weight:600; color:var(--tert); font-size:12px; margin-left:3px}
+  /* 상세 내역 (맡긴 세탁물별 처리) */
+  .dlist{border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:6px}
+  .ditem{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 13px; border-bottom:1px solid var(--line)}
+  .ditem:last-child{border-bottom:none}
+  .di-nm{font-size:13px; font-weight:700; color:var(--ink)}
+  .di-mode{display:flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:flex-end; text-align:right}
+  .m-ticket{font-size:12px; font-weight:800; color:var(--green); background:var(--green-soft); border-radius:8px; padding:3px 9px}
+  .m-charged{font-size:12px; font-weight:700; color:#4A4F57}
+  .chip-tk{font-size:12px; font-weight:800; color:var(--green); background:var(--green-soft); border-radius:8px; padding:3px 9px}
+  .chip-cg{font-size:12px; font-weight:800; color:#5A6069; background:#EEF0F2; border-radius:8px; padding:3px 9px}
+  .di-val{font-size:13px; font-weight:700; color:var(--ink)}
+  .m-cp{font-size:12px; font-weight:700; color:var(--green); background:var(--green-soft); border-radius:8px; padding:2px 7px}
+  /* 세탁권 차감 안내 표 */
+  .ttable{border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:6px}
+  .ttable .tr{display:flex; border-bottom:1px solid var(--line)}
+  .ttable .tr:last-child{border-bottom:none}
+  .ttable .th{flex:0 0 110px; background:#FAFBFC; padding:10px 12px; font-size:12px; font-weight:700; color:var(--sub)}
+  .ttable .td{flex:1; padding:10px 12px; font-size:12px; color:var(--ink); font-weight:600; line-height:1.45}
+  .ttable .td.warn{color:#C0392B}
+  /* 세탁권 차감 안내 — 컬럼형 표 */
+  .ttable3{border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:6px}
+  .ttable3 .t3h, .ttable3 .t3v{display:flex}
+  .ttable3 .t3h{background:#FAFBFC; border-bottom:1px solid var(--line)}
+  .ttable3 .t3h span, .ttable3 .t3v span{flex:1; text-align:center; padding:10px 8px}
+  .ttable3 .t3h span:not(:last-child), .ttable3 .t3v span:not(:last-child){border-right:1px solid var(--line)}
+  .ttable3 .t3h span{font-size:12px; font-weight:700; color:var(--sub)}
+  .ttable3 .t3v span{font-size:14px; font-weight:800; color:var(--ink)}
+  .t3note{margin-top:10px; padding:10px 13px; border-radius:12px; background:#FCF1F0; color:#C0392B; font-size:12px; font-weight:600; line-height:1.55}
+  .reason-box{background:#FCF1F0; border:1px solid #F4D9D6; border-radius:12px; padding:13px 15px; margin-top:10px; font-size:12px; color:#4A4F57; line-height:1.65}
+  .reason-box .rb-ttl{display:block; font-weight:800; color:#C0392B; font-size:12px; margin-bottom:5px}
+  /* 해지 가능 조건 */
+  .cond-list{display:flex; flex-direction:column; gap:8px; margin-top:6px}
+  .cond-item{display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:12px; padding:11px 13px; font-size:13px; font-weight:600; color:#3E434A}
+  .cond-item .ci-ic{width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:0 0 auto; color:#fff}
+  .cond-item.ok .ci-ic{background:var(--green)}
+  .cond-item.no .ci-ic{background:#C0392B}
+  .cond-item .ci-tag{margin-left:auto; font-size:12px; font-weight:800}
+  .cond-item.ok .ci-tag{color:var(--green)}
+  .cond-item.no .ci-tag{color:#C0392B}
+  .verdict{display:flex; gap:9px; border-radius:12px; padding:13px 15px; margin-top:14px; font-size:12px; line-height:1.6; font-weight:600}
+  .verdict .v-ic{flex:0 0 auto; font-size:15px}
+  .verdict.ok{background:var(--green-soft); color:#1A7A52}
+  .verdict.no{background:#FCF1F0; color:#C0392B}
+  .k-1\.1{color:var(--r1)} .k-기능{color:var(--r2)} .k-안심케어{color:var(--r3)} .k-품목재분류{color:var(--r3)} .k-챗봇{color:var(--r4)}
+  .dest h2{font-size:20px; font-weight:700; letter-spacing:-.01em; margin:0 0 10px; line-height:1.4}
+  .dest p.guide{font-size:14px; color:#4A4F57; line-height:1.6; margin:0 0 4px}
+  .infobox{background:var(--gray-200); border-radius:16px; padding:18px; margin:18px 0; font-size:14px; color:var(--cool-gray-800); line-height:1.6}
+  .infobox b{color:var(--ink)}
+  .cta{display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:16px; border-radius:16px; border:none; font-size:16px; font-weight:700; cursor:pointer; margin-top:6px; letter-spacing:-.2px}
+  .cta.primary{background:var(--green); color:#fff}
+  .cta.primary:active{background:var(--green-press)}
+  .cta.ghost{background:#fff; color:var(--ink); border:1.5px solid #DDE0E4}
+  .cta.ghost:active{background:#F6F7F9}
+  /* resolve check (기능 답변 only) — de-emphasized; 아니요는 1:1로 가는 경로라 가장 약하게 */
+  .resolve{margin-top:22px; padding-top:14px; border-top:1px solid var(--line); display:flex; align-items:center; flex-wrap:wrap; gap:8px}
+  .resolve .q{font-size:12px; font-weight:600; color:var(--sub); text-align:left; margin:0 8px 0 0; letter-spacing:-.2px}
+  .resolve .btns{display:flex; gap:6px; align-items:center; margin-left:auto}
+  .resolve button{padding:7px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; letter-spacing:-.2px; color:#5A6069}
+  .resolve button:active{background:#F6F7F9}
+  .resolve .yes{color:#4A4F57}
+  .resolve .no{border:none; background:none; padding:7px 4px; color:var(--tert); font-weight:500; text-decoration:underline; text-underline-offset:2px}
+  .resolve .no:active{background:none; color:var(--sub)}
+  .resolve .no.active{color:#4A4F57; font-weight:700}
+  .inquiry-cta{margin-top:14px}
+  .inquiry-cta .iq-msg{font-size:12px; color:var(--sub); margin:0 2px 10px; line-height:1.55}
+  .iq-textlink{color:var(--green); font-weight:700; text-decoration:underline; text-underline-offset:2px; cursor:pointer}
+  .iq-btn{display:inline-flex; align-items:center; gap:5px; background:#fff; border:1px solid #DDE0E4; color:#4A4F57; border-radius:8px; padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; letter-spacing:-.2px}
+  .iq-btn:active{background:#F6F7F9}
+  /* pickup records (1:1) */
+  .rec{border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:12px; cursor:pointer}
+  .rec:active{background:#F7F8FA}
+  .rec.sel{border-color:var(--green); background:var(--green-soft)}
+  .rec .d{font-size:14px; font-weight:800}
+  .rec .l{display:flex; gap:8px; font-size:12px; color:var(--sub); margin-top:6px}
+  .rec .l span:first-child{color:var(--tert); min-width:64px}
+  textarea{width:100%; min-height:120px; border:1px solid var(--line); border-radius:12px; padding:14px; font-size:14px; font-family:inherit; resize:none; margin-top:6px}
+  textarea:focus{outline:none; border-color:var(--green)}
+  .label{font-size:13px; font-weight:800; margin:18px 0 8px}
+  .label .opt{font-weight:600; color:var(--tert); font-size:12px; margin-left:4px}
+  /* compact selected record + form fields (1:1) */
+  .rec-mini{display:flex; align-items:center; gap:8px; flex-wrap:wrap; border:1px solid var(--line); background:#FAFBFC; border-radius:12px; padding:9px 12px; margin-top:2px}
+  .rec-mini .rm-tag{font-size:10px; font-weight:800; color:var(--green); background:var(--green-soft); border-radius:8px; padding:2px 7px; letter-spacing:-.2px}
+  .rec-mini .rm-d{font-size:12px; font-weight:800; color:var(--ink)}
+  .rec-mini .rm-svc{font-size:12px; color:var(--sub)}
+  .rm-change{margin-left:auto; font-size:12px; font-weight:700; color:var(--green); background:none; border:none; cursor:pointer; font-family:inherit; text-decoration:underline; text-underline-offset:2px; padding:2px}
+  .tinput{width:100%; border:1px solid var(--line); border-radius:12px; padding:13px 14px; font-size:14px; font-family:inherit; margin-top:6px}
+  .tinput:focus{outline:none; border-color:var(--green)}
+  .attach{display:flex; align-items:center; justify-content:center; gap:7px; width:100%; border:1.5px dashed #CFD4DA; background:#fff; border-radius:12px; padding:13px; font-size:13px; font-weight:700; color:#5A6069; cursor:pointer; font-family:inherit; margin-top:6px}
+  .attach:active{background:#F7F8FA}
+  .attach svg{width:17px; height:17px; stroke:#7A828C; fill:none; stroke-width:1.8}
+  .attach-list{display:flex; flex-direction:column; gap:7px}
+  .attach-list:not(:empty){margin-top:8px}
+  .att-item{display:flex; align-items:center; gap:9px; border:1px solid var(--line); border-radius:12px; padding:8px 11px; font-size:12px}
+  .att-item .ai-ic{width:30px; height:30px; border-radius:8px; background:var(--green-soft); display:flex; align-items:center; justify-content:center; font-size:14px; flex:0 0 auto}
+  .att-item .ai-nm{font-weight:700; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .att-item .ai-sz{color:var(--tert); font-size:12px; margin-left:2px; flex:0 0 auto}
+  .att-item .ai-x{margin-left:auto; color:var(--tert); background:none; border:none; cursor:pointer; font-size:16px; line-height:1; padding:2px 4px; flex:0 0 auto}
+  /* billing breakdown (요금·쿠폰·세탁권) */
+  .bill{border:1px solid var(--line); border-radius:16px; padding:4px 16px; margin-top:6px}
+  .bill .br{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:12px 0; font-size:14px; border-bottom:1px solid var(--line)}
+  .bill .br:last-child{border-bottom:none}
+  .bill .br .bl{color:#4A4F57}
+  .bill .br .bl .bsub{display:block; font-size:12px; color:var(--tert); margin-top:2px}
+  .bill .br .bv{font-weight:700; white-space:nowrap}
+  .bill .br .bv .bweak{font-weight:500; color:var(--tert); font-size:12px}
+  .bill .br.disc .bv{color:var(--green)}
+  .bill .br.total{padding:15px 0}
+  .bill .br.total .bl{font-weight:800; font-size:14px; color:var(--ink)}
+  .bill .br.total .bv{font-weight:800; font-size:16px}
+  .bill-note{font-size:12px; color:var(--sub); margin:9px 2px 0; line-height:1.5}
+  /* 세탁물 선택 (안심케어·품목재분류) */
+  .garment{display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:16px; padding:12px 14px; margin-bottom:10px; cursor:pointer}
+  .garment:active{background:#F7F8FA}
+  .garment .g-ic{width:38px; height:38px; border-radius:12px; background:var(--green-soft); display:flex; align-items:center; justify-content:center; font-size:18px; flex:0 0 auto}
+  .garment .g-nm{font-size:14px; font-weight:700; letter-spacing:-.2px}
+  .garment .g-tag{font-size:12px; color:var(--sub); margin-top:3px}
+  .garment .chev{margin-left:auto; color:var(--tert)}
+  /* 세탁물 멀티 선택 (1:1 분실·누락) */
+  .garment.gmulti{position:relative}
+  .garment.gmulti.on{border-color:var(--green); background:var(--green-soft)}
+  .garment .g-check{width:22px; height:22px; border-radius:7px; border:1.6px solid var(--gray-300); background:#fff; flex:0 0 auto; display:flex; align-items:center; justify-content:center}
+  .garment.gmulti.on .g-check{background:var(--green); border-color:var(--green)}
+  .garment.gmulti.on .g-check::after{content:""; width:10px; height:6px; border-left:2px solid #fff; border-bottom:2px solid #fff; transform:rotate(-45deg) translateY(-1px)}
+  .gsel-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:2px}
+  .gchip{font-size:12px; font-weight:600; color:var(--green-press); background:var(--green-soft); border-radius:8px; padding:5px 10px; letter-spacing:-.2px}
+  /* chat */
+  .chat{padding:18px 16px; display:flex; flex-direction:column; gap:10px}
+  .bubble{max-width:80%; padding:12px 14px; border-radius:16px; font-size:14px; line-height:1.5}
+  .bot{align-self:flex-start; background:#F1F2F4; border-bottom-left-radius:5px}
+  .quick{align-self:flex-start; display:flex; flex-wrap:wrap; gap:8px; margin-top:2px}
+  .quick button{background:#fff; border:1.4px solid #DDE0E4; color:var(--ink); border-radius:999px; padding:8px 13px; font-size:12px; font-weight:600; cursor:pointer}
+  .quick button:active{background:#F2F3F5}
+  .chatbar{flex:0 0 auto; border-top:1px solid var(--line); padding:10px 14px; display:flex; gap:8px; align-items:center}
+  .chatbar input{flex:1; border:1px solid var(--line); border-radius:999px; padding:11px 15px; font-size:14px; font-family:inherit}
+  .chatbar input:focus{outline:none; border-color:var(--green)}
+  /* chatbot header strip + escalate-to-agent */
+  .chathead{flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--line)}
+  .chathead .who{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; letter-spacing:-.2px}
+  .chathead .who .av{width:24px; height:24px; border-radius:50%; background:var(--r4b); display:flex; align-items:center; justify-content:center; font-size:13px}
+  .agent-btn{display:inline-flex; align-items:center; gap:5px; background:#fff; border:1px solid #DDE0E4; color:#5A6069; border-radius:999px; padding:6px 11px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; letter-spacing:-.2px}
+  .agent-btn:active{background:#F4F5F7}
+  .agent-btn svg{width:13px; height:13px; stroke:#7A828C; fill:none; stroke-width:1.8}
+  .quick button.agent{border-color:#CFC8F0; color:var(--r4); background:#fff}
+  .act-card{align-self:flex-start; max-width:84%; border:1px solid var(--line); border-radius:16px; padding:12px 14px; background:#fff; font-size:13px; line-height:1.5}
+  .act-card .t{font-size:12px; font-weight:800; color:var(--r2); letter-spacing:.3px; margin-bottom:6px}
+  .act-card .kv{display:flex; gap:8px; margin-top:3px}
+  .act-card .kv span:first-child{color:var(--tert); min-width:60px; font-size:12px}
+  .act-card .kv span:last-child{font-weight:700; font-size:12px}
+  /* 런드렛 비밀번호 표 (챗봇 시연) */
+  .pwtab{align-self:flex-start; max-width:84%; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff}
+  .pwtab .pr{display:flex; align-items:center; border-bottom:1px solid var(--line); font-size:13px}
+  .pwtab .pr:last-child{border-bottom:none}
+  .pwtab .pr.head{background:#FAFBFC}
+  .pwtab .pr span{padding:9px 14px}
+  .pwtab .pr span:first-child{flex:1; color:#3E434A; font-weight:600; display:flex; align-items:center; gap:8px}
+  .pwtab .pr span:last-child{flex:0 0 74px; font-weight:800; color:var(--ink)}
+  .pwtab .pr.head span{font-weight:700; color:var(--sub); font-size:12px}
+  .pwtab .sw{width:11px; height:11px; border-radius:50%; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  /* handoff context card on the 1:1 form */
+  .handoff{border:1px solid var(--r4b); background:var(--cool-gray-100); border-radius:16px; padding:14px 16px; margin:2px 0 18px}
+  .handoff .ht{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:800; color:var(--r4); letter-spacing:.2px; margin-bottom:10px}
+  .handoff .ht svg{width:14px; height:14px; stroke:var(--r4); fill:none; stroke-width:1.9}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px}
+  .chip{font-size:12px; font-weight:700; color:#4A4F57; background:#fff; border:1px solid #E6E2F6; border-radius:999px; padding:5px 10px}
+  .handoff .sum{font-size:12px; color:#4A4F57; line-height:1.55}
+  .handoff .sum b{color:var(--ink)}
+  .prefill-note{font-size:12px; color:var(--sub); margin:6px 2px 0; display:flex; align-items:center; gap:5px}
+  .toast{position:absolute; left:50%; bottom:30px; transform:translateX(-50%) translateY(20px); background:#1A1C1F; color:#fff; font-size:13px; font-weight:600; padding:12px 18px; border-radius:12px; opacity:0; transition:all .25s; pointer-events:none; z-index:5}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+  .home-indicator{flex:0 0 auto; height:26px; display:flex; align-items:center; justify-content:center}
+  .home-indicator span{width:134px; height:5px; border-radius:3px; background:#1A1C1F}
+  .footer{display:flex; align-items:center; justify-content:center; gap:18px; padding:16px 0 4px; font-size:13px; color:var(--sub); font-weight:600}
+  .footer .sep{color:var(--line)}
+  .footer .faq-link{cursor:pointer; transition:color .15s}
+  .footer .faq-link:active{color:var(--green-press)}
+  /* FAQ accordion */
+  .faq{border-bottom:1px solid var(--line)}
+  .faq:first-of-type{border-top:1px solid var(--line)}
+  .faq-q{width:100%; display:flex; align-items:flex-start; gap:14px; justify-content:space-between; background:none; border:0; padding:18px 2px; font-family:inherit; font-size:15px; font-weight:600; letter-spacing:-.2px; color:var(--ink); text-align:left; cursor:pointer; line-height:1.45; word-break:keep-all}
+  .faq-q .faq-ar{flex:0 0 auto; margin-top:3px; color:#C4C8CE; transition:transform .22s, color .15s}
+  .faq.open .faq-q{color:var(--green-press)}
+  .faq.open .faq-ar{transform:rotate(180deg); color:var(--green)}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .28s ease}
+  .faq.open .faq-a{max-height:360px}
+  .faq-a p{margin:0; padding:0 2px 18px; font-size:14px; line-height:1.62; color:var(--sub); letter-spacing:-.2px; word-break:keep-all; text-wrap:pretty}
+  .hint{font-size:12px; color:#9aa0a8; max-width:380px; text-align:center; line-height:1.5}
+  /* ===== reference-screen design (home / chat / sheet) ===== */
+  .home{padding:22px 20px 30px}
+  .greet{font-size:24px; font-weight:700; letter-spacing:-.5px; line-height:1.34; margin:8px 0 18px; color:var(--ink)}
+  .aibanner{width:100%; display:flex; align-items:center; gap:10px; background:linear-gradient(118deg,#0AC290 0%,#14B98C 60%,#23B083 100%); border:none; border-radius:20px; padding:16px 18px; cursor:pointer; text-align:left; box-shadow:0 8px 22px rgba(10,194,144,.30); font-family:inherit}
+  .aibanner:active{filter:brightness(.97)}
+  .ab-txt{flex:1; min-width:0; display:flex; flex-direction:column; gap:5px}
+  .ab-ttl{font-size:15px; font-weight:800; color:#fff; letter-spacing:-.3px; display:flex; align-items:center; gap:7px}
+  .ab-beta{font-size:10px; font-weight:800; background:rgba(255,255,255,.26); color:#fff; border-radius:999px; padding:2px 8px; letter-spacing:.3px}
+  .ab-chev{font-size:18px; color:#fff; opacity:.92; font-weight:600; margin-left:-2px}
+  .ab-sub{font-size:12px; color:rgba(255,255,255,.92); font-weight:500; letter-spacing:-.2px}
+  .ab-art{flex:0 0 auto; display:flex; align-items:center}
+  .qcard{margin-top:14px; background:var(--gray-200); border-radius:20px; padding:4px 16px}
+  .qrow{width:100%; display:flex; align-items:center; gap:13px; background:none; border:none; cursor:pointer; padding:14px 0; font-family:inherit; text-align:left; border-bottom:1px solid var(--cool-gray-300)}
+  .qrow:last-child{border-bottom:none}
+  .qrow:active{opacity:.55}
+  .qrow svg{width:21px; height:21px; flex:0 0 auto}
+  .qrow span{font-size:14px; font-weight:600; color:var(--ink); letter-spacing:-.3px}
+  .home-sec{font-size:20px; font-weight:700; letter-spacing:-.4px; margin:30px 0 6px; color:var(--ink)}
+  .home-sub{font-size:13px; color:var(--sub); line-height:1.55; margin:0 0 16px; letter-spacing:-.2px; text-wrap:pretty}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:11px}
+  .gtile{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:13px; background:var(--gray-200); border:none; border-radius:20px; padding:22px 12px 18px; cursor:pointer; font-family:inherit; min-height:130px}
+  .gtile:active{background:var(--cool-gray-200)}
+  .gic{width:52px; height:52px; display:flex; align-items:center; justify-content:center}
+  .gic svg{width:52px; height:52px; display:block}
+  .gnm{font-size:14px; font-weight:700; color:var(--ink); text-align:center; line-height:1.35; letter-spacing:-.3px; text-wrap:balance}
+  .gtile .cnt{margin:0 auto; color:var(--tert)}
+  /* chat (reference screen 3) */
+  .chat-greet{margin:8px 2px 10px}
+  .cg-title{font-size:24px; font-weight:700; line-height:1.34; letter-spacing:-.5px; color:var(--green); margin:0 0 10px; white-space:pre-line}
+  .cg-sub{font-size:14px; line-height:1.6; color:var(--cool-gray-700); font-weight:500; margin:0; letter-spacing:-.2px; text-wrap:pretty}
+  .chatfoot{flex:0 0 auto; padding:11px 16px 12px; border-top:1px solid var(--line); background:#fff}
+  .send{flex:0 0 auto; width:44px; height:44px; border-radius:50%; border:none; background:var(--green); display:flex; align-items:center; justify-content:center; cursor:pointer}
+  .send:active{background:var(--green-press)}
+  .send svg{width:20px; height:20px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+  .chat-note{font-size:12px; color:var(--tert); text-align:center; margin:10px 6px 0; line-height:1.5; letter-spacing:-.2px}
+  /* bottom sheet */
+  .sheet-host{position:absolute; inset:0; z-index:8; display:none}
+  .sheet-host.show{display:block}
+  .sheet-bd{position:absolute; inset:0; background:rgba(20,24,31,.45); opacity:0; transition:opacity .26s}
+  .sheet-host.show .sheet-bd{opacity:1}
+  .sheet{position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:20px 20px 0 0; padding:10px 20px 26px; transform:translateY(101%); transition:transform .3s cubic-bezier(.32,.72,0,1); box-shadow:var(--shadow-sheet)}
+  .sheet-host.show .sheet{transform:translateY(0)}
+  .sheet .grab{width:40px; height:5px; border-radius:3px; background:var(--cool-gray-400); margin:6px auto 18px}
+  .sheet h3{font-size:16px; font-weight:700; letter-spacing:-.3px; margin:0 0 16px; color:var(--ink)}
+  .sheet-row{display:flex; gap:11px}
+  .sheet-opt{flex:1; background:#fff; border:1.5px solid var(--gray-300); border-radius:16px; padding:18px 12px 16px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:11px; text-align:center; font-family:inherit}
+  .sheet-opt:active{background:var(--gray-100)}
+  .sheet-opt .so-ic{width:40px; height:40px; display:flex; align-items:center; justify-content:center}
+  .sheet-opt .so-ttl{font-size:14px; font-weight:700; color:var(--ink); line-height:1.35; letter-spacing:-.3px}
+  .sheet-opt .so-sub{font-size:12px; color:var(--tert); font-weight:500; letter-spacing:-.2px}
+  .sheet-full{width:100%; margin-top:11px; background:#fff; border:1.5px solid var(--gray-300); border-radius:16px; padding:16px; font-size:15px; font-weight:700; color:var(--ink); cursor:pointer; font-family:inherit; letter-spacing:-.2px}
+  .sheet-full:active{background:var(--gray-100)}
+  /* ===== 안심케어 현황 (care) ===== */
+  .care-banner{display:flex; align-items:center; gap:11px; background:var(--green-01,#CEF3E9); border-radius:12px; padding:14px 16px; margin-bottom:20px; cursor:pointer; transition:filter .12s}
+  .care-banner:active{filter:brightness(.96)}
+  .care-banner .cb-ic{flex:0 0 auto; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:19px; line-height:1}
+  .care-banner .cb-tx{flex:1 1 auto; font-size:14px; font-weight:600; color:var(--ink); letter-spacing:-.2px}
+  .care-banner .cb-go{flex:0 0 auto; font-size:13px; font-weight:600; color:var(--green-02,#07926C); white-space:nowrap}
+  .care-sec .care-sec-t{font-size:13px; font-weight:700; color:var(--sub); margin:24px 0 10px; letter-spacing:-.2px}
+  .care-card{display:flex; align-items:center; gap:11px; border:1px solid var(--line); border-radius:16px; padding:15px 16px; margin-bottom:10px; cursor:pointer; background:#fff; transition:background .12s}
+  .care-card:active{background:#F7F8FA}
+  .care-card .cc-meta{flex:1 1 auto; min-width:0}
+  .care-card .cc-nm{font-size:15px; font-weight:700; letter-spacing:-.2px; color:var(--ink)}
+  .care-card .cc-sub{font-size:12px; color:var(--sub); margin-top:4px; letter-spacing:-.2px}
+  .care-card .chev{flex:0 0 auto; color:var(--tert)}
+  .care-badge{display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:8px; white-space:nowrap; letter-spacing:-.2px}
+  .care-detail .cd-head{display:flex; flex-direction:column; align-items:flex-start; gap:9px; margin-bottom:18px}
+  .care-detail .cd-name{font-size:20px; font-weight:700; letter-spacing:-.01em; color:var(--ink); line-height:1.4}
+  .care-detail .cd-meta{font-size:13px; color:var(--sub); line-height:1.6; letter-spacing:-.2px}
+  .care-detail .cd-meta b{color:var(--ink); font-weight:600}
+  .care-detail .cd-body{background:var(--gray-200); border-radius:16px; padding:20px; margin-bottom:18px}
+  .care-detail .cd-title{font-size:17px; font-weight:700; color:var(--ink); letter-spacing:-.3px; line-height:1.45}
+  .care-detail .cd-desc{font-size:14px; color:#4A4F57; line-height:1.6; margin-top:8px}
+  .care-detail .cd-eta{margin-top:14px; font-size:13px; font-weight:600; color:var(--green-02,#07926C)}
+  .care-help-btn{display:block; width:100%; margin-top:4px; background:none; border:none; padding:8px 4px; font-family:inherit; font-size:13px; font-weight:500; color:var(--sub); cursor:pointer; text-align:center; letter-spacing:-.2px; text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--tert)}
+  .care-help-btn:active{color:var(--ink)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="48" height="48" rx="11" fill="#0AC290"/>
+    <path d="M24 12 36 18 24 24 12 18Z" fill="#A8ECD9"/>
+    <path d="M12 18 24 24v12L12 30Z" fill="#fff" fill-opacity=".95"/>
+    <path d="M36 18 24 24v12l12-6Z" fill="#07926C"/>
+  </svg>
+</template>
+<div class="wrap">
+  <div class="phone">
+    <div class="statusbar">
+      <span>9:41</span>
+      <span class="ic">
+        <svg width="18" height="12" viewBox="0 0 18 12"><g fill="#1A1C1F"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 2.5c2.4 0 4.6.9 6.2 2.4l1.3-1.4C14 1.5 11.4.5 8.5.5S3 1.5 1 3.5l1.3 1.4C3.9 3.4 6.1 2.5 8.5 2.5z" fill="#1A1C1F"/><path d="M8.5 6c1.3 0 2.5.5 3.4 1.4l1.3-1.4C12 4.8 10.3 4 8.5 4S5 4.8 3.8 6l1.3 1.4C6 6.5 7.2 6 8.5 6z" fill="#1A1C1F"/><circle cx="8.5" cy="10" r="1.8" fill="#1A1C1F"/></svg>
+        <svg width="26" height="13" viewBox="0 0 26 13"><rect x="1" y="1" width="21" height="11" rx="3" fill="none" stroke="#1A1C1F" stroke-opacity=".4"/><rect x="2.5" y="2.5" width="17" height="8" rx="1.6" fill="#1A1C1F"/><rect x="23.5" y="4" width="1.8" height="5" rx=".9" fill="#1A1C1F" fill-opacity=".4"/></svg>
+      </span>
+    </div>
+    <div class="nav" id="nav">
+      <div class="back" id="back" onclick="pop()">
+        <svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M9.5 1.5L2 9.5l7.5 8" stroke="#1A1C1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="title">고객센터</div>
+    </div>
+    <div class="body" id="screen"></div>
+    <div class="home-indicator"><span></span></div>
+    <div class="toast" id="toast"></div>
+    <div class="sheet-host" id="sheetHost"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- icons ---------- */
+const ICON={
+ box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+ truck:'<path d="M2 5h11v9H2z"/><path d="M13 8h4l3 3v3h-7z"/><circle cx="6" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/>',
+ washer:'<rect x="4" y="2.5" width="16" height="19" rx="2.5"/><circle cx="12" cy="13" r="5"/><circle cx="8" cy="6" r="0.5"/><circle cx="11" cy="6" r="0.5"/>',
+ card:'<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/>',
+ shield:'<path d="M12 2.5l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10v-6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+ folder:'<path d="M3 6.5a2 2 0 012-2h4l2 2.5h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'
+};
+
+/* ---------- colorful tile illustrations (home grid) — LaundryGo style ---------- */
+const TILEICON={
+ box:`<svg viewBox="0 0 48 48" fill="none"><path d="M24 5 41 13.5 24 22 7 13.5Z" fill="#A8ECD9"/><path d="M7 13.5 24 22v21L7 34.5Z" fill="#0AC290"/><path d="M41 13.5 24 22v21l17-8.5Z" fill="#07926C"/><path d="M15.5 9.2 32.5 17.7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+ truck:`<svg viewBox="0 0 48 48" fill="none"><rect x="3.5" y="15" width="23" height="16" rx="3.5" fill="#0AC290"/><path d="M26.5 19h7.4l6.3 6.2V31H26.5z" fill="#5BD7B2"/><circle cx="13" cy="33" r="4.5" fill="#23303A"/><circle cx="34" cy="33" r="4.5" fill="#23303A"/><circle cx="13" cy="33" r="1.7" fill="#fff"/><circle cx="34" cy="33" r="1.7" fill="#fff"/><circle cx="14.6" cy="22.6" r="6.4" fill="#fff"/><text x="14.6" y="26.4" font-size="9.6" font-weight="800" fill="#0AC290" font-family="Pretendard, sans-serif" text-anchor="middle">G</text></svg>`,
+ washer:`<svg viewBox="0 0 48 48" fill="none"><rect x="9" y="5" width="30" height="38" rx="6.5" fill="#CDEAFE"/><rect x="9" y="5" width="30" height="9.5" rx="6" fill="#9FD6FE"/><circle cx="14.8" cy="9.7" r="1.6" fill="#189FFB"/><circle cx="20.4" cy="9.7" r="1.6" fill="#189FFB"/><circle cx="24" cy="27.5" r="11" fill="#fff"/><circle cx="24" cy="27.5" r="6.8" fill="#189FFB"/></svg>`,
+ card:`<svg viewBox="0 0 48 48" fill="none"><rect x="5" y="12" width="38" height="24" rx="5.5" fill="#189FFB"/><rect x="5" y="18.5" width="38" height="5.5" fill="#0F76C4"/><rect x="10" y="28" width="13" height="4" rx="2" fill="#CDEAFE"/></svg>`,
+ shield:`<svg viewBox="0 0 48 48" fill="none"><rect x="8" y="11" width="32" height="30" rx="6.5" fill="#CDEAFE"/><rect x="8.5" y="12.6" width="31" height="6.6" fill="#189FFB"/><rect x="14.4" y="6.5" width="3.6" height="9" rx="1.8" fill="#0F76C4"/><rect x="30" y="6.5" width="3.6" height="9" rx="1.8" fill="#0F76C4"/><path d="M17.5 30 22 34.5l8.5-9.6" stroke="#189FFB" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ folder:`<svg viewBox="0 0 48 48" fill="none"><path d="M6 13a3 3 0 0 1 3-3h8.4l4 4H39a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z" fill="#C2C7CE"/><path d="M6 19h36v14a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z" fill="#E1E5EA"/></svg>`
+};
+
+/* ---------- IA data — 화면IA_통합안 (9_2) 반영, 챗봇 문의는 '이 외 문의'로 흡수 ---------- */
+const IA=[
+ {nm:'세탁물이 없어졌어요', ex:'세탁물 분실, 타인 세탁물, 소지품', icon:'box',
+  items:[
+   {nm:'맡긴 세탁물이 안 왔어요', ds:'세탁물 전체 또는 일부가 안 옴', route:'1:1', cnt:5434, priority:'urgent'},
+   {nm:'다른 집 세탁물이 왔어요', ds:'다른 사람 세탁물이 섞여서 배송됨', route:'1:1', cnt:717, priority:'urgent'},
+   {nm:'보낸 세탁물에 소지품이 있어요', ds:'차키·지갑·에어팟 등', route:'1:1', cnt:602, priority:'normal'},
+  ], etc:{examples:['그 외 분실·오배송 문의']}},
+ {nm:'수거·배송 문제가 있어요', ex:'오수거, 배송 문제, 런드렛', icon:'truck',
+  items:[
+   {nm:'잘못 수거·배송 됐어요', route:'1:1', cnt:587, priority:'urgent'},
+   {nm:'배송이 지연됐어요', ds:'배송이 늦거나 아직 안 옴', route:'1:1', cnt:2588, priority:'normal'},
+   {nm:'수거·배송 방법을 바꾸고 싶어요', ds:'시간·위치·여러밤 배송 등', route:'챗봇', cnt:1891, hide:true},
+  ], etc:{folded:'수거가 안 됐거나 런드렛에 문제가 있어요', foldCnt:3164,
+      examples:['세탁물 미수거, 런드렛 비밀번호 등'],
+      opts:['런드렛 비밀번호를 모르겠어요','런드렛을 반납하고 싶어요','런드렛이 손상됐어요','수거가 안 됐어요(미수거)','수거·배송 방법을 바꾸고 싶어요']}},
+ {nm:'세탁 품질·분류 문제가 있어요', ex:'얼룩·손상, 품목 재분류', icon:'washer',
+  items:[
+   {nm:'세탁 결과가 마음에 안들어요', ds:'얼룩·손상·변형·이염·냄새·다림질 불량·수선 불량', route:'안심케어', cnt:12185, priority:'high', action:'안심케어로 접수하기', guide:'세탁 결과가 만족스럽지 않으셨군요. 사진과 함께 안심케어로 접수하시면 재처리 또는 보상으로 도와드려요.'},
+   {nm:'품목이 잘못 분류됐어요', ds:'품목 오분류 정정', route:'품목재분류', cnt:1241, action:'품목 재분류 요청하기', guide:'분류된 품목이 실제와 다르면 재분류를 요청할 수 있어요. 해당 품목을 선택해 정정 요청을 보내주세요.'},
+   {nm:'세탁이 반려된 이유가 궁금해요', ds:'세탁불가·미진행 사유', route:'챗봇', cnt:1063, hide:true},
+  ], etc:{folded:'이 옷이 세탁됐는지/왜 프리미엄인지 궁금해요', foldCnt:2620, examples:['프리미엄 분류 사유 등'], opts:['이 옷 세탁할 수 있나요?','왜 프리미엄으로 분류됐나요?','세탁이 반려된 이유가 궁금해요']}},
+ {nm:'결제·구독 문의가 있어요', ex:'결제, 구독', icon:'card',
+  items:[
+   {nm:'청구 금액이 이상해요', ds:'금액 산정·쿠폰·세탁권', route:'1:1', cnt:7261},
+   {nm:'구독을 해지·변경·정지하고 싶어요', route:'기능', cnt:3376, action:'구독 관리로 이동', goToast:'구독 관리 페이지로 이동합니다', guide:'구독 해지·요금제 변경·일시정지를 구독 관리에서 직접 진행할 수 있어요.'},
+  ], etc:{folded:'환불·포인트가 안 들어왔거나 결제수단을 바꾸고 싶어요', foldCnt:2279,
+      examples:['결제수단 변경 등'],
+      opts:['환불은 언제 처리되나요?','헌옷 포인트가 안 들어왔어요','결제수단을 바꾸고 싶어요','결제수단을 삭제하고 싶어요','구독·요금제가 궁금해요']}},
+ {nm:'그 밖에 궁금한 게 있어요', ex:'앱 오류, 이용방법, 세탁 가능 여부', icon:'folder',
+  items:[
+   {nm:'앱 오류가 있어요', ds:'화면·버튼 오류 등', route:'1:1', cnt:522},
+  ], etc:{folded:'서비스 이용 방법이 궁금해요', foldCnt:5572, examples:['이용방법, 세탁 가능 여부\n'], opts:['서비스 이용 방법','보관 서비스','헌옷수거','회원·탈퇴','수선 신청 방법']}},
+];
+
+const ROUTE_KR={'1:1':'1:1 문의','기능':'기능 답변','안심케어':'안심케어','품목재분류':'품목 재분류 요청','챗봇':'챗봇'};
+/* CS 우선순위(젠데스크 전달값) — 명시 안 된 1:1 항목은 normal */
+const PRI_KR={urgent:'긴급', high:'높음', normal:'일반'};
+function priOf(item){ if(!item) return null; if(item.priority) return item.priority; return item.route==='1:1' ? 'normal' : null; }
+function priBadge(item){ const p=priOf(item); return p?`<span class="pri ${p}">${PRI_KR[p]}</span>`:''; }
+
+/* ===== 안심케어 현황 (프로토타입 목업) ===== */
+const CARE_ORDERS = [
+  { id:'AC240914001', item:'바지',    pickedAt:'24.09.14', type:'안심케어',   status:'in_review' },
+  { id:'AC240914002', item:'티셔츠',  pickedAt:'24.09.14', type:'안심케어',   status:'in_review' },
+  { id:'AC240914003', item:'니트',    pickedAt:'24.09.14', type:'안심케어',   status:'approved_recare', deliveryEta:'24.09.19' },
+  { id:'AC240910001', item:'코트',    pickedAt:'24.09.10', type:'안심케어',   status:'rejected_recare' },
+  { id:'IT240912001', item:'가디건',  pickedAt:'24.09.12', type:'품목재분류', status:'item_in_review' },
+];
+const CARE_ACTIVE = ['in_review','approved_recare','approved_refund','cs_contact','item_in_review'];
+const CARE_STATUS = {
+  in_review:       {label:'확인 중',         bg:'var(--orange-01,#FFE5DC)',    fg:'var(--orange-standard,#FF4F17)'},
+  item_in_review:  {label:'확인 중',         bg:'var(--orange-01,#FFE5DC)',    fg:'var(--orange-standard,#FF4F17)'},
+  approved_recare: {label:'재세탁 승인',     bg:'var(--green-01,#CEF3E9)',     fg:'var(--green-02,#07926C)'},
+  rejected_recare: {label:'재세탁 반려',     bg:'var(--cool-gray-200,#E5E8ED)', fg:'var(--cool-gray-800,#3A4150)'},
+  approved_refund: {label:'환불 승인',       bg:'var(--green-01,#CEF3E9)',     fg:'var(--green-02,#07926C)'},
+  rejected_refund: {label:'환불 반려',       bg:'var(--cool-gray-200,#E5E8ED)', fg:'var(--cool-gray-800,#3A4150)'},
+  cs_contact:      {label:'담당자 연락 예정', bg:'var(--blue-01,#CDEAFE)',      fg:'var(--blue-standard,#067DFD)'},
+};
+const CARE_DETAIL = {
+  in_review:       {title:'안심케어를 확인 중입니다.',      desc:'영업일 기준 1~3일 내 안내드릴게요.', btn:'추가 문의하기'},
+  item_in_review:  {title:'품목 재분류를 확인 중입니다.',    desc:'영업일 기준 1~3일 내 안내드릴게요.', btn:'추가 문의하기'},
+  approved_recare: {title:'안심케어가 승인되었습니다.',     desc:'수거 후 재세탁 완료본을 보내드릴게요.', btn:'추가 문의하기'},
+  rejected_recare: {title:'안심케어가 반려되었습니다.',     desc:'', btn:'추가 문의하기'},
+  approved_refund: {title:'세탁비 환불이 승인되었습니다.',  desc:'', btn:'추가 문의하기'},
+  rejected_refund: {title:'세탁비 환불이 반려되었습니다.',  desc:'', btn:'추가 문의하기'},
+  cs_contact:      {title:'담당자가 직접 연락드릴 예정입니다.', desc:'', btn:null},
+};
+function careBadge(st){ const s=CARE_STATUS[st]||{label:st,bg:'var(--gray-200)',fg:'var(--ink)'}; return `<span class="care-badge" style="background:${s.bg}; color:${s.fg}">${s.label}</span>`; }
+function renderCareList(){
+  const active=CARE_ORDERS.filter(o=>CARE_ACTIVE.includes(o.status));
+  const done=CARE_ORDERS.filter(o=>!CARE_ACTIVE.includes(o.status));
+  const card=o=>`<div class="care-card" data-care="${o.id}">
+      <div class="cc-meta"><div class="cc-nm">${o.item}</div><div class="cc-sub">${o.pickedAt} 수거 · ${o.type}</div></div>
+      ${careBadge(o.status)}
+      <div class="chev"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C4C8CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>`;
+  const sec=(t,arr)=>arr.length?`<div class="care-sec"><div class="care-sec-t">${t}</div>${arr.map(card).join('')}</div>`:'';
+  return `<div class="pad">
+    <h1 class="h1">내 접수 현황</h1>
+    <p class="lede">접수하신 안심케어·품목 재분류 진행 상황이에요</p>
+    ${sec('진행 중', active)}
+    ${sec('완료·반려', done)}
+  </div>`;
+}
+/* ---------- nav stack ---------- */
+let stack=[{type:'home'}];
+function push(s){stack.push(s); render()}
+function pop(){if(stack.length>1){stack.pop(); render()}}
+function go(s){stack=[{type:'home'}, s]; render()}
+
+function badge(route){return `<span class="badge b-${route}">${ROUTE_KR[route]}</span>`}
+function cnt(n){return `<span class="cnt">${n.toLocaleString()}건</span>`}
+
+function render(){
+  const top=stack[stack.length-1];
+  const nav=document.getElementById('nav');
+  nav.classList.toggle('has-back', stack.length>1);
+  const el=document.getElementById('screen');
+  if(top.type==='home') el.innerHTML=renderHome();
+  else if(top.type==='sub') el.innerHTML=renderSub(top.d);
+  else if(top.type==='care_list') el.innerHTML=renderCareList();
+  else if(top.type==='faq') el.innerHTML=renderFAQ();
+  else if(top.type==='route'){
+    if(top.escalated) el.innerHTML=form1to1(top.item, top.step||1, top.sel, top.ctx, top.gsel);
+    else el.innerHTML=renderRoute(top.d, top.item, top.isEtc);
+  }
+  else if(top.type==='help'){
+    window._chatCtx={cat:'간단 문의', sub:'', d:null, summary:''};
+    el.innerHTML=helpChat();
+  }
+  el.scrollTop=0;
+  bind();
+}
+
+const FAQ=[
+ {q:'세탁물은 어떻게 내놓나요?', a:'세탁물을 런드렛(전용 수거 가방)에 담아 문 앞에 둔 뒤 수거 신청만 해두면 돼요. 정해진 시간에 비대면으로 가져가요.'},
+ {q:'언제 수거하고 언제 받아볼 수 있나요?', a:'밤 사이에 수거해 다음 날 아침까지 세탁을 마쳐 문 앞으로 배송해 드려요. 오전 9시까지 결제하면 배송비 걱정 없이 받아볼 수 있어요.'},
+ {q:'개별클리닝과 생활빨래는 뭐가 다른가요?', a:'개별클리닝은 옷을 한 벌씩 분리해 세탁하는 드라이·고급 세탁이고, 생활빨래는 수건·속옷·티셔츠 등을 한데 모아 무게 단위로 세탁하는 서비스예요.'},
+ {q:'세탁할 수 없는 품목도 있나요?', a:'가죽·모피·일부 명품, 심하게 오염된 품목 등은 세탁이 어려울 수 있어요. 접수된 세탁물은 입고 후 검수하며, 세탁이 어려운 경우 알려드려요.'},
+ {q:'런드렛 비밀번호는 어디서 확인하나요?', a:'앱 홈 또는 주문 내역에서 확인할 수 있어요. 다이얼이 열리지 않을 때엔 화살표 색상에 맞는 임시 번호를 챗봇에서 안내받을 수 있어요.'},
+ {q:'세탁 결과가 만족스럽지 않으면 어떻게 하나요?', a:'얼룩·손상 등 문제가 있으면 ‘안심케어’로 접수해 재처리 또는 보상을 받을 수 있어요. 고객센터에서 해당 세탁물을 선택해 접수해 주세요.'},
+ {q:'수거·배송 시간을 바꿀 수 있나요?', a:'수거 전이라면 앱에서 시간이나 방법을 변경할 수 있어요. 이미 수거가 시작된 경우엔 고객센터로 문의해 주세요.'},
+ {q:'구독은 어떻게 이용하나요?', a:'구독에 가입하면 매달 세탁비를 할인된 금액으로 이용할 수 있어요. 요금제 변경·일시정지·해지는 MY > 구독 관리에서 할 수 있어요.'},
+];
+function renderFAQ(){
+  const items=FAQ.map((f,i)=>`
+    <div class="faq" data-fi="${i}">
+      <button class="faq-q"><span>${f.q}</span><span class="faq-ar"><svg width="13" height="8" viewBox="0 0 13 8" fill="none"><path d="M1 1l5.5 5.5L12 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <div class="faq-a"><p>${f.a}</p></div>
+    </div>`).join('');
+  return `<div class="pad">
+    <h1 class="h1">자주 묻는 질문</h1>
+    <p class="lede">런드리님들이 가장 많이 물어보는 질문을 모았어요</p>
+    ${items}
+  </div>`;
+}
+function renderHome(){
+  const HOME_ORDER=[1,2,0,3,4];  // 수거·배송 → 세탁 품질·분류 → 세탁물 분실 …
+  let rows=HOME_ORDER.map((i)=>{
+    const c=IA[i];
+    const total=c.items.reduce((a,x)=>a+x.cnt,0)+(c.etc.foldCnt||0);
+    return `<div class="row" data-d="${i}">
+      <div class="tile tile-c">${TILEICON[c.icon]}</div>
+      <div class="meta"><div class="nm">${c.nm}</div><div class="ex">${c.ex}</div></div>
+      ${cnt(total)}
+      <div class="chev"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C4C8CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>`;
+  }).join('');
+  const careActiveOrders=CARE_ORDERS.filter(o=>CARE_ACTIVE.includes(o.status));
+  const careN=careActiveOrders.length;
+  const hasCare=careActiveOrders.some(o=>o.type==='안심케어');
+  const hasItem=careActiveOrders.some(o=>o.type==='품목재분류');
+  const careLabel = (hasCare&&hasItem) ? `안심케어 외 ${careN}건 진행 중`
+                  : hasItem ? `품목 재분류 ${careN}건 진행 중`
+                  : `안심케어 ${careN}건 진행 중`;
+  const careBanner=careN?`<div class="care-banner" data-care-banner="1">
+      <span class="cb-ic">📦</span>
+      <span class="cb-tx">${careLabel}</span>
+      <span class="cb-go">현황 보기 →</span>
+    </div>`:'';
+  return `<div class="pad">
+    <h1 class="h1">어떤 도움이 필요하신가요?</h1>
+    <p class="lede">상황을 선택하면 가장 빠른 방법으로 안내해 드려요</p>
+    ${careBanner}
+    ${rows}
+    <div class="footer"><span>내 문의 보기</span><span class="sep">|</span><span class="faq-link" onclick="push({type:'faq'})">자주 묻는 질문</span></div>
+  </div>`;
+}
+
+function renderSub(di){
+  const c=IA[di];
+  let items=c.items.map((it,ii)=> it.hide ? '' : `
+    <div class="item" data-d="${di}" data-i="${ii}">
+      <div class="meta"><div class="nm">${it.nm}${it.cond?`<span class="cond">(${it.cond})</span>`:''}</div></div>
+      <div class="right">${priBadge(it)}${badge(it.route)}${cnt(it.cnt)}
+        <div class="chev"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C4C8CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>`).join('');
+  const e=c.etc||{};
+  const etcCnt=e.foldCnt?`${e.foldCnt.toLocaleString()}건`:'';
+  const ex=(e.examples||[]).join('  ·  ');
+  const etc=`<button class="etc" data-d="${di}" data-etc="1">
+      <svg class="etc-ic" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-8.5 8.5 9 9 0 01-3.9-.9L3 21l1.9-5.6A8.38 8.38 0 014 11.5 8.5 8.5 0 0112.5 3 8.38 8.38 0 0121 11.5z"/></svg>
+      <span class="etc-txt">
+        <span class="nm">이 외 다른 문의사항이 있어요</span>
+        ${ex?`<span class="ex">${ex}</span>`:''}
+      </span>
+      <span class="etc-right">${badge('챗봇')}${etcCnt?`<span class="cnt">${etcCnt}</span>`:''}</span>
+    </button>`;
+  return `<div class="pad sub-pad">
+    <h1 class="h1">${c.nm}</h1>
+    <p class="lede">상세 내용을 선택하면 바로 안내해 드려요</p>
+    ${items}${etc}
+  </div>`;
+}
+
+function renderRoute(di, item, isEtc){
+  const c=IA[di];
+  if(isEtc){
+    const e=c.etc||{};
+    window._chatCtx={cat:c.nm, sub:(e.folded||'이 외 문의'), d:di, summary:''};
+    const opts=e.opts?e.opts:(e.folded?optionsFor(e.folded):['이용 방법이 궁금해요','다른 문의가 있어요']);
+    return chatScreen(`'${c.nm}' 관련해서 어떤 점이 궁금하신가요? 편하게 말씀해 주세요.`, opts);
+  }
+  const r=item.route;
+  if(r==='챗봇'){
+    window._chatCtx={cat:c.nm, sub:item.nm, d:di, summary:''};
+    return chatScreen(`'${item.nm}' 관련 문의를 도와드릴게요. 어떤 점이 궁금하세요?`, optionsFor(item.nm));
+  }
+  if(r==='1:1'){const t=stack[stack.length-1]; return form1to1(item, t.step||1, t.sel, undefined, t.gsel);}
+  if(r==='기능'){
+    if(item.cancel) return cancelScreen(item);
+    if(item.billing){const t=stack[stack.length-1]; return billingFlow(item, t.step||1, t.sel);}
+    return featureScreen(item);
+  }
+  if(r==='안심케어'){const t=stack[stack.length-1]; return careFlow(item,'안심케어','접수',t.step||1,t.sel,t.gsel);}
+  if(r==='품목재분류'){const t=stack[stack.length-1]; return careFlow(item,'품목 재분류','요청',t.step||1,t.sel,t.gsel);}
+}
+
+function optionsFor(nm){
+  if(nm.includes('런드렛')) return ['런드렛 비밀번호를 모르겠어요','런드렛을 반납하고 싶어요','런드렛이 손상됐어요','런드렛 신청·전환 문의'];
+  if(nm.includes('수거·배송 방법')||nm.includes('바꾸고')) return ['수거 시간을 바꾸고 싶어요','문 앞/문고리 위치를 바꾸고 싶어요','여러밤 배송으로 바꾸고 싶어요'];
+  if(nm.includes('반려')) return ['왜 세탁이 반려됐나요?','반려된 세탁물은 어떻게 되나요?','환불은 어떻게 받나요?'];
+  if(nm.includes('세탁 여부')||nm.includes('세탁 방법')||nm.includes('분류')) return ['이 옷 세탁할 수 있나요?','왜 프리미엄으로 분류됐나요?'];
+  if(nm.includes('포인트')||nm.includes('결제수단')) return ['헌옷 포인트가 안 들어왔어요','결제수단을 바꾸고 싶어요','결제수단을 삭제하고 싶어요'];
+  if(nm.includes('이용방법')) return ['서비스 이용 방법','보관 서비스','헌옷수거','회원·탈퇴','수선 신청 방법'];
+  return ['자세히 알려주세요'];
+}
+
+const REC1TO1=[
+  {d:'24.05.27 (화)', done:'24.05.29 (목)', svc:'개별클리닝, 보관'},
+  {d:'24.04.27 (화)', done:'24.04.28 (수)', svc:'개별클리닝, 생활빨래, 프리미엄'},
+];
+function handoffCard(ctx){
+  if(!ctx) return '';
+  const chips=[ctx.cat, ctx.sub].filter(Boolean).map(t=>`<span class="chip">${t}</span>`).join('');
+  const sum=ctx.summary?`<div class="sum">챗봇 상담 요약 · <b>${ctx.summary}</b><br>최근 주문(24.04.27 수거, 배송완료 04.28) 확인됨. 단순 안내로 해결되지 않아 상담사 연결을 요청함.</div>`
+                       :`<div class="sum">챗봇에서 위 분류로 문의를 시작했으나 해결되지 않아 상담사 연결을 요청함.</div>`;
+  return `<div class="handoff">
+    <div class="ht"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>챗봇에서 전달된 정보</div>
+    <div class="chips">${chips}</div>
+    ${sum}
+  </div>`;
+}
+const AUTO_REC=['맡긴 세탁물이 안 왔어요','옷에 물건을 두고 왔어요 (차키·지갑 등)','내 것이 아닌 세탁물이 왔어요'];
+function lostInit(){ window._lostFlow={sel:null, gsel:[], title:'', content:'', atts:[]}; }
+function lostSet(k,v){ if(window._lostFlow) window._lostFlow[k]=v; }
+function lostActive(){ const t=stack[stack.length-1]; return (t&&t.type==='route'&&!t.escalated&&t.item&&t.item.nm==='맡긴 세탁물이 안 왔어요'&&window._lostFlow)?window._lostFlow:null; }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function changeRec(){ pop(); pop(); }       // 3/3 → 1/3 (수거건 다시 선택, 입력값 유지)
+function changeGarments(){ pop(); }          // 3/3 → 2/3 (세탁물 다시 선택)
+function form1to1(item, step, sel, ctx, gsel){
+  const handoff=handoffCard(ctx);
+  const draft=ctx&&ctx.summary?`[챗봇 상담 내용] ${ctx.summary}\n\n`:'';
+  // 단계 없이 바로 젠데스크 문의 접수 화면으로 진입
+  return `<div class="dest">
+    <p class="kicker k-1\\.1 pm-only">1:1 문의 · 젠데스크 티켓 접수</p>
+    <h2>${item.nm}</h2>
+    ${handoff}
+    <p class="guide">문의 내용을 작성해 접수해 주세요. 접수된 문의는 담당 상담사가 순서대로 확인해 답변드려요.</p>
+    <div class="label">제목</div>
+    <input class="tinput" placeholder="문의 제목을 입력해주세요">
+    <div class="label">내용</div>
+    <textarea placeholder="어떤 문제가 있었는지 자세히 적어주실수록 빠르게 도와드릴 수 있어요.">${draft}</textarea>
+    ${ctx?`<div class="prefill-note">✓ 챗봇 상담 내용이 미리 담겼어요. 빠진 내용만 더해 주세요.</div>`:''}
+    <div class="label">첨부파일 <span class="opt">(선택)</span></div>
+    <div class="attach-list" id="attachList"></div>
+    <button class="attach" onclick="addAttach()">
+      <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+      사진·파일 첨부
+    </button>
+    <button class="cta primary" style="margin-top:20px" onclick="submitInquiry()">문의 접수하기</button>
+    <button class="cta ghost" style="margin-top:10px" onclick="pop()">목록으로</button>
+  </div>`;
+}
+// 1:1 → 페이지 없이 바로 젠데스크로 이동(토스트만). priority에 따라 머리말 분기
+function goZendesk(item){
+  const p=priOf(item);
+  let pre='';
+  if(p==='urgent') pre='긴급 · ';
+  else if(p==='high') pre='높음 · ';
+  toast(`${pre}젠데스크 문의로 이동합니다`);
+}
+function next1to1(){
+  if(window._sel==null) return;
+  const top=stack[stack.length-1];
+  push({type:'route', escalated:top.escalated, ctx:top.ctx, d:top.d, item:top.item, isEtc:false, step:2, sel:window._sel});
+}
+// 세탁물 멀티 선택 → 폼(3단계)으로. 선택이 없어도 진행 가능.
+function nextGarment(){
+  const top=stack[stack.length-1];
+  const gsel=(window._gsel||[]).slice().sort((a,b)=>a-b);
+  if(window._lostFlow) window._lostFlow.gsel=gsel.slice();
+  push({type:'route', escalated:top.escalated, ctx:top.ctx, d:top.d, item:top.item, isEtc:false, step:3, sel:top.sel, gsel});
+}
+// 프로토타입용 첨부 시뮬레이션 (실제 파일 업로드 대신 샘플 항목을 추가)
+const ATTACH_SAMPLES=[['IMG_4821.jpg','1.8MB','🖼️'],['세탁_라벨.jpg','920KB','🖼️'],['영수증.pdf','240KB','📄'],['손상부위.png','2.4MB','🖼️']];
+window._attachN=0;
+function appendAttRow(list, a, lf){
+  const row=document.createElement('div'); row.className='att-item';
+  row.innerHTML=`<span class="ai-ic">${a[2]}</span><span class="ai-nm">${a[0]}</span><span class="ai-sz">${a[1]}</span><button class="ai-x" aria-label="삭제">×</button>`;
+  row.querySelector('.ai-x').onclick=()=>{ row.remove(); if(lf){ const i=lf.atts.indexOf(a); if(i>=0) lf.atts.splice(i,1); } };
+  list.appendChild(row);
+}
+function addAttach(){
+  const list=document.getElementById('attachList'); if(!list)return;
+  const lf=lostActive();
+  const count = lf ? lf.atts.length : list.children.length;
+  if(count>=4){toast('첨부는 최대 4개까지 가능해요'); return;}
+  const s=ATTACH_SAMPLES[window._attachN % ATTACH_SAMPLES.length]; window._attachN++;
+  const a=[s[0],s[1],s[2]];
+  if(lf) lf.atts.push(a);
+  appendAttRow(list, a, lf);
+}
+
+function featureScreen(item){
+  const guide=(item.guide||'').replace(/\n/g,'<br>');
+  return `<div class="dest">
+    <p class="kicker k-기능 pm-only">기능 답변 · 화면 내 안내</p>
+    <h2>${item.nm}</h2>
+    <div class="infobox">${guide}</div>
+    <button class="cta primary" onclick="toast('${(item.action||'이동')}')">${item.action||'바로가기'}</button>
+    <button class="cta ghost" style="margin-top:10px" onclick="pop()">목록으로</button>
+    ${resolveBlock()}
+  </div>`;
+}
+// 구독 해지 — 가능 조건 판정 화면
+const CANCEL={plan:'런드리고 X', payDate:'2024.05.01', elapsed:12, window:21,
+  conds:[
+    {label:'결제일 포함 21일 이내', ok:true},
+    {label:'이용내역이 없는 경우', ok:true},
+  ]};
+function cancelScreen(item){
+  const c=CANCEL, can=c.conds.every(x=>x.ok);
+  const conds=c.conds.map(x=>`<div class="cond-item ${x.ok?'ok':'no'}">
+      <span class="ci-ic">${x.ok?'✓':'✕'}</span>${x.label}
+      <span class="ci-tag">${x.ok?'충족':'미충족'}</span>
+    </div>`).join('');
+  const verdict = can
+    ? `<div class="verdict ok"><span class="v-ic">✓</span><span>두 조건을 모두 충족해 지금 바로 해지할 수 있어요. 아래 <b>구독 관리</b>에서 직접 해지하면 결제 금액은 전액 환불돼요.</span></div>`
+    : `<div class="verdict no"><span class="v-ic">!</span><span>아래 조건을 충족하지 않아 지금은 해지가 어려워요. 자세한 사항은 구독 관리에서 확인해 주세요.</span></div>`;
+  return `<div class="dest">
+    <p class="kicker k-기능 pm-only">기능 답변 · 화면 내 안내</p>
+    <h2>해지</h2>
+    <div class="label">현재 구독</div>
+    <div class="bill">
+      <div class="br"><span class="bl">이용 요금제</span><span class="bv">${c.plan}</span></div>
+      <div class="br"><span class="bl">결제일</span><span class="bv">${c.payDate}</span></div>
+      <div class="br"><span class="bl">경과일</span><span class="bv">${c.elapsed}일 <span class="bweak">/ ${c.window}일</span></span></div>
+    </div>
+    <div class="label">해지 가능 조건</div>
+    <div class="cond-list">${conds}</div>
+    ${verdict}
+    <button class="cta primary" style="margin-top:18px" onclick="toast('구독 관리로 이동')">${can?'구독 관리에서 해지하기':'구독 관리로 이동'}</button>
+    <button class="cta ghost" style="margin-top:10px" onclick="pop()">목록으로</button>
+    ${resolveBlock()}
+  </div>`;
+}
+function resolveBlock(){
+  return `<div class="resolve">
+      <p class="q">이 안내로 해결되셨나요?</p>
+      <div class="btns">
+        <button class="yes" onclick="toast('도움이 되어 다행이에요')">네, 해결됐어요</button>
+        <button class="no" onclick="showInquiry(this)">아니요</button>
+      </div>
+    </div>
+    <div class="inquiry-cta" id="inquiryCta" style="display:none">
+      <p class="iq-msg">해결되지 않으셨나요? <a class="iq-textlink" onclick="resolveNo()">1:1로 문의를 남겨주세요</a>.</p>
+    </div>`;
+}
+function showInquiry(btn){
+  if(btn) btn.classList.add('active');
+  const c=document.getElementById('inquiryCta');
+  if(c){c.style.display='block'; c.scrollIntoView({behavior:'smooth', block:'nearest'});}
+}
+function resolveNo(){
+  const t=stack[stack.length-1];
+  goZendesk(Object.assign({}, t.item, {route:'1:1'}));
+}
+
+/* 요금·쿠폰·세탁권: 수거건별 청구 내역 (세탁물별 처리 방식 기준) */
+const BILLING=[
+  { // 수거건 0 — 세탁권 부족 + 쿠폰 미적용으로 일부 과금
+    items:[
+      {nm:'캐시미어 코트', mode:'ticket', tk:3},
+      {nm:'울 슬랙스', mode:'ticket', tk:1},
+      {nm:'드레스 셔츠', mode:'charged', v:7000},
+      {nm:'운동화', mode:'charged', v:9000},
+    ],
+    delivery:{free:true},
+    ticket:{held:4, shortItem:'드레스 셔츠', shortMore:1, shortNeed:2},
+    coupon:{applied:false, name:'T우주패스_운동화 세탁권', target:'일반 운동화', inspected:'운동화 - 부분 세무 / 가죽'},
+  },
+  { // 수거건 1 — 세탁권 전액 정상 차감 + 쿠폰 정상 적용
+    items:[
+      {nm:'다운 패딩', mode:'ticket', tk:2},
+      {nm:'정장 자켓', mode:'ticket', tk:1},
+      {nm:'생활빨래 1팩', mode:'charged', v:9900, coupon:{name:'친구 추천 쿠폰', amount:3000}},
+    ],
+    delivery:{free:true},
+    ticket:{held:4},
+    coupon:{applied:true, name:'친구 추천 쿠폰', amount:3000},
+  },
+];
+const won=n=>(n<0?'-':'')+'₩'+Math.abs(n).toLocaleString();
+function billTab(btn, which){
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const d=document.getElementById('bp-detail'), c=document.getElementById('bp-coupon');
+  if(d) d.style.display = which==='detail'?'block':'none';
+  if(c) c.style.display = which==='coupon'?'block':'none';
+}
+function billingFlow(item, step, sel){
+  if(step===2){
+    const r=REC1TO1[sel], b=BILLING[sel];
+    const its=b.items, tk=b.ticket||{}, dv=b.delivery||{free:true};
+    const ticketItems=its.filter(x=>x.mode==='ticket');
+    const chargedItems=its.filter(x=>x.mode==='charged');
+    const usedTotal=ticketItems.reduce((a,x)=>a+(x.tk||0),0);
+    const remain=(tk.held||0)-usedTotal;
+    const chargedSum=chargedItems.reduce((a,x)=>a+x.v,0);
+    const discount=chargedItems.reduce((a,x)=>a+(x.coupon?x.coupon.amount:0),0);
+    const deliveryFee=dv.free?0:(dv.v||0);
+    const total=chargedSum-discount+deliveryFee;
+    // 결제 요약 (압축)
+    const summary=`<div class="bill">
+        <div class="br"><span class="bl">맡긴 세탁물</span><span class="bv">${its.length}개</span></div>
+        <div class="br"><span class="bl">세탁권 차감</span><span class="bv"><span class="bweak">세탁물 ${ticketItems.length}개 / </span>세탁권 ${usedTotal}장</span></div>
+        <div class="br"><span class="bl">세탁 과금</span><span class="bv"><span class="bweak">세탁물 ${chargedItems.length}개 / </span>${won(chargedSum)}</span></div>
+        ${discount>0?`<div class="br disc"><span class="bl">할인 금액</span><span class="bv">-${won(discount)}</span></div>`:''}
+        <div class="br"><span class="bl">배송비</span><span class="bv">${dv.free?'무료 (무료배송권)':won(deliveryFee)}</span></div>
+        <div class="br total"><span class="bl">최종 결제금액</span><span class="bv">${won(total)}</span></div>
+      </div>`;
+    // 상세 내역 (세탁물별 처리)
+    const detail=its.map(x=>{
+      const right = x.mode==='ticket'
+        ? `<span class="chip-tk">세탁권</span><span class="di-val">${x.tk}장</span>`
+        : `<span class="chip-cg">과금</span><span class="di-val">${won(x.v)}</span>${x.coupon?`<span class="m-cp">${x.coupon.name} -${won(x.coupon.amount)}</span>`:''}`;
+      return `<div class="ditem"><span class="di-nm">${x.nm}</span><span class="di-mode">${right}</span></div>`;
+    }).join('');
+    // 세탁권 차감 안내 (컬럼형 표)
+    const ttable=`<div class="ttable3">
+        <div class="t3h"><span>기존 보유</span><span>차감</span><span>잔여</span></div>
+        <div class="t3v"><span>${tk.held}장</span><span>${usedTotal}장</span><span>${remain}장</span></div>
+      </div>
+      ${tk.shortItem?`<div class="t3note">${tk.shortItem} 외 ${tk.shortMore}건 · 최소 ${tk.shortNeed}장 필요 — 잔여 세탁권 부족으로 과금</div>`:''}`;
+    const cp=b.coupon||{};
+    const couponPanel = cp.applied
+      ? `<div class="ttable">
+           <div class="tr"><span class="th">상태</span><span class="td"><span class="pill-ok" style="margin:0">정상 적용</span></span></div>
+           <div class="tr"><span class="th">사용 쿠폰</span><span class="td">${cp.name}</span></div>
+           <div class="tr"><span class="th">할인 금액</span><span class="td">${won(cp.amount)}</span></div>
+         </div>
+         <p class="bill-note">쿠폰별 적용 가능 품목은 앱 내 MY &gt; 쿠폰 &gt; 해당 쿠폰 [자세히보기]에서 미리 확인할 수 있어요.</p>`
+      : `<div class="ttable">
+           <div class="tr"><span class="th">상태</span><span class="td"><span class="pill-no" style="margin:0">미적용</span></span></div>
+           <div class="tr"><span class="th">사용 쿠폰</span><span class="td">${cp.name}</span></div>
+           <div class="tr"><span class="th">적용 대상</span><span class="td">‘${cp.target}’ 품목 전용</span></div>
+           <div class="tr"><span class="th">검수 결과</span><span class="td warn">${cp.inspected}</span></div>
+         </div>
+         <div class="reason-box"><span class="rb-ttl">왜 적용되지 않았나요?</span>‘${cp.target}’ 전용 쿠폰이지만, 맡기신 신발이 ‘${cp.inspected}’ 품목으로 분류되어 쿠폰이 적용되지 않았어요.</div>
+         <p class="bill-note">쿠폰별 적용 가능 품목은 앱 내 MY &gt; 쿠폰 &gt; 해당 쿠폰 [자세히보기]에서 미리 확인할 수 있어요.</p>`;
+    return `<div class="dest">
+      <p class="kicker k-기능"><span class="kmethod">기능 답변 · </span>2/2 단계</p>
+      <h2>청구 내역</h2>
+      <div class="label">선택한 수거 건</div>
+      <div class="rec-mini">
+        <span class="rm-tag">수거</span>
+        <span class="rm-d">${r.d}</span>
+        <span class="rm-svc">${r.svc}</span>
+        <button class="rm-change" onclick="pop()">변경</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="billTab(this,'detail')">청구 상세 내용</button>
+        <button class="tab" onclick="billTab(this,'coupon')">쿠폰 적용</button>
+      </div>
+      <div class="tabpanel" id="bp-detail">
+        <div class="label" style="margin-top:4px">결제 요약</div>
+        ${summary}
+        <div class="label">세탁권 차감 안내</div>
+        ${ttable}
+        <p class="bill-note">세탁권은 [개별 고액 순 → 생활빨래] 규칙으로 자동 차감되며, 차감 품목은 임의로 변경할 수 없어요. 세탁권 차감 자체는 추가 비용이 들지 않아요.</p>
+        <div class="label">상세 내역</div>
+        <div class="dlist">${detail}</div>
+      </div>
+      <div class="tabpanel" id="bp-coupon" style="display:none">
+        ${couponPanel}
+      </div>
+      ${resolveBlock()}
+    </div>`;
+  }
+  // step 1 — 수거 건 선택
+  const list=REC1TO1.map((r,i)=>`<div class="rec" data-rec="${i}">
+     <div class="d">${r.d}</div>
+     <div class="l"><span>배송완료일</span><span>${r.done}</span></div>
+     <div class="l"><span>서비스</span><span>${r.svc}</span></div>
+   </div>`).join('');
+  return `<div class="dest">
+    <p class="kicker k-기능"><span class="kmethod">기능 답변 · </span>1/2 단계</p>
+    <h2>${item.nm}</h2>
+    <p class="guide">청구 내역을 확인할 수거 건을 선택해 주세요.</p>
+    <div class="label">수거 건을 선택해주세요</div>
+    ${list}
+    <button id="next1to1" class="cta primary" style="margin-top:20px; opacity:.45; pointer-events:none" disabled>다음</button>
+  </div>`;
+}
+
+function actionScreen(item,feat,verb){
+  return `<div class="dest">
+    <p class="kicker k-${item.route} pm-only">앱 기능 접수 · ${feat}</p>
+    <h2>${item.nm}</h2>
+    <p class="guide">${item.guide||''}</p>
+    <div class="infobox"><b>${feat}</b>로 접수하면 사진·내용이 담당자에게 바로 전달되고, 진행현황에서 처리 상태를 확인할 수 있어요.</div>
+    <button class="cta primary" onclick="toast('${feat} ${verb} 화면으로 이동')">${item.action}</button>
+    <button class="cta ghost" style="margin-top:10px" onclick="pop()">목록으로</button>
+  </div>`;
+}
+
+/* 세탁물(수거건별) 더미 데이터 */
+const GARMENTS=[
+  [ {nm:'캐시미어 코트', tag:'개별클리닝'}, {nm:'니트 스웨터', tag:'개별클리닝'}, {nm:'드레스 셔츠', tag:'개별클리닝'}, {nm:'울 슬랙스', tag:'개별클리닝'} ],
+  [ {nm:'다운 패딩', tag:'프리미엄'}, {nm:'정장 자켓', tag:'개별클리닝'}, {nm:'실크 원피스', tag:'프리미엄'}, {nm:'면 셔츠 3벌', tag:'생활빨래'} ],
+];
+const CARE_DESC={
+  '안심케어':'세탁·수선 결과가 만족스럽지 않으셨나요? 문제가 있는 세탁물을 선택하면 안심케어로 접수해 재처리 또는 보상을 도와드려요.',
+  '품목 재분류':'분류된 품목이 실제와 다른가요? 잘못 분류된 세탁물을 선택하면 재분류를 요청할 수 있어요. 확인 후 추가금이 정정됩니다.'
+};
+function careFlow(item, feat, verb, step, sel, gsel){
+  const kClass = feat==='안심케어' ? 'k-안심케어' : 'k-품목재분류';
+  // step 2 — 세탁물 선택 (선택 시 앱 내 접수 기능으로 이동)
+  if(step===2){
+    const r=REC1TO1[sel];
+    const gl=GARMENTS[sel].map((g,i)=>`<div class="garment" data-g="${i}">
+        <span class="g-ic">👕</span>
+        <div><div class="g-nm">${g.nm}</div><div class="g-tag">${g.tag}</div></div>
+        <div class="chev"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C4C8CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>`).join('');
+    return `<div class="dest">
+      <p class="kicker ${kClass}"><span class="kmethod">${feat} · </span>2/2 단계</p>
+      <h2>세탁물 선택</h2>
+      <div class="label">선택한 수거 건</div>
+      <div class="rec-mini">
+        <span class="rm-tag">수거</span>
+        <span class="rm-d">${r.d}</span>
+        <span class="rm-svc">${r.svc}</span>
+        <button class="rm-change" onclick="pop()">변경</button>
+      </div>
+      <p class="guide" style="margin-top:16px">${verb}할 세탁물을 선택하면 ${feat} ${verb} 화면으로 이동해요.</p>
+      <div class="label">세탁물을 선택해주세요</div>
+      ${gl}
+    </div>`;
+  }
+  // step 1 — 설명 + 수거건 선택
+  const list=REC1TO1.map((r,i)=>`<div class="rec" data-rec="${i}">
+     <div class="d">${r.d}</div>
+     <div class="l"><span>배송완료일</span><span>${r.done}</span></div>
+     <div class="l"><span>서비스</span><span>${r.svc}</span></div>
+   </div>`).join('');
+  return `<div class="dest">
+    <p class="kicker ${kClass}"><span class="kmethod">${feat} · </span>1/2 단계</p>
+    <h2>${item.nm}</h2>
+    <div class="infobox">${CARE_DESC[feat]||''}</div>
+    <div class="label">수거 건을 선택해주세요</div>
+    ${list}
+    <button id="next1to1" class="cta primary" style="margin-top:20px; opacity:.45; pointer-events:none" disabled>다음</button>
+  </div>`;
+}
+function selectGarment(g){
+  const t=stack[stack.length-1];
+  const r=REC1TO1[t.sel], gm=GARMENTS[t.sel][g];
+  const feat=t.item.route==='안심케어'?'안심케어 접수':'품목 재분류 요청';
+  toast(`${gm.nm} · ${feat} 화면으로 이동`);
+}
+
+let chatState=null;
+function chatScreen(greet, opts){
+  chatState={greet, opts};
+  window._chatLog=[];
+  let quick='';  // 추천 카테고리 칩 제거 — 사용자가 직접 입력
+  const ctx=window._chatCtx||{};
+  return `<div style="display:flex;flex-direction:column;height:100%">
+    <div class="chathead">
+      <div class="who"><span class="av">🤖</span>런드리고 챗봇</div>
+    </div>
+    <div class="chat" id="chat">
+      <div class="bubble bot">안녕하세요, 런드리고 챗봇이에요 🤖</div>
+      <div class="bubble bot">${greet}</div>
+      <div class="quick" id="quick">${quick}</div>
+    </div>
+    <div class="chatbar"><input id="cin" placeholder="메시지를 입력하세요" onkeydown="if(event.key==='Enter')sendMsg()"><button class="cta primary" style="width:auto;margin:0;padding:11px 16px" onclick="sendMsg()">전송</button></div>
+  </div>`;
+}
+function helpChat(){
+  return chatScreen('런드리님! 무엇이든 물어보세요.\n런드리고와 세탁 없는 생활을 시작해보세요. 궁금한 점은 편하게 물어보세요!',
+    ['세탁물 내놓는 법','개별클리닝 vs 생활빨래 차이','세탁 불가 품목 확인하기','세탁 요금 확인하기']);
+}
+function openHelpChat(){ closeSheet(true); push({type:'help'}); }
+
+/* ---------- 문의 방법 bottom sheet (참고 화면 2) ---------- */
+function sheetHTML(){
+  return `<div class="sheet-bd" onclick="closeSheet()"></div>
+    <div class="sheet" role="dialog" aria-label="문의 방법 선택">
+      <div class="grab"></div>
+      <h3>문의 방법을 선택해주세요</h3>
+      <div class="sheet-row">
+        <button class="sheet-opt" onclick="closeSheet(); push({type:'sub', d:2})">
+          <span class="so-ic"><svg width="40" height="40" viewBox="0 0 48 48" fill="none"><path d="M18 7l6 3 6-3 8 4.5-3.6 6.6L30 16.5V41H18V16.5l-4.4 1.6L10 11.5z" fill="#0AC290"/><path d="M21.5 9l2.5 1.3L26.5 9" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+          <span class="so-ttl">세탁 문제<br>간편 접수하기</span>
+          <span class="so-sub">품질문의 · 품목변경</span>
+        </button>
+        <button class="sheet-opt" onclick="openHelpChat()">
+          <span class="so-ic"><svg width="40" height="40" viewBox="0 0 48 48" fill="none"><rect x="7" y="9" width="34" height="25" rx="9" fill="#0AC290"/><path d="M18 33l-3 7 10-6z" fill="#0AC290"/><text x="24" y="26" font-size="12.5" font-weight="800" fill="#fff" font-family="Pretendard, sans-serif" text-anchor="middle">AI</text></svg></span>
+          <span class="so-ttl">채팅으로<br>바로 해결하기</span>
+          <span class="so-sub">이용문의</span>
+        </button>
+      </div>
+      <button class="sheet-full" onclick="closeSheet(); goZendesk({route:'1:1'})">1:1 문의하기</button>
+    </div>`;
+}
+function openSheet(){
+  const h=document.getElementById('sheetHost');
+  h.innerHTML=sheetHTML();
+  requestAnimationFrame(()=>h.classList.add('show'));
+}
+function closeSheet(instant){
+  const h=document.getElementById('sheetHost'); if(!h)return;
+  h.classList.remove('show');
+  if(instant){h.innerHTML='';} else setTimeout(()=>{if(!h.classList.contains('show'))h.innerHTML='';},300);
+}
+function addBubble(text, who){
+  const c=document.getElementById('chat'); if(!c)return;
+  const b=document.createElement('div'); b.className='bubble '+(who==='me'?'me':'bot');
+  if(who==='me'){b.style.alignSelf='flex-end'; b.style.background='var(--green)'; b.style.color='#fff'; b.style.borderBottomRightRadius='5px'}
+  b.textContent=text; c.appendChild(b); c.scrollTop=c.scrollHeight;
+}
+function addNode(html){
+  const c=document.getElementById('chat'); if(!c)return;
+  const d=document.createElement('div'); d.innerHTML=html;
+  while(d.firstChild) c.appendChild(d.firstChild);
+  c.scrollTop=c.scrollHeight;
+}
+function botReply(btn, opt){
+  const q=document.getElementById('quick'); if(q)q.remove();
+  addBubble(opt,'me');
+  window._chatLog.push(opt);
+  if(window._chatCtx) window._chatCtx.summary=opt;
+  botRespond(opt);
+}
+function sendMsg(){
+  const i=document.getElementById('cin'); if(!i||!i.value.trim())return;
+  const q=document.getElementById('quick'); if(q)q.remove();
+  const txt=i.value.trim();
+  addBubble(txt,'me'); i.value='';
+  window._chatLog.push(txt);
+  if(window._chatCtx) window._chatCtx.summary=txt;
+  botRespond(txt);
+}
+const PW_ROWS=[['빨강/주황','#E8623B','122'],['노랑','#F2C200','255'],['초록','#2BA864','388'],['파랑','#3B82E8','477'],['보라','#8A5CD8','511']];
+function pwTableHTML(){
+  const rows=PW_ROWS.map(r=>`<div class="pr"><span><i class="sw" style="background:${r[1]}"></i>${r[0]}</span><span>${r[2]}</span></div>`).join('');
+  return `<div class="pwtab"><div class="pr head"><span>색상</span><span>비밀번호</span></div>${rows}</div>`;
+}
+function botRespond(text){
+  // 런드렛 비밀번호 시연 답변
+  if(text.includes('비밀번호')){
+    setTimeout(()=>addBubble('고객님의 런드렛 다이얼키 비밀번호는 122입니다.','bot'),300);
+    setTimeout(()=>addBubble('안내해 드린 번호로 열리지 않는다면, 다이얼 옆 화살표 색상에 맞춰 아래 번호를 시도해 주세요.','bot'),900);
+    setTimeout(()=>addNode(pwTableHTML()),1300);
+    setTimeout(()=>addBubble('위 임시 번호로도 열리지 않으면 지퍼 부분을 젓가락이나 볼펜 등 얇은 물건으로 조심스럽게 눌러 열어 주세요.','bot'),1700);
+    return;
+  }
+  // 기본 — 주문 조회 시뮬레이션
+  setTimeout(()=>addBubble('네, 바로 확인해 드릴게요. 최근 주문 내역을 조회했어요.','bot'),300);
+  setTimeout(()=>addNode(`<div class="act-card">
+      <div class="t">주문 조회됨</div>
+      <div class="kv"><span>수거일</span><span>24.04.27 (화)</span></div>
+      <div class="kv"><span>서비스</span><span>개별클리닝, 생활빨래</span></div>
+      <div class="kv"><span>상태</span><span>배송완료 · 04.28</span></div>
+    </div>`),900);
+  setTimeout(()=>addBubble('이 건이 맞으실까요? 더 궁금한 점이 있으면 편하게 말씀해 주세요.','bot'),1500);
+}
+// 챗봇 → 1:1 인계: 지금까지의 카테고리 선택값 + 대화 요약을 그대로 들고 넘어감
+function escalateToAgent(){
+  goZendesk({route:'1:1'});
+}
+
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function bind(){
+  document.querySelectorAll('.row').forEach(r=>r.onclick=()=>push({type:'sub', d:+r.dataset.d}));
+  document.querySelectorAll('.faq-q').forEach(q=>q.onclick=()=>{
+    q.closest('.faq').classList.toggle('open');
+  });
+  document.querySelectorAll('.item').forEach(it=>it.onclick=()=>{
+    const di=+it.dataset.d, ii=+it.dataset.i;
+    const item=IA[di].items[ii];
+    if(item.goToast){ toast(item.goToast); return; }
+    if(item.route==='1:1'){ goZendesk(item); return; }
+    if(item.nm==='맡긴 세탁물이 안 왔어요') lostInit();
+    push({type:'route', d:di, item, isEtc:false});
+  });
+  document.querySelectorAll('.etc').forEach(b=>b.onclick=()=>push({type:'route', d:+b.dataset.d, isEtc:true}));
+  const careBnr=document.querySelector('[data-care-banner]'); if(careBnr) careBnr.onclick=()=>push({type:'care_list'});
+  document.querySelectorAll('.care-card').forEach(c=>c.onclick=()=>goZendesk({route:'1:1', priority:'urgent'}));
+  document.querySelectorAll('.garment:not(.gmulti)').forEach(g=>g.onclick=()=>selectGarment(+g.dataset.g));
+  const gmulti=document.querySelectorAll('.garment.gmulti');
+  if(gmulti.length){
+    const lf=window._lostFlow;
+    window._gsel = (lf&&Array.isArray(lf.gsel))? lf.gsel.slice() : [];
+    gmulti.forEach(el=>{
+      const i=+el.dataset.gm;
+      if(window._gsel.includes(i)) el.classList.add('on');
+      el.onclick=()=>{
+        el.classList.toggle('on');
+        const arr=window._gsel, idx=arr.indexOf(i);
+        if(idx>=0) arr.splice(idx,1); else arr.push(i);
+      };
+    });
+  }
+  // 분실·누락 폼: 첨부파일 복원
+  const al=document.getElementById('attachList'), lfa=lostActive();
+  if(al && lfa && lfa.atts.length){ al.innerHTML=''; lfa.atts.forEach(a=>appendAttRow(al, a, lfa)); }
+  window._sel=null;
+  document.querySelectorAll('.rec[data-rec]').forEach(r=>r.onclick=()=>{
+    const t=stack[stack.length-1], sel=+r.dataset.rec;
+    // 자동 진행 항목(분실·누락 / 소지품 / 타인 세탁물): 수거건 선택 즉시 다음 단계로
+    if(t.type==='route' && !t.escalated && t.item && AUTO_REC.includes(t.item.nm) && (t.step||1)===1){
+      if(t.item.nm==='맡긴 세탁물이 안 왔어요' && window._lostFlow){ if(window._lostFlow.sel!==sel) window._lostFlow.gsel=[]; window._lostFlow.sel=sel; }
+      window._sel=sel;
+      push({type:'route', d:t.d, item:t.item, isEtc:false, step:2, sel});
+      return;
+    }
+    document.querySelectorAll('.rec').forEach(x=>x.classList.remove('sel')); r.classList.add('sel');
+    window._sel=sel;
+    const nb=document.getElementById('next1to1');
+    if(nb){nb.disabled=false; nb.style.opacity='1'; nb.style.pointerEvents='auto'; nb.onclick=next1to1;}
+  });
+}
+render();
+</script>
+</body>
+</html>
