@@ -474,13 +474,16 @@
   .care-banner .cb-tx{flex:1 1 auto; font-size:14px; font-weight:600; color:var(--ink); letter-spacing:-.2px}
   .care-banner .cb-go{flex:0 0 auto; font-size:13px; font-weight:600; color:var(--green-02,#07926C); white-space:nowrap}
   .care-sec .care-sec-t{font-size:13px; font-weight:700; color:var(--sub); margin:24px 0 10px; letter-spacing:-.2px}
-  .care-card{display:flex; align-items:center; gap:11px; border:1px solid var(--line); border-radius:16px; padding:15px 16px; margin-bottom:10px; cursor:pointer; background:#fff; transition:background .12s}
+  .care-card{display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer; background:#fff; transition:background .12s}
   .care-card:active{background:#F7F8FA}
-  .care-card .cc-meta{flex:1 1 auto; min-width:0}
-  .care-card .cc-nm{font-size:15px; font-weight:700; letter-spacing:-.2px; color:var(--ink)}
-  .care-card .cc-sub{font-size:12px; color:var(--sub); margin-top:4px; letter-spacing:-.2px}
-  .care-card .chev{flex:0 0 auto; color:var(--tert)}
-  .care-badge{display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:8px; white-space:nowrap; letter-spacing:-.2px}
+  .cc-thumb{flex:0 0 48px; width:48px; height:48px; border-radius:8px; background:var(--cool-gray-100,#F4F5F7); flex-shrink:0}
+  .care-card .cc-meta{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px}
+  .cc-top{display:flex; align-items:center; gap:6px; min-width:0}
+  .cc-type{flex:0 0 auto; font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px; white-space:nowrap; letter-spacing:-.2px; background:var(--cool-gray-100,#F4F5F7); color:var(--cool-gray-600,#8F97A3)}
+  .cc-nm{font-size:15px; font-weight:700; letter-spacing:-.2px; color:var(--ink); flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .cc-status{flex:0 0 auto; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; white-space:nowrap; letter-spacing:-.2px; align-self:center}
+  .cc-sub{font-size:12px; color:var(--tert); letter-spacing:-.2px}
+  .care-card .chev{flex:0 0 auto; color:var(--tert); margin-left:4px}
   .care-detail .cd-head{display:flex; flex-direction:column; align-items:flex-start; gap:9px; margin-bottom:18px}
   .care-detail .cd-name{font-size:20px; font-weight:700; letter-spacing:-.01em; color:var(--ink); line-height:1.4}
   .care-detail .cd-meta{font-size:13px; color:var(--sub); line-height:1.6; letter-spacing:-.2px}
@@ -590,11 +593,11 @@ function priBadge(item){ const p=priOf(item); return p?`<span class="pri ${p}">$
 
 /* ===== 안심케어 현황 (프로토타입 목업) ===== */
 const CARE_ORDERS = [
-  { id:'AC240914001', item:'바지',    pickedAt:'24.09.14', type:'안심케어',   status:'in_review' },
-  { id:'AC240914002', item:'티셔츠',  pickedAt:'24.09.14', type:'안심케어',   status:'in_review' },
-  { id:'AC240914003', item:'니트',    pickedAt:'24.09.14', type:'안심케어',   status:'approved_recare', deliveryEta:'24.09.19' },
-  { id:'AC240910001', item:'코트',    pickedAt:'24.09.10', type:'안심케어',   status:'rejected_recare' },
-  { id:'IT240912001', item:'가디건',  pickedAt:'24.09.12', type:'품목재분류', status:'item_in_review' },
+  { id:'AC240914001', item:'바지',    pickedAt:'26.09.14', receivedAt:'26.09.15', type:'안심케어',   status:'in_review',       thumb:'https://placehold.co/96x96/E8F5F0/07926C?text=바지' },
+  { id:'AC240914002', item:'티셔츠',  pickedAt:'26.09.14', receivedAt:'26.09.15', type:'안심케어',   status:'in_review',       thumb:'https://placehold.co/96x96/E8F5F0/07926C?text=티셔츠' },
+  { id:'AC240914003', item:'니트',    pickedAt:'26.09.14', receivedAt:'26.09.15', type:'안심케어',   status:'approved_recare', deliveryEta:'26.09.19', thumb:'https://placehold.co/96x96/E8F5F0/07926C?text=니트' },
+  { id:'AC240910001', item:'코트',    pickedAt:'26.09.10', receivedAt:'26.09.11', type:'안심케어',   status:'rejected_recare', thumb:'' },
+  { id:'IT240912001', item:'가디건',  pickedAt:'26.09.12', receivedAt:'26.09.13', type:'품목재분류', status:'item_in_review',  thumb:'' },
 ];
 const CARE_ACTIVE = ['in_review','approved_recare','approved_refund','cs_contact','item_in_review'];
 const CARE_STATUS = {
@@ -616,20 +619,22 @@ const CARE_DETAIL = {
   cs_contact:      {title:'담당자가 직접 연락드릴 예정입니다.', desc:'', btn:null},
 };
 function careBadge(st){ const s=CARE_STATUS[st]||{label:st,bg:'var(--gray-200)',fg:'var(--ink)'}; return `<span class="care-badge" style="background:${s.bg}; color:${s.fg}">${s.label}</span>`; }
+function careTypeBadge(type){ const label=type==='품목재분류'?'재분류':type; return `<span class="cc-type">${label}</span>`; }
+function careThumb(o){ return `<div class="cc-thumb"></div>`; }
 function renderCareList(){
-  const active=CARE_ORDERS.filter(o=>CARE_ACTIVE.includes(o.status));
-  const done=CARE_ORDERS.filter(o=>!CARE_ACTIVE.includes(o.status));
   const card=o=>`<div class="care-card" data-care="${o.id}">
-      <div class="cc-meta"><div class="cc-nm">${o.item}</div><div class="cc-sub">${o.pickedAt} 수거 · ${o.type}</div></div>
-      ${careBadge(o.status)}
+      ${careThumb(o)}
+      <div class="cc-meta">
+        <div class="cc-top">${careTypeBadge(o.type)}<span class="cc-nm">${o.item}</span></div>
+        <div class="cc-sub">${o.receivedAt.slice(3)} 접수</div>
+      </div>
+      <span class="cc-status" style="background:${(CARE_STATUS[o.status]||{bg:'var(--cool-gray-100)'}).bg}; color:${(CARE_STATUS[o.status]||{fg:'var(--ink)'}).fg}">${CARE_STATUS[o.status]?.label||o.status}</span>
       <div class="chev"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C4C8CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     </div>`;
-  const sec=(t,arr)=>arr.length?`<div class="care-sec"><div class="care-sec-t">${t}</div>${arr.map(card).join('')}</div>`:'';
   return `<div class="pad">
     <h1 class="h1">내 접수 현황</h1>
     <p class="lede">접수하신 안심케어·품목 재분류 진행 상황이에요</p>
-    ${sec('진행 중', active)}
-    ${sec('완료·반려', done)}
+    <div class="care-sec">${CARE_ORDERS.map(card).join('')}</div>
   </div>`;
 }
 /* ---------- nav stack ---------- */
@@ -778,13 +783,13 @@ function optionsFor(nm){
 }
 
 const REC1TO1=[
-  {d:'24.05.27 (화)', done:'24.05.29 (목)', svc:'개별클리닝, 보관'},
-  {d:'24.04.27 (화)', done:'24.04.28 (수)', svc:'개별클리닝, 생활빨래, 프리미엄'},
+  {d:'26.05.27 (화)', done:'26.05.29 (목)', svc:'개별클리닝, 보관'},
+  {d:'26.04.27 (화)', done:'26.04.28 (수)', svc:'개별클리닝, 생활빨래, 프리미엄'},
 ];
 function handoffCard(ctx){
   if(!ctx) return '';
   const chips=[ctx.cat, ctx.sub].filter(Boolean).map(t=>`<span class="chip">${t}</span>`).join('');
-  const sum=ctx.summary?`<div class="sum">챗봇 상담 요약 · <b>${ctx.summary}</b><br>최근 주문(24.04.27 수거, 배송완료 04.28) 확인됨. 단순 안내로 해결되지 않아 상담사 연결을 요청함.</div>`
+  const sum=ctx.summary?`<div class="sum">챗봇 상담 요약 · <b>${ctx.summary}</b><br>최근 주문(26.04.27 수거, 배송완료 04.28) 확인됨. 단순 안내로 해결되지 않아 상담사 연결을 요청함.</div>`
                        :`<div class="sum">챗봇에서 위 분류로 문의를 시작했으나 해결되지 않아 상담사 연결을 요청함.</div>`;
   return `<div class="handoff">
     <div class="ht"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>챗봇에서 전달된 정보</div>
@@ -875,7 +880,7 @@ function featureScreen(item){
   </div>`;
 }
 // 구독 해지 — 가능 조건 판정 화면
-const CANCEL={plan:'런드리고 X', payDate:'2024.05.01', elapsed:12, window:21,
+const CANCEL={plan:'런드리고 X', payDate:'2026.05.01', elapsed:12, window:21,
   conds:[
     {label:'결제일 포함 21일 이내', ok:true},
     {label:'이용내역이 없는 경우', ok:true},
@@ -1223,7 +1228,7 @@ function botRespond(text){
   setTimeout(()=>addBubble('네, 바로 확인해 드릴게요. 최근 주문 내역을 조회했어요.','bot'),300);
   setTimeout(()=>addNode(`<div class="act-card">
       <div class="t">주문 조회됨</div>
-      <div class="kv"><span>수거일</span><span>24.04.27 (화)</span></div>
+      <div class="kv"><span>수거일</span><span>26.04.27 (화)</span></div>
       <div class="kv"><span>서비스</span><span>개별클리닝, 생활빨래</span></div>
       <div class="kv"><span>상태</span><span>배송완료 · 04.28</span></div>
     </div>`),900);
