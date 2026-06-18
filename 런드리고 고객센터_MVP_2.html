@@ -396,11 +396,14 @@
   .handoff .sum{font-size:12px; color:#4A4F57; line-height:1.55}
   .handoff .sum b{color:var(--ink)}
   .prefill-note{font-size:12px; color:var(--sub); margin:6px 2px 0; display:flex; align-items:center; gap:5px}
-  .toast{position:absolute; left:50%; bottom:30px; transform:translateX(-50%) translateY(20px); background:#1A1C1F; color:#fff; font-size:13px; font-weight:600; padding:12px 18px; border-radius:12px; opacity:0; transition:all .25s; pointer-events:none; z-index:5}
+  .toast{position:absolute; left:50%; bottom:30px; transform:translateX(-50%) translateY(20px); background:#1A1C1F; color:#fff; font-size:13px; font-weight:600; padding:12px 18px; border-radius:12px; opacity:0; transition:all .25s; pointer-events:none; z-index:5; width:max-content; max-width:calc(100% - 32px); white-space:nowrap; text-align:center}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
   .home-indicator{flex:0 0 auto; height:26px; display:flex; align-items:center; justify-content:center}
   .home-indicator span{width:134px; height:5px; border-radius:3px; background:#1A1C1F}
   .footer{display:flex; align-items:center; justify-content:center; gap:18px; padding:16px 0 4px; font-size:13px; color:var(--sub); font-weight:600}
+  /* 홈 화면: 푸터를 하단 고정 */
+  .home-pad{display:flex; flex-direction:column; min-height:100%}
+  .home-pad>.footer{margin-top:auto}
   .footer .sep{color:var(--line)}
   .footer .faq-link{cursor:pointer; transition:color .15s}
   .footer .faq-link:active{color:var(--green-press)}
@@ -552,20 +555,17 @@ const TILEICON={
 
 /* ---------- IA data — 화면IA_통합안 (9_2) 반영, 챗봇 문의는 '이 외 문의'로 흡수 ---------- */
 const IA=[
- {nm:'세탁물이 없어졌어요', ex:'세탁물 분실, 타인 세탁물, 소지품', icon:'box',
+ {nm:'수거·배송 문제가 있어요', ex:'세탁물 분실, 오배송, 배송 지연, 런드렛', icon:'truck',
   items:[
-   {nm:'맡긴 세탁물이 안 왔어요', ds:'세탁물 전체 또는 일부가 안 옴', route:'1:1', cnt:5434, priority:'urgent'},
+   {nm:'세탁물이 분실됐어요', ds:'세탁물 전체 또는 일부가 안 옴', route:'1:1', cnt:5434, priority:'urgent'},
    {nm:'다른 집 세탁물이 왔어요', ds:'다른 사람 세탁물이 섞여서 배송됨', route:'1:1', cnt:717, priority:'urgent'},
-   {nm:'보낸 세탁물에 소지품이 있어요', ds:'차키·지갑·에어팟 등', route:'1:1', cnt:602, priority:'normal'},
-  ], etc:{examples:['그 외 분실·오배송 문의']}},
- {nm:'수거·배송 문제가 있어요', ex:'오수거, 배송 문제, 런드렛', icon:'truck',
-  items:[
    {nm:'잘못 수거·배송 됐어요', route:'1:1', cnt:587, priority:'urgent'},
    {nm:'배송이 지연됐어요', ds:'배송이 늦거나 아직 안 옴', route:'1:1', cnt:2588, priority:'normal'},
+   {nm:'보낸 세탁물에 소지품이 있어요', ds:'차키·지갑·에어팟 등', route:'1:1', cnt:602, priority:'normal'},
    {nm:'수거·배송 방법을 바꾸고 싶어요', ds:'시간·위치·여러밤 배송 등', route:'챗봇', cnt:1891, hide:true},
   ], etc:{folded:'수거가 안 됐거나 런드렛에 문제가 있어요', foldCnt:3164,
-      examples:['세탁물 미수거, 런드렛 비밀번호 등'],
-      opts:['런드렛 비밀번호를 모르겠어요','런드렛을 반납하고 싶어요','런드렛이 손상됐어요','수거가 안 됐어요(미수거)','수거·배송 방법을 바꾸고 싶어요']}},
+      examples:['세탁물 미수거, 런드렛 비밀번호, 분실·오배송 등'],
+      opts:['세탁물이 분실됐어요','다른 집 세탁물이 왔어요','잘못 수거·배송 됐어요','런드렛 비밀번호를 모르겠어요','런드렛을 반납하고 싶어요','런드렛이 손상됐어요','수거가 안 됐어요(미수거)','수거·배송 방법을 바꾸고 싶어요']}},
  {nm:'세탁 품질·분류 문제가 있어요', ex:'얼룩·손상, 품목 재분류', icon:'washer',
   items:[
    {nm:'세탁 결과가 마음에 안들어요', ds:'얼룩·손상·변형·이염·냄새·다림질 불량·수선 불량', route:'안심케어', cnt:12185, priority:'high', action:'안심케어로 접수하기', guide:'세탁 결과가 만족스럽지 않으셨군요. 사진과 함께 안심케어로 접수하시면 재처리 또는 보상으로 도와드려요.'},
@@ -690,7 +690,7 @@ function renderFAQ(){
   </div>`;
 }
 function renderHome(){
-  const HOME_ORDER=[1,2,0,3,4];  // 수거·배송 → 세탁 품질·분류 → 세탁물 분실 …
+  const HOME_ORDER=[0,1,2,3];  // 세탁물 수거·배송 → 세탁 품질·분류 → 결제·구독 → 기타
   let rows=HOME_ORDER.map((i)=>{
     const c=IA[i];
     const total=c.items.reduce((a,x)=>a+x.cnt,0)+(c.etc.foldCnt||0);
@@ -711,14 +711,14 @@ function renderHome(){
   const careBanner=careN?`<div class="care-banner" data-care-banner="1">
       <span class="cb-ic">📦</span>
       <span class="cb-tx">${careLabel}</span>
-      <span class="cb-go">현황 보기 →</span>
+      <span class="cb-go">문의하기 →</span>
     </div>`:'';
-  return `<div class="pad">
+  return `<div class="pad home-pad">
     <h1 class="h1">어떤 도움이 필요하신가요?</h1>
     <p class="lede">상황을 선택하면 가장 빠른 방법으로 안내해 드려요</p>
     ${careBanner}
     ${rows}
-    <div class="footer"><span>내 문의 보기</span><span class="sep">|</span><span class="faq-link" onclick="push({type:'faq'})">자주 묻는 질문</span></div>
+    <div class="footer"><span class="faq-link" onclick="toast('젠데스크 문의내역으로 이동합니다')">내 문의 보기</span><span class="sep">|</span><span class="faq-link" onclick="toast('FAQ 페이지로 이동합니다')">자주 묻는 질문</span></div>
   </div>`;
 }
 
@@ -797,10 +797,10 @@ function handoffCard(ctx){
     ${sum}
   </div>`;
 }
-const AUTO_REC=['맡긴 세탁물이 안 왔어요','옷에 물건을 두고 왔어요 (차키·지갑 등)','내 것이 아닌 세탁물이 왔어요'];
+const AUTO_REC=['세탁물이 분실됐어요','옷에 물건을 두고 왔어요 (차키·지갑 등)','내 것이 아닌 세탁물이 왔어요'];
 function lostInit(){ window._lostFlow={sel:null, gsel:[], title:'', content:'', atts:[]}; }
 function lostSet(k,v){ if(window._lostFlow) window._lostFlow[k]=v; }
-function lostActive(){ const t=stack[stack.length-1]; return (t&&t.type==='route'&&!t.escalated&&t.item&&t.item.nm==='맡긴 세탁물이 안 왔어요'&&window._lostFlow)?window._lostFlow:null; }
+function lostActive(){ const t=stack[stack.length-1]; return (t&&t.type==='route'&&!t.escalated&&t.item&&t.item.nm==='세탁물이 분실됐어요'&&window._lostFlow)?window._lostFlow:null; }
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function changeRec(){ pop(); pop(); }       // 3/3 → 1/3 (수거건 다시 선택, 입력값 유지)
 function changeGarments(){ pop(); }          // 3/3 → 2/3 (세탁물 다시 선택)
@@ -1158,7 +1158,7 @@ function sheetHTML(){
       <div class="grab"></div>
       <h3>문의 방법을 선택해주세요</h3>
       <div class="sheet-row">
-        <button class="sheet-opt" onclick="closeSheet(); push({type:'sub', d:2})">
+        <button class="sheet-opt" onclick="closeSheet(); push({type:'sub', d:1})">
           <span class="so-ic"><svg width="40" height="40" viewBox="0 0 48 48" fill="none"><path d="M18 7l6 3 6-3 8 4.5-3.6 6.6L30 16.5V41H18V16.5l-4.4 1.6L10 11.5z" fill="#0AC290"/><path d="M21.5 9l2.5 1.3L26.5 9" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
           <span class="so-ttl">세탁 문제<br>간편 접수하기</span>
           <span class="so-sub">품질문의 · 품목변경</span>
@@ -1254,7 +1254,7 @@ function bind(){
     const item=IA[di].items[ii];
     if(item.goToast){ toast(item.goToast); return; }
     if(item.route==='1:1'){ goZendesk(item); return; }
-    if(item.nm==='맡긴 세탁물이 안 왔어요') lostInit();
+    if(item.nm==='세탁물이 분실됐어요') lostInit();
     push({type:'route', d:di, item, isEtc:false});
   });
   document.querySelectorAll('.etc').forEach(b=>b.onclick=()=>push({type:'route', d:+b.dataset.d, isEtc:true}));
@@ -1283,7 +1283,7 @@ function bind(){
     const t=stack[stack.length-1], sel=+r.dataset.rec;
     // 자동 진행 항목(분실·누락 / 소지품 / 타인 세탁물): 수거건 선택 즉시 다음 단계로
     if(t.type==='route' && !t.escalated && t.item && AUTO_REC.includes(t.item.nm) && (t.step||1)===1){
-      if(t.item.nm==='맡긴 세탁물이 안 왔어요' && window._lostFlow){ if(window._lostFlow.sel!==sel) window._lostFlow.gsel=[]; window._lostFlow.sel=sel; }
+      if(t.item.nm==='세탁물이 분실됐어요' && window._lostFlow){ if(window._lostFlow.sel!==sel) window._lostFlow.gsel=[]; window._lostFlow.sel=sel; }
       window._sel=sel;
       push({type:'route', d:t.d, item:t.item, isEtc:false, step:2, sel});
       return;
