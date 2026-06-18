@@ -4,18 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>런드리고 고객센터 프로토타입</title>
-<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <!-- LaundryGo Design System — design tokens (colors, type, radius, spacing, shadow) -->
 <style>
-/* LaundryGo Design System — tokens (fonts via Pretendard CDN) */
+/* LDS tokens (fonts via CDN Pretendard above) */
 /* ==========================================================================
    LaundryGo Design System (LDS) — Colors & Type
    Color Guide ver 2.1.0 · Typography ver 2.0.0
    KR: Pretendard · EN display: Basis Grotesque (substituted — see README)
    ========================================================================== */
 
+/* ----- Fonts ------------------------------------------------------------- */
+
+
+
+
+
 /* Brand display face — 런드리고딕 (LaundryGothic). Used for the wordmark
    and occasional brand-voice numerals. */
+
+
 
 :root {
   /* === Brand / Main — Green ============================================= */
@@ -134,6 +142,7 @@
 .lds-label { font-family: var(--font-base); font-weight: var(--w-medium); font-size: var(--label-size); line-height: var(--label-lh); color: var(--fg-2); }
 .lds-caption1 { font-family: var(--font-base); font-weight: var(--w-medium); font-size: var(--caption1-size); line-height: var(--caption1-lh); color: var(--fg-2); }
 .lds-caption2 { font-family: var(--font-base); font-weight: var(--w-bold); font-size: var(--caption2-size); line-height: var(--caption2-lh); color: var(--fg-2); }
+
 </style>
 <style>
   :root{
@@ -149,7 +158,7 @@
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{margin:0; height:100%}
   body{
-    font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    font-family:"Pretendard Variable","Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
     background:var(--backdrop); color:var(--ink);
     display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px 12px;
   }
@@ -471,6 +480,7 @@
   .sheet-full{width:100%; margin-top:11px; background:#fff; border:1.5px solid var(--gray-300); border-radius:16px; padding:16px; font-size:15px; font-weight:700; color:var(--ink); cursor:pointer; font-family:inherit; letter-spacing:-.2px}
   .sheet-full:active{background:var(--gray-100)}
   /* ===== 안심케어 현황 (care) ===== */
+  .care-list-label{font-size:13px; color:var(--cool-gray-500, #B6BEC9); text-align:left; margin:18px 2px 10px}
   .care-banner{display:flex; align-items:center; gap:11px; background:var(--green-01,#CEF3E9); border-radius:12px; padding:14px 16px; margin-bottom:20px; cursor:pointer; transition:filter .12s}
   .care-banner:active{filter:brightness(.96)}
   .care-banner .cb-ic{flex:0 0 auto; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:19px; line-height:1}
@@ -555,11 +565,11 @@ const TILEICON={
 
 /* ---------- IA data — 화면IA_통합안 (9_2) 반영, 챗봇 문의는 '이 외 문의'로 흡수 ---------- */
 const IA=[
- {nm:'수거·배송 문제가 있어요', ex:'세탁물 분실, 오수거, 런드렛', icon:'truck',
+ {nm:'수거·배송 문제가 있어요', ex:'세탁물 분실, 오배송, 배송 지연, 런드렛', icon:'truck',
   items:[
    {nm:'세탁물이 안왔어요', ds:'세탁물 전체 또는 일부가 안 옴', route:'1:1', cnt:5434, priority:'urgent'},
    {nm:'다른 집 세탁물이 왔어요', ds:'다른 사람 세탁물이 섞여서 배송됨', route:'1:1', cnt:717, priority:'urgent'},
-   {nm:'세탁물이 잘못 수거됐어요', route:'1:1', cnt:587, priority:'urgent'},
+   {nm:'잘못 수거·배송 됐어요', route:'1:1', cnt:587, priority:'urgent'},
    {nm:'배송이 지연됐어요', ds:'배송이 늦거나 아직 안 옴', route:'1:1', cnt:2588, priority:'normal'},
    {nm:'보낸 세탁물에 소지품이 있어요', ds:'차키·지갑·에어팟 등', route:'1:1', cnt:602, priority:'normal'},
    {nm:'수거·배송 방법을 바꾸고 싶어요', ds:'시간·위치·여러밤 배송 등', route:'챗봇', cnt:1891, hide:true},
@@ -572,14 +582,14 @@ const IA=[
    {nm:'품목이 잘못 분류됐어요', ds:'품목 오분류 정정', route:'품목재분류', cnt:1241, action:'품목 재분류 요청하기', guide:'분류된 품목이 실제와 다르면 재분류를 요청할 수 있어요. 해당 품목을 선택해 정정 요청을 보내주세요.'},
    {nm:'세탁이 반려된 이유가 궁금해요', ds:'세탁불가·미진행 사유', route:'챗봇', cnt:1063, hide:true},
   ], etc:{folded:'이 옷이 세탁됐는지/왜 프리미엄인지 궁금해요', foldCnt:2620, examples:['프리미엄 분류 사유 등'], opts:['이 옷 세탁할 수 있나요?','왜 프리미엄으로 분류됐나요?','세탁이 반려된 이유가 궁금해요']}},
- {nm:'결제·구독 문의가 있어요', ex:'비용 확인, 구독 변경', icon:'card',
+ {nm:'결제·구독 문의가 있어요', ex:'결제, 구독', icon:'card',
   items:[
    {nm:'청구 금액이 이상해요', ds:'금액 산정·쿠폰·세탁권', route:'1:1', cnt:7261},
    {nm:'구독을 해지·변경·정지하고 싶어요', route:'기능', cnt:3376, action:'구독 관리로 이동', goToast:'구독 관리 페이지로 이동합니다', guide:'구독 해지·요금제 변경·일시정지를 구독 관리에서 직접 진행할 수 있어요.'},
   ], etc:{folded:'환불·포인트가 안 들어왔거나 결제수단을 바꾸고 싶어요', foldCnt:2279,
       examples:['결제수단 변경 등'],
       opts:['환불은 언제 처리되나요?','헌옷 포인트가 안 들어왔어요','결제수단을 바꾸고 싶어요','결제수단을 삭제하고 싶어요','구독·요금제가 궁금해요']}},
- {nm:'그 밖에 궁금한 게 있어요', ex:'앱 오류, 세탁 가능 여부, 이용방법', icon:'folder',
+ {nm:'그 밖에 궁금한 게 있어요', ex:'앱 오류, 이용방법, 세탁 가능 여부', icon:'folder',
   items:[
    {nm:'앱 오류가 있어요', ds:'화면·버튼 오류 등', route:'1:1', cnt:522},
   ], etc:{folded:'서비스 이용 방법이 궁금해요', foldCnt:5572, examples:['이용방법, 세탁 가능 여부\n'], opts:['서비스 이용 방법','보관 서비스','헌옷수거','회원·탈퇴','수선 신청 방법']}},
@@ -599,6 +609,16 @@ const CARE_ORDERS = [
   { id:'AC240910001', item:'코트',    pickedAt:'26.09.10', receivedAt:'26.09.11', type:'안심케어',   status:'rejected_recare', thumb:'' },
   { id:'IT240912001', item:'가디건',  pickedAt:'26.09.12', receivedAt:'26.09.13', type:'품목재분류', status:'item_in_review',  thumb:'' },
 ];
+// receivedAt: 최근 30일 내 랜덤 배정 후 날짜 내림차순 정렬 (로드 시 1회)
+(function(){
+  const fmt=d=>`${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  const today=new Date();
+  CARE_ORDERS.forEach(o=>{
+    const d=new Date(today); d.setDate(d.getDate()-Math.floor(Math.random()*30));
+    o.receivedAt=fmt(d);
+  });
+  CARE_ORDERS.sort((a,b)=>a.receivedAt<b.receivedAt?1:a.receivedAt>b.receivedAt?-1:0);
+})();
 const CARE_ACTIVE = ['in_review','approved_recare','approved_refund','cs_contact','item_in_review'];
 const CARE_STATUS = {
   in_review:       {label:'확인 중',         bg:'var(--orange-01,#FFE5DC)',    fg:'var(--orange-standard,#FF4F17)'},
@@ -625,15 +645,15 @@ function renderCareList(){
   const card=o=>`<div class="care-card" data-care="${o.id}">
       ${careThumb(o)}
       <div class="cc-meta">
-        <div class="cc-top">${careTypeBadge(o.type)}<span class="cc-nm">${o.item}</span></div>
-        <div class="cc-sub">${o.receivedAt.slice(3)} 접수</div>
+        <div class="cc-top"><span class="cc-nm">${o.item}</span></div>
+        <div class="cc-sub">${o.receivedAt} 승인</div>
       </div>
-      <span class="cc-status" style="background:${(CARE_STATUS[o.status]||{bg:'var(--cool-gray-100)'}).bg}; color:${(CARE_STATUS[o.status]||{fg:'var(--ink)'}).fg}">${CARE_STATUS[o.status]?.label||o.status}</span>
       <div class="chev"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C4C8CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     </div>`;
   return `<div class="pad">
-    <h1 class="h1">내 접수 현황</h1>
-    <p class="lede">접수하신 안심케어·품목 재분류 진행 상황이에요</p>
+    <h1 class="h1">안심케어 문의</h1>
+    <p class="lede">세탁물을 선택해 문의해 주세요</p>
+    <div class="care-list-label">최근 30일 이내 승인건</div>
     <div class="care-sec">${CARE_ORDERS.map(card).join('')}</div>
   </div>`;
 }
@@ -705,7 +725,7 @@ function renderHome(){
   const careN=careActiveOrders.length;
   const hasCare=careActiveOrders.some(o=>o.type==='안심케어');
   const hasItem=careActiveOrders.some(o=>o.type==='품목재분류');
-  const careLabel = (hasCare&&hasItem) ? `안심케어 외 ${careN}건 진행 중`
+  const careLabel = (hasCare&&hasItem) ? `안심케어 ${careN}건 진행 중`
                   : hasItem ? `품목 재분류 ${careN}건 진행 중`
                   : `안심케어 ${careN}건 진행 중`;
   const careBanner=careN?`<div class="care-banner" data-care-banner="1">
