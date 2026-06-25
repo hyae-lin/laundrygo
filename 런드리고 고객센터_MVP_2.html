@@ -567,27 +567,27 @@ const TILEICON={
 const IA=[
  {nm:'수거·배송 문제가 있어요', ex:'세탁물 분실, 오배송, 배송 지연, 런드렛', icon:'truck',
   items:[
-   {nm:'세탁물이 안왔어요', ds:'세탁물 전체 또는 일부가 안 옴', route:'1:1', cnt:5434, priority:'urgent'},
+   {nm:'세탁물이 분실됐어요', ds:'세탁물 전체 또는 일부가 안 옴', route:'1:1', cnt:5434, priority:'urgent'},
    {nm:'다른 집 세탁물이 왔어요', ds:'다른 사람 세탁물이 섞여서 배송됨', route:'1:1', cnt:717, priority:'urgent'},
-   {nm:'잘못 수거·배송 됐어요', route:'1:1', cnt:587, priority:'urgent'},
+   {nm:'잘못 수거됐어요', route:'1:1', cnt:587, priority:'urgent'},
    {nm:'배송이 지연됐어요', ds:'배송이 늦거나 아직 안 옴', route:'1:1', cnt:2588, priority:'normal'},
    {nm:'보낸 세탁물에 소지품이 있어요', ds:'차키·지갑·에어팟 등', route:'1:1', cnt:602, priority:'normal'},
    {nm:'수거·배송 방법을 바꾸고 싶어요', ds:'시간·위치·여러밤 배송 등', route:'챗봇', cnt:1891, hide:true},
   ], etc:{folded:'수거가 안 됐거나 런드렛에 문제가 있어요', foldCnt:3164,
       examples:['세탁물 미수거, 런드렛 비밀번호 등'],
-      opts:['세탁물이 안왔어요','다른 집 세탁물이 왔어요','잘못 수거·배송 됐어요','런드렛 비밀번호를 모르겠어요','런드렛을 반납하고 싶어요','런드렛이 손상됐어요','수거가 안 됐어요(미수거)','수거·배송 방법을 바꾸고 싶어요']}},
- {nm:'세탁 품질·분류 문제가 있어요', ex:'얼룩·손상, 품목 재분류', icon:'washer',
+      opts:['세탁물이 분실됐어요','다른 집 세탁물이 왔어요','잘못 수거·배송 됐어요','런드렛 비밀번호를 모르겠어요','런드렛을 반납하고 싶어요','런드렛이 손상됐어요','수거가 안 됐어요(미수거)','수거·배송 방법을 바꾸고 싶어요']}},
+ {nm:'세탁 결과가 마음에 안들어요', ex:'얼룩, 손상, 구김', icon:'washer',
   items:[
    {nm:'세탁 결과가 마음에 안들어요', ds:'얼룩·손상·변형·이염·냄새·다림질 불량·수선 불량', route:'안심케어', cnt:12185, priority:'high', action:'안심케어로 접수하기', guide:'세탁 결과가 만족스럽지 않으셨군요. 사진과 함께 안심케어로 접수하시면 재처리 또는 보상으로 도와드려요.'},
-   {nm:'품목이 잘못 분류됐어요', ds:'품목 오분류 정정', route:'품목재분류', cnt:1241, action:'품목 재분류 요청하기', guide:'분류된 품목이 실제와 다르면 재분류를 요청할 수 있어요. 해당 품목을 선택해 정정 요청을 보내주세요.'},
    {nm:'세탁이 반려된 이유가 궁금해요', ds:'세탁불가·미진행 사유', route:'챗봇', cnt:1063, hide:true},
   ], etc:{folded:'이 옷이 세탁됐는지/왜 프리미엄인지 궁금해요', foldCnt:2620, examples:['프리미엄 분류 사유 등'], opts:['이 옷 세탁할 수 있나요?','왜 프리미엄으로 분류됐나요?','세탁이 반려된 이유가 궁금해요']}},
- {nm:'결제·구독 문의가 있어요', ex:'결제, 구독', icon:'card',
+ {nm:'결제·구독 문의가 있어요', ex:'품목 재분류, 결제, 구독', icon:'card',
   items:[
+   {nm:'품목이 잘못 분류됐어요', ds:'품목 오분류 정정', route:'품목재분류', cnt:1241, action:'품목 재분류 요청하기', guide:'분류된 품목이 실제와 다르면 재분류를 요청할 수 있어요. 해당 품목을 선택해 정정 요청을 보내주세요.'},
    {nm:'청구 금액이 이상해요', ds:'금액 산정·쿠폰·세탁권', route:'1:1', cnt:7261},
    {nm:'구독을 해지·변경·정지하고 싶어요', route:'기능', cnt:3376, action:'구독 관리로 이동', goToast:'구독 관리 페이지로 이동합니다', guide:'구독 해지·요금제 변경·일시정지를 구독 관리에서 직접 진행할 수 있어요.'},
   ], etc:{folded:'환불·포인트가 안 들어왔거나 결제수단을 바꾸고 싶어요', foldCnt:2279,
-      examples:['결제수단 변경 등'],
+      examples:['프리미엄 분류 사유, 결제수단 변경 등'],
       opts:['환불은 언제 처리되나요?','헌옷 포인트가 안 들어왔어요','결제수단을 바꾸고 싶어요','결제수단을 삭제하고 싶어요','구독·요금제가 궁금해요']}},
  {nm:'그 밖에 궁금한 게 있어요', ex:'앱 오류, 이용방법, 세탁 가능 여부', icon:'folder',
   items:[
@@ -817,10 +817,10 @@ function handoffCard(ctx){
     ${sum}
   </div>`;
 }
-const AUTO_REC=['세탁물이 안왔어요','옷에 물건을 두고 왔어요 (차키·지갑 등)','내 것이 아닌 세탁물이 왔어요'];
+const AUTO_REC=['세탁물이 분실됐어요','옷에 물건을 두고 왔어요 (차키·지갑 등)','내 것이 아닌 세탁물이 왔어요'];
 function lostInit(){ window._lostFlow={sel:null, gsel:[], title:'', content:'', atts:[]}; }
 function lostSet(k,v){ if(window._lostFlow) window._lostFlow[k]=v; }
-function lostActive(){ const t=stack[stack.length-1]; return (t&&t.type==='route'&&!t.escalated&&t.item&&t.item.nm==='세탁물이 안왔어요'&&window._lostFlow)?window._lostFlow:null; }
+function lostActive(){ const t=stack[stack.length-1]; return (t&&t.type==='route'&&!t.escalated&&t.item&&t.item.nm==='세탁물이 분실됐어요'&&window._lostFlow)?window._lostFlow:null; }
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function changeRec(){ pop(); pop(); }       // 3/3 → 1/3 (수거건 다시 선택, 입력값 유지)
 function changeGarments(){ pop(); }          // 3/3 → 2/3 (세탁물 다시 선택)
@@ -1097,7 +1097,7 @@ const GARMENTS=[
   [ {nm:'다운 패딩', tag:'프리미엄'}, {nm:'정장 자켓', tag:'개별클리닝'}, {nm:'실크 원피스', tag:'프리미엄'}, {nm:'면 셔츠 3벌', tag:'생활빨래'} ],
 ];
 const CARE_DESC={
-  '안심케어':'세탁·수선 결과가 만족스럽지 않으셨나요? 문제가 있는 세탁물을 선택하면 안심케어로 접수해 재처리 또는 보상을 도와드려요.',
+  '안심케어':'세탁 결과가 만족스럽지 않으셨나요? 문제가 있는 세탁물을 선택하면 안심케어로 접수해 재처리 또는 보상을 도와드려요.',
   '품목 재분류':'분류된 품목이 실제와 다른가요? 잘못 분류된 세탁물을 선택하면 재분류를 요청할 수 있어요. 확인 후 추가금이 정정됩니다.'
 };
 function careFlow(item, feat, verb, step, sel, gsel){
@@ -1268,6 +1268,7 @@ function bind(){
   document.querySelectorAll('.row').forEach(r=>r.onclick=()=>{
     const d=+r.dataset.d;
     if(d===3){ push({type:'route', d:3, isEtc:true}); return; }
+    if(d===1){ push({type:'route', d:1, item:IA[1].items[0], isEtc:false}); return; }
     push({type:'sub', d});
   });
   document.querySelectorAll('.faq-q').forEach(q=>q.onclick=()=>{
@@ -1278,7 +1279,7 @@ function bind(){
     const item=IA[di].items[ii];
     if(item.goToast){ toast(item.goToast); return; }
     if(item.route==='1:1'){ goZendesk(item); return; }
-    if(item.nm==='세탁물이 안왔어요') lostInit();
+    if(item.nm==='세탁물이 분실됐어요') lostInit();
     push({type:'route', d:di, item, isEtc:false});
   });
   document.querySelectorAll('.etc').forEach(b=>b.onclick=()=>push({type:'route', d:+b.dataset.d, isEtc:true}));
@@ -1307,7 +1308,7 @@ function bind(){
     const t=stack[stack.length-1], sel=+r.dataset.rec;
     // 자동 진행 항목(분실·누락 / 소지품 / 타인 세탁물): 수거건 선택 즉시 다음 단계로
     if(t.type==='route' && !t.escalated && t.item && AUTO_REC.includes(t.item.nm) && (t.step||1)===1){
-      if(t.item.nm==='세탁물이 안왔어요' && window._lostFlow){ if(window._lostFlow.sel!==sel) window._lostFlow.gsel=[]; window._lostFlow.sel=sel; }
+      if(t.item.nm==='세탁물이 분실됐어요' && window._lostFlow){ if(window._lostFlow.sel!==sel) window._lostFlow.gsel=[]; window._lostFlow.sel=sel; }
       window._sel=sel;
       push({type:'route', d:t.d, item:t.item, isEtc:false, step:2, sel});
       return;
