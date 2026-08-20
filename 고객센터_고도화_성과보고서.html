@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고객센터 고도화(LAUN-2606) 성과 보고서</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@1.3.9/dist/web/static/pretendard.css" />
+<style>
+  :root{
+    color-scheme: light;
+    --bg:            #f7f8fa;
+    --surface-2:     #eef0f3;
+    --card:          #ffffff;
+    --border:        #e8eaed;
+    --border-strong: #d7dae0;
+    --text-primary:  #111827;
+    --text-secondary:#374151;
+    --text-tertiary: #6b7280;
+
+    --green:      #059669;
+    --green-bg:   #ecfdf5;
+    --green-border:#a7f3d0;
+
+    --red:        #dc2626;
+    --red-bg:     #fef2f2;
+    --red-border: #fecaca;
+
+    --amber:      #b45309;
+    --amber-bg:   #fffbeb;
+    --amber-border:#fde68a;
+
+    --blue:       #2563eb;
+    --blue-bg:    #eff6ff;
+    --blue-border:#bfdbfe;
+
+    --font-sans: 'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    --nav-h: 56px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      color-scheme: dark;
+      --bg:            #0b0d10;
+      --surface-2:     #14171c;
+      --card:          #131619;
+      --border:        #23272e;
+      --border-strong: #2f3540;
+      --text-primary:  #f3f4f6;
+      --text-secondary:#d1d5db;
+      --text-tertiary: #9ca3af;
+
+      --green:      #34d399;
+      --green-bg:   rgba(52,211,153,0.10);
+      --green-border:rgba(52,211,153,0.28);
+
+      --red:        #f87171;
+      --red-bg:     rgba(248,113,113,0.10);
+      --red-border: rgba(248,113,113,0.28);
+
+      --amber:      #fbbf24;
+      --amber-bg:   rgba(251,191,36,0.10);
+      --amber-border:rgba(251,191,36,0.28);
+
+      --blue:       #60a5fa;
+      --blue-bg:    rgba(96,165,250,0.10);
+      --blue-border:rgba(96,165,250,0.28);
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .container{max-width:1248px;margin:0 auto;padding:0 32px;}
+
+  /* NAV */
+  .topnav{
+    position:sticky;top:0;z-index:100;height:var(--nav-h);
+    background:color-mix(in srgb, var(--card) 85%, transparent);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .topnav-inner{
+    max-width:1248px;margin:0 auto;padding:0 32px;height:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;flex:none;}
+  .brand-mark{
+    width:24px;height:24px;border-radius:6px;background:var(--green);
+    display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .brand-mark svg{width:13px;height:13px;}
+  .brand-title{font-size:14px;font-weight:700;color:var(--text-primary);white-space:nowrap;}
+  .brand-title span{color:var(--text-tertiary);font-weight:500;margin-left:6px;font-family:var(--font-sans);font-size:12.5px;}
+  .navlinks{display:flex;gap:6px;overflow-x:auto;}
+  .navlinks a{
+    font-size:13.5px;font-weight:600;color:var(--text-secondary);text-decoration:none;
+    padding:6px 12px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s;
+  }
+  .navlinks a:hover{background:var(--surface-2);color:var(--text-primary);}
+
+  /* HEADER */
+  .hero-header{background:var(--card);border-bottom:1px solid var(--border);}
+  .hero-inner{
+    max-width:1248px;margin:0 auto;padding:48px 32px 40px;
+    display:grid;grid-template-columns:1fr 340px;gap:48px;align-items:start;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:14px;
+  }
+  .eyebrow .bars{display:flex;align-items:flex-end;gap:2px;height:12px;}
+  .eyebrow .bars i{display:block;width:3px;background:var(--green);border-radius:1px;}
+  .eyebrow .bars i:nth-child(1){height:40%;}
+  .eyebrow .bars i:nth-child(2){height:70%;}
+  .eyebrow .bars i:nth-child(3){height:100%;}
+  h1{font-size:36px;font-weight:800;letter-spacing:-0.02em;margin:0 0 14px;line-height:1.25;}
+  .hero-desc{font-size:14.5px;color:var(--text-secondary);max-width:580px;margin:0 0 18px;}
+  .status-pill-row{display:flex;align-items:center;gap:8px;}
+
+  .meta-col{border-left:1px solid var(--border);padding-left:28px;}
+  .meta-row{padding:12px 0;border-bottom:1px solid var(--border);}
+  .meta-row:last-child{border-bottom:none;}
+  .meta-label{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;}
+  .meta-value{font-family:var(--font-sans);font-size:14px;color:var(--text-primary);font-weight:600;}
+
+  /* PILLS */
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;
+    font-size:12px;font-weight:700;letter-spacing:.01em;line-height:1.5;white-space:nowrap;
+  }
+  .pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex:none;}
+  .pill-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+  .pill-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+  .pill-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+  .pill-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+  .pill-neutral{background:var(--surface-2);color:var(--text-secondary);border:1px solid var(--border);}
+  .pill-neutral::before{display:none;}
+
+  /* SECTIONS */
+  main{padding:52px 0 44px;}
+  .rpt-section{margin-bottom:64px;scroll-margin-top:calc(var(--nav-h) + 20px);}
+  .rpt-section:last-child{margin-bottom:0;}
+  .sec-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+  .sec-num{font-family:var(--font-sans);font-size:20px;font-weight:800;color:var(--green);line-height:1;user-select:none;flex:none;}
+  .sec-title{font-size:20px;font-weight:800;letter-spacing:-0.01em;margin:0;color:var(--text-primary);}
+  .sec-desc{
+    font-size:14px;color:var(--text-secondary);margin:0 0 20px 0;line-height:1.5;
+  }
+
+  /* CARDS & STATS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;}
+  .card + .card{margin-top:16px;}
+  .card-title{font-size:14px;font-weight:700;margin:0 0 16px;color:var(--text-primary);}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;flex-direction:column;}
+  .stat-label{font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;min-height:32px;}
+  .hero-num{font-family:var(--font-sans);font-size:36px;font-weight:800;letter-spacing:-0.02em;line-height:1;}
+  .hero-num .u{font-size:17px;font-weight:600;color:var(--text-tertiary);margin-left:2px;}
+  .hero-num.good{color:var(--green);}
+  .stat-sub{font-family:var(--font-sans);font-size:13px;color:var(--text-tertiary);margin-top:8px;}
+  .stat-caveat{font-size:12.5px;color:var(--text-secondary);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);line-height:1.5;}
+
+  .headline-stat{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--border);}
+  .headline-label{font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;}
+  .headline-sub{font-family:var(--font-sans);font-size:13px;color:var(--text-tertiary);margin-top:4px;}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .mini-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;}
+  .mini-card h3{font-size:14px;font-weight:700;margin:0 0 14px;color:var(--text-primary);}
+  .mini-card ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--text-secondary);}
+  .mini-card li{margin-bottom:8px;}
+  .mini-card li:last-child{margin-bottom:0;}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{text-align:left;font-size:12px;font-weight:700;color:var(--text-tertiary);padding:0 12px 10px;border-bottom:1px solid var(--border);}
+  thead th.num,td.num{text-align:right;font-family:var(--font-sans);}
+  tbody td{padding:12px;border-bottom:1px solid var(--border);color:var(--text-secondary);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr.highlight-row{background:var(--green-bg);}
+  tbody td.strong{color:var(--text-primary);font-weight:700;}
+  .table-note{font-size:12.5px;color:var(--text-tertiary);margin-top:14px;line-height:1.5;}
+
+  .insight-top{
+    font-size:13.5px;color:var(--text-secondary);margin:0 0 18px 0;padding-bottom:16px;
+    border-bottom:1px solid var(--border);line-height:1.6;
+  }
+  .insight-top b{color:var(--text-primary);font-weight:700;}
+  .insight-top .tag{
+    display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;
+    font-family:var(--font-sans);font-size:11.5px;font-weight:700;
+    color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);
+    margin-right:8px;
+  }
+
+  /* FUNNEL */
+  .hfunnel-grid{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:12px;margin-bottom:12px;}
+  .hfunnel-card{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;text-align:center;}
+  .hfunnel-title{font-size:12px;font-weight:700;color:var(--text-tertiary);margin-bottom:4px;}
+  .hfunnel-val{font-size:22px;font-weight:800;color:var(--text-primary);font-family:var(--font-sans);}
+  .hfunnel-arrow{display:flex;flex-direction:column;align-items:center;color:var(--text-tertiary);font-size:12px;font-weight:700;}
+  .hfunnel-arrow svg{width:16px;height:16px;margin-top:2px;color:var(--green);}
+
+  .compact-funnel-list{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+  .compact-funnel-item{background:var(--surface-2);border-radius:6px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:13.5px;}
+  .compact-step{display:flex;align-items:center;gap:8px;}
+  .compact-step-num{width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .mfunnel-note{font-size:12.5px;color:var(--text-secondary);margin:14px 0 0;padding-top:12px;border-top:1px solid var(--border);line-height:1.55;font-weight:400;}
+
+  /* BARS */
+  .hbar-row{display:grid;grid-template-columns:140px 1fr 52px;gap:10px;align-items:center;margin-bottom:8px;}
+  .hbar-row:last-child{margin-bottom:0;}
+  .hbar-name{font-size:13px;color:var(--text-secondary);font-weight:600;}
+  .hbar-track{position:relative;height:12px;background:var(--surface-2);border-radius:4px;}
+  .hbar-fill{position:absolute;top:0;bottom:0;left:0;border-radius:4px;background:var(--text-tertiary);}
+  .hbar-fill.attn{background:var(--red);}
+  .hbar-val{font-family:var(--font-sans);font-size:12.5px;color:var(--text-primary);font-weight:700;text-align:right;}
+
+  /* CONCLUSION SINGLE CARD */
+  .concl-single-card{border-radius:10px;padding:24px;border:1px solid var(--border);background:var(--card);}
+  .concl-single-card ul{margin:0;padding-left:20px;font-size:14px;color:var(--text-secondary);line-height:1.8;}
+  .concl-single-card li{margin-bottom:10px;}
+  .concl-single-card li:last-child{margin-bottom:0;}
+
+  footer{border-top:1px solid var(--border);padding:24px 0 48px;font-size:12px;color:var(--text-tertiary);line-height:1.6;font-family:var(--font-sans);}
+
+  @media (max-width:900px){
+    .hero-inner{grid-template-columns:1fr;gap:24px;}
+    .meta-col{border-left:none;border-top:1px solid var(--border);padding-left:0;padding-top:16px;}
+    .stat-grid, .two-col{grid-template-columns:1fr;}
+    .hfunnel-grid{grid-template-columns:1fr;gap:8px;}
+    .hfunnel-arrow{transform:rotate(90deg);margin:4px 0;}
+    .navlinks{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="brand">
+        <span class="brand-mark"><svg viewBox="0 0 12 12" fill="none"><rect x="0" y="7" width="2.4" height="5" rx="0.5" fill="#fff"/><rect x="4.8" y="3" width="2.4" height="9" rx="0.5" fill="#fff"/><rect x="9.6" y="0" width="2.4" height="12" rx="0.5" fill="#fff"/></svg></span>
+        <span class="brand-title">고객센터 고도화 성과 보고서<span>LAUN-2606</span></span>
+      </div>
+      <div class="navlinks">
+        <a href="#summary">01 요약</a>
+        <a href="#background">02 배경</a>
+        <a href="#voc">03 VOC 변화</a>
+        <a href="#amplitude">04 유저 행동</a>
+        <a href="#conclusion">05 향후 과제</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero-header">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow"><span class="bars"><i></i><i></i><i></i></span>Phase 1 Performance Report</div>
+        <h1>고객센터 고도화 Phase 1 성과 보고서</h1>
+        <p class="hero-desc">배포 전후 30일 간의 VOC, 수거량, Amplitude 데이터를 종합 분석한 핵심 요약 보고서입니다.</p>
+        <div class="status-pill-row">
+          <span class="pill pill-green">적용완료</span>
+          <span class="pill pill-neutral">2026-07-20 배포</span>
+        </div>
+      </div>
+      <div class="meta-col">
+        <div class="meta-row"><div class="meta-label">배포일</div><div class="meta-value">2026-07-20 (월)</div></div>
+        <div class="meta-row"><div class="meta-label">분석 기준</div><div class="meta-value">배포 전후 30일 데이터 비교</div></div>
+        <div class="meta-row"><div class="meta-label">분석 범위</div><div class="meta-value">VOC · 수거신청량 · Amplitude</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+  <div class="container">
+
+    <!-- 01 -->
+    <section class="rpt-section" id="summary">
+      <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">핵심 지표 요약</h2></div>
+      <p class="sec-desc">Phase 1 배포 전후 30일 핵심 변화율 요약입니다.</p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">VOC 일평균 건수</div>
+          <div class="hero-num good">▼11.9<span class="u">%</span></div>
+          <div class="stat-sub">299 → 263건/일</div>
+          <div class="stat-caveat">수거신청량 보정(+0.1%)을 거쳐 <b>실질적 개선</b> 확인</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">품질 불만 문의 (통합)</div>
+          <div class="hero-num good">▼18.4<span class="u">%</span></div>
+          <div class="stat-sub">2,127 → 1,735건</div>
+          <div class="stat-caveat">세탁품질 + 안심케어 기능 직결을 통한 <b>목표 달성</b></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">해결 경로 전환율</div>
+          <div class="hero-num good">68.5<span class="u">%</span></div>
+          <div class="stat-sub">8,349명 중 5,715명 도달</div>
+          <div class="stat-caveat">홈 진입 유저 대다수 도달</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">구독해지 관련 문의</div>
+          <div class="hero-num good">▼54.5<span class="u">%</span></div>
+          <div class="stat-sub">374 → 170건</div>
+          <div class="stat-caveat"><b>구독관리 직결(전환율 56.1%)</b>로 CS 인입 크게 완화</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="rpt-section" id="background">
+      <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Phase 1 배경 및 목표</h2></div>
+      <div class="two-col">
+        <div class="mini-card">
+          <h3>배경 (AS-IS)</h3>
+          <ul>
+            <li><b>긴급 대응 지연:</b> 단순 문의 혼재로 수기 분류 필요</li>
+            <li><b>단순 문의 쏠림:</b> 셀프 해결 가능 문의의 CS 인입 과다</li>
+            <li><b>유형 선택 혼선:</b> 공급자 중심 카테고리로 고객 불편</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h3>목표 (TO-BE)</h3>
+          <ul>
+            <li><b>우선순위 자동화:</b> 접수 시점 긴급도·유형 자동 분류</li>
+            <li><b>CS 인입 효율화:</b> 구독·안심케어·챗봇 기능 직결</li>
+            <li><b>고객 중심 분류:</b> 고객 언어로 직관적인 체계 재정의</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="rpt-section" id="voc">
+      <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">VOC 변화</h2></div>
+      <p class="sec-desc">수거신청량 보정 반영 시, 물량 변동 없는 <b>실질적 VOC 개선</b>입니다.</p>
+
+      <div class="card">
+        <p class="insight-top"><span class="tag">핵심 해석</span><b>구독관리(-30.7%)</b>와 <b>세탁품질(-20.3%)</b> 등 핵심 타겟 기능의 직접 연결 효과로 인입 감소를 견인했습니다.</p>
+
+        <div class="headline-stat">
+          <div>
+            <div class="headline-label">VOC 일평균 건수 (전체)</div>
+            <div class="hero-num good">▼11.9<span class="u">%</span></div>
+            <div class="headline-sub">299 → 263건/일</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>카테고리</th><th class="num">이전 (6/20–7/19)</th><th class="num">이후 (7/20–8/18)</th><th class="num">증감률</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row"><td class="strong">구독/이용권 관리</td><td class="num">475</td><td class="num">329</td><td class="num"><span class="pill pill-green">-30.7%</span></td></tr>
+            <tr class="highlight-row"><td class="strong">세탁 품질</td><td class="num">2,072</td><td class="num">1,652</td><td class="num"><span class="pill pill-green">-20.3%</span></td></tr>
+            <tr><td class="strong">결제/환불/요금제</td><td class="num">1,573</td><td class="num">1,264</td><td class="num"><span class="pill pill-green">-19.6%</span></td></tr>
+            <tr><td class="strong">기타/단순문의</td><td class="num">1,191</td><td class="num">1,052</td><td class="num"><span class="pill pill-green">-11.7%</span></td></tr>
+            <tr><td class="strong">수선 서비스</td><td class="num">377</td><td class="num">336</td><td class="num"><span class="pill pill-green">-10.9%</span></td></tr>
+            <tr><td class="strong">수거/배송</td><td class="num">2,414</td><td class="num">2,251</td><td class="num"><span class="pill pill-green">-6.8%</span></td></tr>
+            <tr><td>이벤트/쿠폰 <span class="tag-inline">(프로모션)</span></td><td class="num">411</td><td class="num">572</td><td class="num"><span class="pill pill-red">+39.2%</span></td></tr>
+          </tbody>
+        </table>
+        <div class="table-note">* 이벤트/쿠폰 증가는 별도 프로모션 영향으로 개선 폭 해석에서 제외함.</div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="rpt-section" id="amplitude">
+      <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Amplitude 유저 행동 분석</h2></div>
+      <p class="sec-desc">개편 화면(07/20~08/19) 기준, 절차별 셀프 해결 효율 검증 결과입니다.</p>
+
+      <div class="card">
+        <p class="insight-top"><span class="tag">핵심 해석</span>대다수 유저가 해결 경로에 도달(68.5%)하였으며, 인입 1위인 <b>'그 밖의 궁금한 점'</b>은 챗봇 직결 랜딩 경로로 작동해 단순 문의를 셀프 해결하고 있습니다.</p>
+
+        <div class="card-title">고객센터 탐색 퍼널 (전환 흐름)</div>
+        <div class="hfunnel-grid">
+          <div class="hfunnel-card">
+            <div class="hfunnel-title">1. 고객센터 홈 진입</div>
+            <div class="hfunnel-val">8,349명</div>
+          </div>
+          <div class="hfunnel-arrow">
+            81.2%
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="hfunnel-card">
+            <div class="hfunnel-title">2. 카테고리 진입</div>
+            <div class="hfunnel-val">6,780명</div>
+          </div>
+          <div class="hfunnel-arrow">
+            84.3%
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="hfunnel-card" style="border-color:var(--green-border); background:var(--green-bg);">
+            <div class="hfunnel-title" style="color:var(--green);">3. 최종 도달 (해결/챗봇)</div>
+            <div class="hfunnel-val" style="color:var(--green);">5,715명 <span style="font-size:12.5px;font-weight:600;">(68.5%)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:14px;">
+        <div class="mini-card">
+          <h3>대분류 인입 Top 4</h3>
+          <div class="hbar-row"><div class="hbar-name">그 밖의 궁금한 점</div><div class="hbar-track"><div class="hbar-fill" style="width:100%;"></div></div><div class="hbar-val">3,488</div></div>
+          <div class="hbar-row"><div class="hbar-name">수거·배송 문의</div><div class="hbar-track"><div class="hbar-fill" style="width:91%;"></div></div><div class="hbar-val">3,189</div></div>
+          <div class="hbar-row"><div class="hbar-name">세탁 결과 불만족</div><div class="hbar-track"><div class="hbar-fill" style="width:64%;"></div></div><div class="hbar-val">2,228</div></div>
+          <div class="hbar-row"><div class="hbar-name">결제·구독 문의</div><div class="hbar-track"><div class="hbar-fill" style="width:61%;"></div></div><div class="hbar-val">2,115</div></div>
+        </div>
+
+        <div class="mini-card">
+          <h3>중분류 인입 Top 4</h3>
+          <div class="hbar-row"><div class="hbar-name">구독 해지·변경·정지</div><div class="hbar-track"><div class="hbar-fill attn" style="width:100%;"></div></div><div class="hbar-val">700</div></div>
+          <div class="hbar-row"><div class="hbar-name">청구 금액 이상</div><div class="hbar-track"><div class="hbar-fill attn" style="width:95%;"></div></div><div class="hbar-val">665</div></div>
+          <div class="hbar-row"><div class="hbar-name">세탁물 분실</div><div class="hbar-track"><div class="hbar-fill attn" style="width:75%;"></div></div><div class="hbar-val">527</div></div>
+          <div class="hbar-row"><div class="hbar-name">세탁물 오수거</div><div class="hbar-track"><div class="hbar-fill attn" style="width:46%;"></div></div><div class="hbar-val">326</div></div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:14px;">
+        <div class="mini-card">
+          <h3>기능 연결 퍼널① 구독 해지·변경·정지</h3>
+          <div class="compact-funnel-list">
+            <div class="compact-funnel-item"><div class="compact-step"><span class="compact-step-num">1</span>문의 진입</div><b>700명</b></div>
+            <div class="compact-funnel-item"><div class="compact-step"><span class="compact-step-num">2</span>구독관리 화면 조회</div><b>527명 <span style="color:var(--text-tertiary);font-size:11.5px;">(75.3%)</span></b></div>
+            <div class="compact-funnel-item" style="border:1px solid var(--green-border); background:var(--green-bg);"><div class="compact-step"><span class="compact-step-num">3</span>최종 행동 (해지/변경)</div><b style="color:var(--green);">393명 (56.1%)</b></div>
+          </div>
+          <p class="mfunnel-note">기능 직결을 통해 <b>56.1%가 셀프 처리</b>를 완료했습니다.</p>
+        </div>
+
+        <div class="mini-card">
+          <h3>기능 연결 퍼널② 안심케어</h3>
+          <div class="compact-funnel-list">
+            <div class="compact-funnel-item"><div class="compact-step"><span class="compact-step-num">1</span>카테고리 진입</div><b>2,228명</b></div>
+            <div class="compact-funnel-item"><div class="compact-step"><span class="compact-step-num">2</span>수거건 선택</div><b>1,755명 <span style="color:var(--text-tertiary);font-size:11.5px;">(78.8%)</span></b></div>
+            <div class="compact-funnel-item" style="border:1px solid var(--green-border); background:var(--green-bg);"><div class="compact-step"><span class="compact-step-num">3</span>세탁물 선택</div><b style="color:var(--green);">1,240명 (55.7%)</b></div>
+          </div>
+          <p class="mfunnel-note">세탁 품질 문의가 <b>안심케어 기능으로 연결</b>되었습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 OPTION A INTEGRATED SINGLE CARD (PRD PHASE 2 BASED) -->
+    <section class="rpt-section" id="conclusion">
+      <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">향후 과제 (Phase 2 계획)</h2></div>
+      <div class="concl-single-card">
+        <ul>
+          <li><b>개인화 맞춤 안내 도입:</b> 1:1 문의 접수 전 결제·청구·쿠폰 등 개인화 데이터를 사전 노출하여 셀프 해결률 증대</li>
+          <li><b>챗봇 Q&A 시나리오 고도화:</b> 대분류별 맞춤 안내 및 자주 묻는 질문/답변 추가로 단순 문의 대응 강화</li>
+          <li><b>인앱 1:1 문의 접수 전환:</b> 외부 젠데스크 연결 방식에서 고객센터 화면 내 직접 접수 체계로 고도화</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      데이터 출처: 전체 1:1문의 원본(50,379건) · 수거신청량(2026-06-17~08-18) · 구독해지 여부 LLM 분류 데이터(1,980건) · Amplitude 대시보드.
+    </footer>
+
+  </div>
+  </main>
+
+</body>
+</html>
