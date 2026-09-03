@@ -1,0 +1,358 @@
+<title>라이트 유저 진입장벽</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,440;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#F4F8F8;
+    --surface:#FFFFFF;
+    --surface-2:#EBF2F2;
+    --border:#DBE5E5;
+    --ink:#101A1C;
+    --ink-2:#46585C;
+    --ink-3:#7E9093;
+    --accent:#00768E;
+    --accent-soft:#DCF0F3;
+    --accent-ink:#00566A;
+    --warn:#A6325A;
+    --warn-soft:#F6E1E9;
+    --warn-ink:#832349;
+    --shadow: 0 1px 2px rgba(16,26,28,.04), 0 8px 24px -12px rgba(16,26,28,.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0C1315;
+      --surface:#141E20;
+      --surface-2:#1A2628;
+      --border:#293739;
+      --ink:#E9F1F1;
+      --ink-2:#B7C6C8;
+      --ink-3:#7E9294;
+      --accent:#3AB0CB;
+      --accent-soft:#16323A;
+      --accent-ink:#82D6E9;
+      --warn:#D4788F;
+      --warn-soft:#3A222B;
+      --warn-ink:#F0A9BB;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0C1315;
+    --surface:#141E20;
+    --surface-2:#1A2628;
+    --border:#293739;
+    --ink:#E9F1F1;
+    --ink-2:#B7C6C8;
+    --ink-3:#7E9294;
+    --accent:#3AB0CB;
+    --accent-soft:#16323A;
+    --accent-ink:#82D6E9;
+    --warn:#D4788F;
+    --warn-soft:#3A222B;
+    --warn-ink:#F0A9BB;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, 'Malgun Gothic', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 80px;
+  }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
+
+  /* header */
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent-ink);
+    background:var(--accent-soft);
+    padding:5px 11px; border-radius:100px;
+    margin-bottom:18px;
+  }
+  header h1{ font-size:38px; font-weight:650; color:var(--ink); }
+  header p.lede{
+    margin-top:12px;
+    color:var(--ink-2); font-size:16px;
+  }
+  .timestamp{
+    margin-top:20px; display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; color:var(--ink-3);
+    border-top:1px solid var(--border); padding-top:14px; width:100%;
+  }
+  .timestamp b{ color:var(--ink-2); font-weight:500; }
+
+  /* summary tickets */
+  .summary{
+    display:grid; grid-template-columns:1fr auto 1fr;
+    gap:18px; align-items:stretch;
+    margin:40px 0 52px;
+  }
+  .ticket{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px 24px;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .ticket::before{
+    content:"";
+    position:absolute; left:0; top:16px; bottom:16px; width:3px; border-radius:3px;
+  }
+  .ticket.a::before{ background:var(--warn); }
+  .ticket.b::before{ background:var(--accent); }
+  .ticket .label{
+    font-size:12.5px; letter-spacing:.03em; color:var(--ink-3); font-weight:500;
+  }
+  .ticket .figure{
+    margin-top:8px; font-size:34px; font-weight:600; font-family:'Fraunces', serif;
+  }
+  .ticket .sub{ margin-top:6px; font-size:12.5px; color:var(--ink-3); }
+  .delta{
+    align-self:center; text-align:center; padding:0 4px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .delta .arrow{ font-size:20px; color:var(--ink-3); }
+  .delta .amt{ font-size:15px; font-weight:600; color:var(--warn-ink); font-family:'IBM Plex Mono', monospace; white-space:nowrap; }
+  .delta .pct{ font-size:12px; color:var(--ink-3); white-space:nowrap; }
+
+  /* kpi strip */
+  .kpis{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+    margin-bottom:52px;
+  }
+  .kpi{
+    background:var(--surface-2); border-radius:10px; padding:14px 16px;
+  }
+  .kpi .n{ font-size:20px; font-weight:600; font-family:'IBM Plex Mono',monospace; }
+  .kpi .t{ font-size:12.5px; color:var(--ink-2); margin-top:2px; }
+
+  /* section headers */
+  section{ margin-bottom:56px; }
+  .sec-head{ margin-bottom:6px; }
+  .sec-head h2{ font-size:21px; font-weight:600; }
+  .sec-head p{ margin-top:6px; font-size:13.5px; color:var(--ink-3); }
+
+  /* legend */
+  .legend{ display:flex; gap:18px; margin:16px 0 22px; font-size:12.5px; color:var(--ink-2); }
+  .legend .item{ display:flex; align-items:center; gap:7px; }
+  .legend .sw{ width:10px; height:10px; border-radius:3px; }
+
+  /* chart */
+  .chart-wrap{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:22px 24px 18px; box-shadow:var(--shadow);
+  }
+  .chart-row{
+    display:grid; grid-template-columns:150px 1fr; align-items:center;
+    gap:10px; height:26px; position:relative;
+  }
+  .chart-row + .chart-row{ margin-top:6px; }
+  .chart-label{
+    font-size:12.5px; color:var(--ink-2); text-align:right;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .chart-label.hi{ color:var(--ink); font-weight:500; }
+  .track{ position:relative; height:100%; }
+  .bar{
+    position:absolute; left:0; top:3px; bottom:3px;
+    border-radius:0 4px 4px 0;
+    background:var(--accent);
+  }
+  .bar.below{ background:var(--warn); }
+  .bar-val{
+    position:absolute; top:50%; transform:translateY(-50%);
+    font-size:11.5px; font-family:'IBM Plex Mono',monospace; color:var(--ink-2);
+    white-space:nowrap;
+  }
+  .refline{
+    position:absolute; top:-6px; bottom:-6px; width:0;
+    border-left:1.5px dashed var(--ink-3); opacity:.55;
+  }
+  .chart-plot{ position:relative; }
+  .ref-tag{
+    position:absolute; top:-30px; transform:translateX(-50%);
+    font-size:11px; font-family:'IBM Plex Mono',monospace;
+    color:var(--ink-2); background:var(--surface);
+    padding:3px 7px; border:1px solid var(--border); border-radius:100px;
+    white-space:nowrap;
+  }
+  .chart-note{
+    margin-top:16px; padding-top:14px; border-top:1px solid var(--border);
+    font-size:12px; color:var(--ink-3);
+  }
+
+  /* table */
+  .table-scroll{ overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); box-shadow:var(--shadow); }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:560px; }
+  thead th{
+    text-align:left; padding:12px 16px; font-size:11.5px; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:500;
+    border-bottom:1px solid var(--border); cursor:pointer; user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{ color:var(--ink); }
+  thead th .arrow{ opacity:.4; font-size:10px; margin-left:3px; }
+  thead th.active{ color:var(--ink); }
+  thead th.active .arrow{ opacity:1; }
+  tbody td{
+    padding:11px 16px; border-bottom:1px solid var(--border);
+    font-family:'IBM Plex Mono', monospace; white-space:nowrap;
+  }
+  tbody td.name{ font-family:'IBM Plex Sans', sans-serif; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover td{ background:var(--surface-2); }
+  .num{ text-align:right; }
+  .pill{
+    display:inline-block; padding:2px 9px; border-radius:100px; font-size:11.5px;
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+  .pill.above{ background:var(--accent-soft); color:var(--accent-ink); }
+  .pill.below{ background:var(--warn-soft); color:var(--warn-ink); }
+
+  footer{
+    border-top:1px solid var(--border); padding-top:22px;
+    font-size:13px; color:var(--ink-3); max-width:66ch;
+  }
+  footer p + p{ margin-top:10px; }
+  footer b{ color:var(--ink-2); font-weight:500; }
+
+  @media (max-width:600px){
+    header h1{ font-size:29px; }
+    .summary{ grid-template-columns:1fr; }
+    .delta{ flex-direction:row; padding:6px 0; }
+    .delta .arrow{ transform:rotate(90deg); }
+    .kpis{ grid-template-columns:1fr; }
+    .chart-row{ grid-template-columns:96px 1fr; }
+    .chart-label{ font-size:11px; }
+  }
+</style>
+
+<div class="page">
+
+  <header>
+    <span class="eyebrow">2609 · 런드리고 패스 · 데이터 체크</span>
+    <h1>라이트 유저 진입장벽</h1>
+    <p class="lede">구독으로 전환한 유저들은 전환 직전 평균 얼마를 결제했을까 — 그 값을 지금 미구독 회원의 결제 수준과 견줘, "요금제가 비싸 라이트 유저가 가입을 주저한다"는 가설의 방향을 확인한다.</p>
+  </header>
+
+  <div class="summary">
+    <div class="ticket a">
+      <div class="label">미구독 회원 · 건당 평균 결제액</div>
+      <div class="figure mono" id="fig-nonsub">33,736원</div>
+      <div class="sub">결제 이력 유저 44,302명 · 결제 85,680건</div>
+    </div>
+    <div class="delta">
+      <div class="arrow">→</div>
+      <div class="amt">+13,122원</div>
+      <div class="pct">1.39배 (+39%)</div>
+    </div>
+    <div class="ticket b">
+      <div class="label">구독 전환자 · 건당 평균 결제액</div>
+      <div class="figure mono" id="fig-sub">46,858원</div>
+      <div class="sub">전환자 4,270명 · 결제 166,481건</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <h2>집계 기준</h2>
+      <p>두 케이스는 2026년 1~8월 신규 가입 회원을 대상으로 합니다.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>미구독 회원</th>
+            <th>구독 전환자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="name">대상</td><td class="name">미구독 & 결제 이력이 있는 유저</td><td class="name">최초 구독 & 구독 전 결제 이력이 있는 유저</td></tr>
+          <tr><td class="name">집계 대상 결제</td><td class="name">전체 결제 건</td><td class="name">구독 신청 이전에 발생한 결제 건</td></tr>
+          <tr><td class="name">산식</td><td class="name">총 결제액 ÷ 총 결제 건수</td><td class="name">구독 전 총 결제액 ÷ 구독 전 총 결제 건수</td></tr>
+          <tr><td class="name">다건 합산 방식</td><td class="name">단일 그룹이라 가중평균 불필요</td><td class="name">요금제 28개 합산 시 결제 건수 가중평균</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-note">
+      <p><b>결제건수 가중평균을 쓰는 이유.</b> 요금제마다 가입자 수·결제 건수 규모가 크게 달라서, 요금제별 평균을 단순 평균하지 않고 결제 건수를 가중치로 삼아 실제 결제 규모를 반영했습니다.</p>
+      <p style="margin-top:8px;"><b>'구독 전' 결제로 제한하는 이유.</b> 구독 이후에는 세탁권 · 지급무게 · 수거배송권을 이용하기 때문에 그만큼 실제 결제금액이 줄어듭니다. 이 때문에 비교 대상을 구독 전 결제로 제한했습니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>구독 요금제별 상세 데이터</h2>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr id="ranking-head">
+            <th data-key="name">요금제명</th>
+            <th data-key="subs" class="num">가입자 수</th>
+            <th data-key="txns" class="num">구독 전 결제 건수</th>
+            <th data-key="avg" class="num active">건당 평균 결제액<span class="arrow">▲</span></th>
+            <th data-key="status">상태</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const DATA = [{"name":"런드리고X 라이트","subs":510,"txns":25441,"avg":15095},{"name":"런드리온리 28","subs":17,"txns":1630,"avg":16181},{"name":"런드리&드라이 45","subs":3,"txns":295,"avg":30431},{"name":"런드리온리 43","subs":43,"txns":2612,"avg":30715},{"name":"와이셔츠&드라이 스탠다드","subs":26,"txns":4150,"avg":32943},{"name":"와이셔츠&드라이 시그니처","subs":74,"txns":5254,"avg":33013},{"name":"런드리&베딩 59","subs":7,"txns":418,"avg":33402},{"name":"런드리온리 베이직","subs":103,"txns":5625,"avg":35890},{"name":"드라이온리 39","subs":261,"txns":10176,"avg":38537},{"name":"와이셔츠&드라이 47","subs":65,"txns":9870,"avg":39473},{"name":"와이셔츠&드라이 79","subs":10,"txns":1489,"avg":40009},{"name":"런드리&드라이 74","subs":3,"txns":83,"avg":41035},{"name":"와이셔츠&드라이 62","subs":17,"txns":2826,"avg":41394},{"name":"드라이온리 73","subs":53,"txns":2048,"avg":43342},{"name":"런드리온리 스탠다드","subs":38,"txns":1839,"avg":46766},{"name":"런드리고X 베이직","subs":1328,"txns":45572,"avg":52851},{"name":"드라이온리 92","subs":24,"txns":740,"avg":53909},{"name":"베딩온리 35","subs":20,"txns":773,"avg":54045},{"name":"베딩온리 베이직","subs":110,"txns":1750,"avg":55993},{"name":"런드리온리 95","subs":2,"txns":654,"avg":56386},{"name":"드라이온리 베이직","subs":589,"txns":14769,"avg":57847},{"name":"런드리고X 시그니처","subs":145,"txns":5285,"avg":61832},{"name":"런드리온리 70","subs":9,"txns":807,"avg":61881},{"name":"런드리&드라이 베이직","subs":40,"txns":982,"avg":62880},{"name":"런드리고X 스탠다드","subs":398,"txns":13237,"avg":73614},{"name":"런드리&드라이 스탠다드","subs":49,"txns":2066,"avg":80159},{"name":"드라이온리 스탠다드","subs":322,"txns":5880,"avg":90852},{"name":"런드리&드라이 59","subs":4,"txns":210,"avg":222848}];
+  const THRESHOLD = 33736;
+  const nf = n => n.toLocaleString('ko-KR');
+
+  // ---- table ----
+  let sortKey = 'avg', sortDir = 1;
+  function renderTable(){
+    const rows = DATA.slice().sort((a,b)=>{
+      if (sortKey==='name') return a.name.localeCompare(b.name) * sortDir;
+      if (sortKey==='status'){
+        const sa = a.avg<THRESHOLD?0:1, sb = b.avg<THRESHOLD?0:1;
+        return (sa-sb) * sortDir;
+      }
+      return (a[sortKey]-b[sortKey]) * sortDir;
+    });
+    document.getElementById('tbody').innerHTML = rows.map(d=>{
+      const below = d.avg < THRESHOLD;
+      return `<tr>
+        <td class="name">${d.name}</td>
+        <td class="num">${nf(d.subs)}</td>
+        <td class="num">${nf(d.txns)}</td>
+        <td class="num">${nf(d.avg)}원</td>
+        <td><span class="pill ${below?'below':'above'}">${below?'미구독 평균 미만':'미구독 평균 이상'}</span></td>
+      </tr>`;
+    }).join('');
+  }
+  renderTable();
+
+  document.querySelectorAll('#ranking-head th').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+      document.querySelectorAll('#ranking-head th').forEach(t=>{ t.classList.remove('active'); t.querySelector('.arrow') && (t.querySelector('.arrow').textContent = '▲'); });
+      th.classList.add('active');
+      const arrow = th.querySelector('.arrow');
+      if (arrow) arrow.textContent = sortDir===1 ? '▲' : '▼';
+      else th.innerHTML = th.innerHTML + ` <span class="arrow">${sortDir===1?'▲':'▼'}</span>`;
+      renderTable();
+    });
+  });
+</script>
